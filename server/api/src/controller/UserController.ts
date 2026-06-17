@@ -85,6 +85,8 @@ export default class UserController {
   };
 
   Login = async (req: Request, res: Response) => {
+    console.log('Password type:', typeof process.env.DB_PASSWORD);
+console.log('Password value:', process.env.DB_PASSWORD);
     const { email, senha } = req.body;
 
     const user = await this.dao.Login(email, senha);
@@ -108,6 +110,10 @@ export default class UserController {
         expiresIn: "1h",
       },
     );
+
+    
+    console.log('Password type:', typeof process.env.ACCESS_TOKEN_KEY);
+console.log('Password value:', process.env.ACCESS_TOKEN_KEY);
 
     res.json({ token });
   };
