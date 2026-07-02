@@ -1,8 +1,7 @@
 import ProdutoSaida from "./ProdutoSaida.js";
 import Usuario from "./Usuario.js";
 import { TipoPagamento } from "../enums/TipoPagamento.js";
-import type { ISaida } from "../types/ISaida.js";
-
+import type { ISaida } from "./../interfaces/ISaida.js";
 export default class Saida {
   private _id: number | null;
   private _cupomFiscal: string;

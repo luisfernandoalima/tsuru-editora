@@ -1,7 +1,7 @@
 import ProdutoEntrada from "./ProdutoEntrada.js";
 import type Usuario from "./Usuario.js";
 
-import type { IEntrada } from "../types/IEntrada.js";
+import type { IEntrada } from "../interfaces/IEntrada.js";
 
 export default class Entrada {
   private _id: number | null;
