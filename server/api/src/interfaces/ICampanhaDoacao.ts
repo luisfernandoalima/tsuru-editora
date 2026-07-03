@@ -1,3 +1,4 @@
+import Devolucao from "../class/Devolucao.js";
 import { StatusCampanha } from "../enums/StatusCampanha.js";
 
 export interface ICampanhaDoacao {

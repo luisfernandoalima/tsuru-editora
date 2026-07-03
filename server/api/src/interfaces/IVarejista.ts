@@ -1,3 +1,4 @@
+import Endereco from "../class/Endereco.js";
 export interface IVarejista {
   id?: number;
   nome: string;

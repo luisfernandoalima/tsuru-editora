@@ -1,3 +1,5 @@
+import Varejista from "../class/Varejista.js";
+
 export interface IDevolucao {
   id?: number;
   dataDevolucao: number;

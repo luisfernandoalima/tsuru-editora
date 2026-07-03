@@ -1,4 +1,4 @@
-export default interface IUsuario {
+export interface IUsuario {
   id: number | null;
   nome: string;
   email: string;
