@@ -1,17 +1,17 @@
-import Varejista from "./Varejista.js";
+import Parceiro from "./Parceiro.js";
 import type { IDevolucao } from "./../interfaces/IDevolucao.js";
 
 export default class Devolucao {
   private id?: number | undefined;
   private dataDevolucao: number;
   private saldoAtual: number;
-  private varejista: Varejista;
+  private parceiro: Parceiro;
 
   constructor(devolucao: IDevolucao) {
     this.id = devolucao.id;
     this.dataDevolucao = devolucao.dataDevolucao;
     this.saldoAtual = devolucao.saldoAtual;
-    this.varejista = devolucao.varejista;
+    this.parceiro = devolucao.parceiro;
   }
 
   public getId(): number | undefined {
@@ -38,11 +38,11 @@ export default class Devolucao {
     this.saldoAtual = saldoAtual;
   }
 
-  public getVarejista(): Varejista {
-    return this.varejista;
+  public getParceiro(): Parceiro {
+    return this.parceiro;
   }
 
-  public setVarejista(varejista: Varejista): void {
-    this.varejista = varejista;
+  public setParceiro(parceiro: Parceiro): void {
+    this.parceiro = parceiro;
   }
 }

@@ -4,7 +4,7 @@ import path from "path";
 import type { Request, Response } from "express";
 import Produto from "../class/Produto.js";
 import { ProdutoDAO } from "../dal/ProdutoDAO.js";
-import type { IProduto } from "../types/TProduto.js";
+import type { IProduto } from "../interfaces/IProduto.js";
 export default class ProdutoController {
   private dao = new ProdutoDAO();
 

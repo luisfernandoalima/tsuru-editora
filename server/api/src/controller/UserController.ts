@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
-import type IUsuario from "../types/Usuario.js";
+import type { IUsuario } from "../interfaces/IUsuario.js";
 import Usuario from "../class/Usuario.js";
 import UsuarioDAO from "../dal/UsuarioDAO.js";
 export default class UserController {
@@ -85,8 +85,8 @@ export default class UserController {
   };
 
   Login = async (req: Request, res: Response) => {
-    console.log('Password type:', typeof process.env.DB_PASSWORD);
-console.log('Password value:', process.env.DB_PASSWORD);
+    console.log("Password type:", typeof process.env.DB_PASSWORD);
+    console.log("Password value:", process.env.DB_PASSWORD);
     const { email, senha } = req.body;
 
     const user = await this.dao.Login(email, senha);
@@ -111,9 +111,8 @@ console.log('Password value:', process.env.DB_PASSWORD);
       },
     );
 
-    
-    console.log('Password type:', typeof process.env.ACCESS_TOKEN_KEY);
-console.log('Password value:', process.env.ACCESS_TOKEN_KEY);
+    console.log("Password type:", typeof process.env.ACCESS_TOKEN_KEY);
+    console.log("Password value:", process.env.ACCESS_TOKEN_KEY);
 
     res.json({ token });
   };

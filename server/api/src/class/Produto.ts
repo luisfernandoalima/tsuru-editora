@@ -1,4 +1,4 @@
-import type { IProduto } from "../interfaces/TProduto.js";
+import type { IProduto } from "../interfaces/IProduto.js";
 
 export default class Produto {
   private _id: number | null;

@@ -1,4 +1,4 @@
-import type { IUsuario } from "./../interfaces/Usuario.js";
+import type { IUsuario } from "../interfaces/IUsuario.js";
 export default class Usuario {
   constructor(user: IUsuario) {
     this._id = user.id;

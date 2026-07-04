@@ -1,7 +1,7 @@
 import Endereco from "./Endereco.js";
-import type { IVarejista } from "../interfaces/IVarejista.js";
+import type { IParceiro } from "../interfaces/IParceiro.js";
 
-export default class Varejista {
+export default class Parceiro {
   private id?: number | undefined;
   private nome: string;
   private cnpj: string;
@@ -11,15 +11,15 @@ export default class Varejista {
   private dataCadastro: Date;
   private enderecos: Endereco[];
 
-  constructor(varejista: IVarejista) {
-    this.id = varejista.id;
-    this.nome = varejista.nome;
-    this.cnpj = varejista.cnpj;
-    this.email = varejista.email;
-    this.contato = varejista.contato;
-    this.ativo = varejista.ativo;
-    this.dataCadastro = varejista.dataCadastro;
-    this.enderecos = varejista.enderecos;
+  constructor(parceiro: IParceiro) {
+    this.id = parceiro.id;
+    this.nome = parceiro.nome;
+    this.cnpj = parceiro.cnpj;
+    this.email = parceiro.email;
+    this.contato = parceiro.contato;
+    this.ativo = parceiro.ativo;
+    this.dataCadastro = parceiro.dataCadastro;
+    this.enderecos = parceiro.enderecos;
   }
 
   public getId(): number | undefined {

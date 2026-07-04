@@ -1,5 +1,5 @@
 import Endereco from "../class/Endereco.js";
-export interface IVarejista {
+export interface IParceiro {
   id?: number;
   nome: string;
   cnpj: string;
