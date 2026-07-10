@@ -6,9 +6,9 @@ export default class OrdemDeImpressao {
   private id?: number | undefined;
   private nome: string;
   private dataCriacao: Date;
-  private dataAprovacao: Date;
-  private totalObras: number;
-  private totalUnidades: number;
+  private dataFechamento: Date | null;
+  private totalObras: number | null;
+  private totalUnidades: number | null;
   private statusOrdem: StatusOrdem;
   private aprovador: Usuario;
 
@@ -16,7 +16,7 @@ export default class OrdemDeImpressao {
     this.id = ordem.id;
     this.nome = ordem.nome;
     this.dataCriacao = ordem.dataCriacao;
-    this.dataAprovacao = ordem.dataAprovacao;
+    this.dataFechamento = ordem.dataFechamento;
     this.totalObras = ordem.totalObras;
     this.totalUnidades = ordem.totalUnidades;
     this.statusOrdem = ordem.statusOrdem;
@@ -47,15 +47,15 @@ export default class OrdemDeImpressao {
     this.dataCriacao = dataCriacao;
   }
 
-  public getDataAprovacao(): Date {
-    return this.dataAprovacao;
+  public getDataAprovacao(): Date | null {
+    return this.dataFechamento;
   }
 
-  public setDataAprovacao(dataAprovacao: Date): void {
-    this.dataAprovacao = dataAprovacao;
+  public setDataAprovacao(dataFechamento: Date): void {
+    this.dataFechamento = dataFechamento;
   }
 
-  public getTotalObras(): number {
+  public getTotalObras(): number | null {
     return this.totalObras;
   }
 
@@ -63,7 +63,7 @@ export default class OrdemDeImpressao {
     this.totalObras = totalObras;
   }
 
-  public getTotalUnidades(): number {
+  public getTotalUnidades(): number | null {
     return this.totalUnidades;
   }
 

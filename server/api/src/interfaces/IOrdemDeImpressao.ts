@@ -5,9 +5,9 @@ export interface IOrdemDeImpressao {
   id?: number;
   nome: string;
   dataCriacao: Date;
-  dataAprovacao: Date;
-  totalObras: number;
-  totalUnidades: number;
+  dataFechamento: Date | null;
+  totalObras: number | null;
+  totalUnidades: number | null;
   statusOrdem: StatusOrdem;
   aprovador: Usuario;
 }

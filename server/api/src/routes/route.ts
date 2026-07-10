@@ -9,12 +9,14 @@ import UserController from "../controller/UserController.js";
 import ProdutoController from "../controller/ProductController.js";
 import EntradaController from "../controller/EntradaController.js";
 import SaidaController from "../controller/SaidaController.js";
+import OrdemDeImpressaoController from "../controller/OrdemDeImpressaoController.js";
 
 const route = Router();
 const userController = new UserController();
 const produtoController = new ProdutoController();
 const entradaController = new EntradaController();
 const saidaController = new SaidaController();
+const ordemDeImpressaoController = new OrdemDeImpressaoController();
 
 route.post("/user/sign-up", authValidate, userController.Criar);
 route.post("/user/login", userController.Login);
@@ -61,6 +63,7 @@ route.get(
   entradaController.listarPorCupom,
 );
 
+// Registro de saídas
 route.post("/outgoing/register", authValidate, saidaController.Registrar);
 route.get(
   "/outgoing/find-registration/:cupom",
@@ -72,6 +75,36 @@ route.get(
   "/outgoing/list-registration-cupom/:cupom",
   authValidate,
   saidaController.listarPorCupom,
+);
+
+// registro de ordens
+route.post("/print-order", authValidate, ordemDeImpressaoController.Criar);
+route.put("/print-order/:id", authValidate, ordemDeImpressaoController.Alterar);
+route.get(
+  "/print-order/:id",
+  authValidate,
+  ordemDeImpressaoController.Consultar,
+);
+route.put(
+  "/print-order/approve/:id",
+  authValidate,
+  ordemDeImpressaoController.Aprovar,
+);
+route.put(
+  "/print-order/reject/:id",
+  authValidate,
+  ordemDeImpressaoController.Rejeitar,
+);
+route.get("/print-order/list", authValidate, ordemDeImpressaoController.Listar);
+route.get(
+  "/print-order/search",
+  authValidate,
+  ordemDeImpressaoController.Buscar,
+);
+route.post(
+  "/print-order/save-products/:id",
+  authValidate,
+  ordemDeImpressaoController.salvarProdutos,
 );
 
 export default route;
