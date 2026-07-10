@@ -72,6 +72,7 @@ watch(
         :name="value._titulo"
         :link="`/produto/${value._id}`"
         :image="`http://localhost:8081${value._imgCapa}`"
+        statusItem="Baixo"
       />
     </div>
   </NuxtLayout>
@@ -84,8 +85,11 @@ watch(
   align-items: center;
   justify-items: center;
   row-gap: 1em;
-  padding-top: 50px;
+  padding: 50px 0px;
   overflow-y: auto;
   overflow-x: unset;
+  background-color: var(--main);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
 }
 </style>

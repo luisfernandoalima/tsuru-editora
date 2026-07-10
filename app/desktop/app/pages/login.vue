@@ -53,7 +53,7 @@ const login = async () => {
     router.push("/");
   } catch (err) {
     console.error(err);
-    toast.error(err);
+    toast.error({ title: "Erro!", message: err.message });
   }
 };
 </script>

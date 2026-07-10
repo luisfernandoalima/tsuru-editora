@@ -18,7 +18,7 @@ const emit = defineEmits(["update:value"]);
           icon="material-symbols:search"
           width="35"
           height="35"
-          style="color: #fff"
+          style="color: #5b0606"
         />
       </button>
       <input
@@ -36,8 +36,8 @@ const emit = defineEmits(["update:value"]);
 <style scoped>
 form {
   width: 100%;
-  color: #fff;
   margin-bottom: 25px;
+  color: var(--main_text);
 }
 
 label {
@@ -46,8 +46,11 @@ label {
   gap: 5px;
   padding: 5px;
   width: 100%;
-  border: 2px solid #fff;
+  border: 3px solid var(--details);
   border-radius: 10px;
+
+  background-color: var(--main);
+  box-shadow: var(--shadow);
 }
 
 input {

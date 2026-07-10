@@ -21,14 +21,14 @@ const { user } = useAuth();
               />Home</NuxtLink
             >
           </li>
-          <li>
-            <NuxtLink to="/perfil"
-              ><Icon icon="lucide:circle-user" />Perfil</NuxtLink
-            >
-          </li>
           <li v-if="user?.funcao === 1">
             <NuxtLink to="/estoque">
               <Icon icon="fluent:box-24-regular" />Estoque</NuxtLink
+            >
+          </li>
+          <li>
+            <NuxtLink to="/ordem-de-impressao">
+              <Icon icon="mingcute:paper-2-line" />Ordens Impre.</NuxtLink
             >
           </li>
           <li>
@@ -39,6 +39,11 @@ const { user } = useAuth();
           <li v-if="user?.funcao === 1">
             <NuxtLink to="/colaborador"
               ><Icon icon="ri:team-line" />Colaboradores</NuxtLink
+            >
+          </li>
+          <li>
+            <NuxtLink to="/perfil"
+              ><Icon icon="lucide:circle-user" />Perfil</NuxtLink
             >
           </li>
         </ul>
@@ -55,16 +60,26 @@ const { user } = useAuth();
   flex: 1;
   display: grid;
   grid-template-columns: 15% 85%;
-  background-color: #5b0606;
+  grid-template-rows: 100vh;
+  height: 100vh;
+  background-color: var(--main_secundary);
 }
 
 header {
   padding: 0.3em;
-  box-shadow: 5px 5px 10px #00000075;
+  box-shadow: var(--shadow);
   border-radius: 0px 15px 15px 0px;
-  background-color: #fff;
+  background-color: var(--main);
+  height: 100%;
+  overflow: hidden;
 }
 
+.main_area {
+  padding: 15px 50px;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
 nav {
   display: block;
   width: 100%;
@@ -77,7 +92,7 @@ nav {
     cursor: pointer;
     padding: 5px;
     width: 100%;
-    color: #5b0606;
+    color: var(--fucus_text);
     font-weight: 400;
     font-size: 1.5em;
     transition: 0.3s;
@@ -107,9 +122,5 @@ nav {
       }
     }
   }
-}
-
-main {
-  padding: 15px 50px;
 }
 </style>

@@ -73,11 +73,15 @@ Acesse o servidor em: `http://localhost:8081/`
 
 ## ⚙️ Funcionalidades
 
-- [x] Sistema de Login
+- [x] Sistema de Login;
 
-- [x] Sistema de controle de colaborador
+- [x] Sistema de controle de produtos;
 
-- [ ] Sistema de controle de doações;
+- [x] Sistema de controle de colaborador;
+
+- [x] Sistema de gerenciamento de Ordens;
+
+- [ ] Sistema de controle de doações.
 
 ## 📊 Resultados / Demonstrações
 

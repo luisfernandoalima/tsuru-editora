@@ -68,12 +68,14 @@ watch(
       @update:value="produto = $event"
     ></SearchBar>
 
-    <div class="main_area">
+    <div class="main_area_stock">
       <NuxtLink to="/estoque/novo-produto">
         <div class="new_product_container">
           <Icon icon="ep:plus" width="70" height="70" />
         </div>
-        <p class="mt-1 mb-1 text-white font-bold text-center">Criar novo</p>
+        <p class="mt-1 mb-1 text-(--details) font-bold text-center">
+          Criar novo
+        </p>
       </NuxtLink>
       <ItemStockCard
         v-for="value in produtos"
@@ -87,15 +89,18 @@ watch(
 </template>
 
 <style scoped>
-.main_area {
+.main_area_stock {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   align-items: center;
   justify-items: center;
   row-gap: 1em;
-  padding-top: 50px;
+  padding: 15px 0px;
   overflow-y: auto;
   overflow-x: unset;
+  background-color: var(--main);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
 }
 
 .new_product_container {
@@ -106,8 +111,8 @@ watch(
   background-position: center center;
   background-size: contain;
   background-color: rgba(255, 255, 255, 0.389);
-  border: 2px solid #fff;
-  color: #fff;
+  border: 2px solid var(--details);
+  color: var(--details);
   display: flex;
   align-items: center;
   justify-content: center;
