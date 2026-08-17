@@ -16,7 +16,11 @@ import OrderCard from "~/components/ui/cards/OrderCard.vue";
       @update:value="produto = $event"
     />
 
-    <NuxtLink to="/ordem-de-impressao/nova-ordem">+ Nova Janela</NuxtLink>
+    <div class="flex justify-end">
+      <NuxtLink to="/ordem-de-impressao/nova-ordem" class="new_order"
+        >+ Nova Janela</NuxtLink
+      >
+    </div>
 
     <Container>
       <div class="order_container">
@@ -48,5 +52,13 @@ import OrderCard from "~/components/ui/cards/OrderCard.vue";
   justify-items: center;
   width: 100%;
   gap: 20px;
+}
+
+.new_order {
+  background-color: var(--main);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  padding: 1px 6px;
+  margin-bottom: 15px;
 }
 </style>
