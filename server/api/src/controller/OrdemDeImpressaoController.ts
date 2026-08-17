@@ -27,6 +27,8 @@ export default class OrdemDeImpressaoController {
 
       const novaOrdem = new OrdemDeImpressao(reqInfo);
 
+      console.log(novaOrdem);
+
       if (await this.dao.Criar(novaOrdem)) {
         res.status(201).json({ message: `Ordem criada com sucesso!` });
       }

@@ -10,16 +10,18 @@ export default class OrdemDeImpressao {
   private totalObras: number | null;
   private totalUnidades: number | null;
   private statusOrdem: StatusOrdem;
+  private criador: Usuario;
   private aprovador: Usuario;
 
   constructor(ordem: IOrdemDeImpressao) {
     this.id = ordem.id;
     this.nome = ordem.nome;
-    this.dataCriacao = ordem.dataCriacao;
+    this.dataCriacao = new Date(ordem.dataCriacao);
     this.dataFechamento = ordem.dataFechamento;
     this.totalObras = ordem.totalObras;
     this.totalUnidades = ordem.totalUnidades;
     this.statusOrdem = ordem.statusOrdem;
+    this.criador = ordem.criador;
     this.aprovador = ordem.aprovador;
   }
 
@@ -77,6 +79,14 @@ export default class OrdemDeImpressao {
 
   public setStatusOrdem(statusOrdem: StatusOrdem): void {
     this.statusOrdem = statusOrdem;
+  }
+
+  public getCriador(): Usuario {
+    return this.criador;
+  }
+
+  public setCriador(criador: Usuario): void {
+    this.criador = criador;
   }
 
   public getAprovador(): Usuario {

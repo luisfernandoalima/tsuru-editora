@@ -107,7 +107,7 @@ export default class UserController {
       },
       this.ACCESS_TOKEN!,
       {
-        expiresIn: "1h",
+        expiresIn: "5h",
       },
     );
 

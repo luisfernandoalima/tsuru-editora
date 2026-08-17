@@ -9,5 +9,6 @@ export interface IOrdemDeImpressao {
   totalObras: number | null;
   totalUnidades: number | null;
   statusOrdem: StatusOrdem;
+  criador: Usuario;
   aprovador: Usuario;
 }
