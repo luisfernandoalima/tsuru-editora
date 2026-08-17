@@ -1,7 +1,11 @@
+<script setup>
+const props = defineProps({ customClass: String });
+</script>
+
 <template>
-  <div class="page_container">
+  <section :class="['page_container', props.customClass]">
     <slot></slot>
-  </div>
+  </section>
 </template>
 <style>
 .page_container {

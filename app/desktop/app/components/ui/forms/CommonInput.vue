@@ -10,6 +10,7 @@ defineProps({
 
   mask: String,
   maxlength: Number,
+  disabled: Boolean,
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -28,6 +29,7 @@ const emit = defineEmits(["update:modelValue"]);
       :maxlength="maxlength"
       @input="emit('update:modelValue', $event.target.value)"
       autocomplete="off"
+      :disabled="disabled"
     />
   </div>
 </template>
@@ -37,12 +39,12 @@ div {
   display: flex;
   flex-direction: column;
   width: 100%;
-  color: #fff;
+  color: #000;
   font-size: 1.2em;
 }
 
 input {
-  border: 2px solid #fff;
+  border: var(--border);
   border-radius: 10px;
   padding: 3px;
 }
@@ -51,7 +53,16 @@ input:focus {
   outline: none;
 }
 
+input:disabled {
+  background-color: #cecece;
+  cursor: not-allowed;
+}
+
 input::placeholder {
   color: #ababab;
+}
+
+input:disabled::placeholder {
+  color: #616161;
 }
 </style>
