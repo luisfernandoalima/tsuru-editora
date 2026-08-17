@@ -32,6 +32,11 @@ const { user } = useAuth();
             >
           </li>
           <li>
+            <NuxtLink to="/parceiros">
+              <Icon icon="material-symbols:store-outline-rounded" />Parceiros</NuxtLink
+            >
+          </li>
+          <li>
             <NuxtLink to="/operacoes"
               ><Icon icon="fluent:arrow-sort-16-filled" />Operações</NuxtLink
             >
@@ -75,9 +80,11 @@ header {
 }
 
 .main_area {
+  display: flex;
+  flex-direction: column;
   padding: 15px 50px;
   height: 100%;
-  min-height: 0;
+  min-height: 100vh;
   overflow-y: auto;
 }
 nav {
