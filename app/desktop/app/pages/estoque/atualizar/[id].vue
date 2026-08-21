@@ -6,6 +6,7 @@ import BackButton from "~/components/layout/BackButton.vue";
 import { listClassificacoesIndicativas } from "~/utils/lists";
 import { listGeneros } from "~/utils/lists";
 import { useAuthToken } from "~/composables/useAuthToken";
+import Container from "~/components/layout/Container.vue";
 
 definePageMeta({
   layout: "default",
@@ -80,153 +81,146 @@ const updateProduct = async () => {
 
 <template>
   <NuxtLayout>
-    <div class="page">
-      <div class="product_card">
-        <div class="header">
-          <BackButton />
+    <Container :class="`container`">
+      <div class="header">
+        <BackButton />
 
-          <div class="product_preview mt-4">
-            <div class="cover_preview">
-              <img v-if="previewImage" :src="previewImage" />
+        <div class="product_preview mt-4">
+          <div class="cover_preview">
+            <img v-if="previewImage" :src="previewImage" />
 
-              <div v-else class="empty_cover">Sem capa</div>
-            </div>
+            <div v-else class="empty_cover">Sem capa</div>
+          </div>
 
-            <div class="product_info">
-              <h1>
-                {{ titulo || "Novo Produto" }}
-              </h1>
+          <div class="product_info">
+            <h1>
+              {{ titulo || "Novo Produto" }}
+            </h1>
 
-              <p>
-                {{ autor || "Autor" }}
-              </p>
+            <p>
+              {{ autor || "Autor" }}
+            </p>
 
-              <span> ISBN: {{ isbn || "0000000000000" }} </span>
-            </div>
+            <span> ISBN: {{ isbn || "0000000000000" }} </span>
           </div>
         </div>
-
-        <form @submit.prevent="updateProduct">
-          <section class="section">
-            <h2>Informações básicas</h2>
-
-            <div class="form_grid">
-              <CommonInput
-                text="Titulo"
-                name="titulo"
-                type="text"
-                placeholder="Insira o titulo do produto"
-                v-model="titulo"
-              />
-
-              <CommonInput
-                text="Autor"
-                name="autor"
-                type="text"
-                placeholder="Digite o nome do autor"
-                v-model="autor"
-              />
-
-              <CommonInput
-                text="ISBN-13"
-                name="isbn"
-                type="text"
-                placeholder="1234567890123"
-                v-model="isbn"
-              />
-
-              <CommonInput
-                text="Idioma"
-                name="idioma"
-                type="text"
-                placeholder="Português"
-                v-model="idioma"
-              />
-
-              <CommonInput
-                text="Serie"
-                name="serie"
-                type="text"
-                placeholder="Insira a série"
-                v-model="serie"
-              />
-
-              <CommonInput
-                text="Volume"
-                name="volume"
-                type="text"
-                placeholder="Volume"
-                v-model="volume"
-              />
-            </div>
-          </section>
-
-          <section class="section">
-            <h2>Detalhes</h2>
-
-            <div class="form_grid">
-              <CommonInput
-                text="Número de Páginas"
-                name="numPaginas"
-                type="number"
-                placeholder="Número de páginas"
-                v-model="numPaginas"
-              />
-
-              <CommonInput
-                text="Data de Publicação"
-                name="dataPublicacao"
-                type="date"
-                v-model="dataPublicacao"
-              />
-
-              <CommonSelect
-                text="Genero"
-                name="genero"
-                v-model="genero"
-                :options="listGeneros"
-              />
-
-              <CommonSelect
-                text="Classificação Indicativa"
-                name="classIndicativa"
-                v-model="classIndicativa"
-                :options="listClassificacoesIndicativas"
-              />
-
-              <CommonInput
-                text="Preço"
-                name="preco"
-                type="text"
-                placeholder="55.00"
-                v-model="preco"
-              />
-            </div>
-          </section>
-
-          <div class="actions">
-            <button type="button" class="secondary">Cancelar</button>
-
-            <button type="submit" class="primary">Salvar alterações</button>
-          </div>
-        </form>
       </div>
-    </div>
+
+      <form @submit.prevent="updateProduct">
+        <section class="section">
+          <h2>Informações básicas</h2>
+
+          <div class="form_grid">
+            <CommonInput
+              text="Titulo"
+              name="titulo"
+              type="text"
+              placeholder="Insira o titulo do produto"
+              v-model="titulo"
+            />
+
+            <CommonInput
+              text="Autor"
+              name="autor"
+              type="text"
+              placeholder="Digite o nome do autor"
+              v-model="autor"
+            />
+
+            <CommonInput
+              text="ISBN-13"
+              name="isbn"
+              type="text"
+              placeholder="1234567890123"
+              v-model="isbn"
+            />
+
+            <CommonInput
+              text="Idioma"
+              name="idioma"
+              type="text"
+              placeholder="Português"
+              v-model="idioma"
+            />
+
+            <CommonInput
+              text="Serie"
+              name="serie"
+              type="text"
+              placeholder="Insira a série"
+              v-model="serie"
+            />
+
+            <CommonInput
+              text="Volume"
+              name="volume"
+              type="text"
+              placeholder="Volume"
+              v-model="volume"
+            />
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Detalhes</h2>
+
+          <div class="form_grid">
+            <CommonInput
+              text="Número de Páginas"
+              name="numPaginas"
+              type="number"
+              placeholder="Número de páginas"
+              v-model="numPaginas"
+            />
+
+            <CommonInput
+              text="Data de Publicação"
+              name="dataPublicacao"
+              type="date"
+              v-model="dataPublicacao"
+            />
+
+            <CommonSelect
+              text="Genero"
+              name="genero"
+              v-model="genero"
+              :options="listGeneros"
+            />
+
+            <CommonSelect
+              text="Classificação Indicativa"
+              name="classIndicativa"
+              v-model="classIndicativa"
+              :options="listClassificacoesIndicativas"
+            />
+
+            <CommonInput
+              text="Preço"
+              name="preco"
+              type="text"
+              placeholder="55.00"
+              v-model="preco"
+            />
+          </div>
+        </section>
+
+        <div class="actions">
+          <button type="button" class="secondary">Cancelar</button>
+
+          <button type="submit" class="primary">Salvar alterações</button>
+        </div>
+      </form>
+    </Container>
   </NuxtLayout>
 </template>
 
 <style scoped>
-.product_card {
-  max-width: 1200px;
-  margin: 0 auto;
-
-  border-radius: 28px;
-
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+.container {
+  flex: 1;
 }
-
 .header {
   margin-bottom: 40px;
+  width: 100%;
 }
 
 .product_preview {
@@ -258,33 +252,29 @@ const updateProduct = async () => {
 .empty_cover {
   width: 100%;
   height: 100%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   color: #9ca3af;
 }
 
 .product_info h1 {
   margin: 0;
-
   font-size: 34px;
-  color: #fff;
 }
 
 .product_info p {
   margin-top: 8px;
 
   font-size: 18px;
-  color: #bbbbbb;
+  color: #505050;
 }
 
 .product_info span {
   display: block;
   margin-top: 12px;
 
-  color: #bbbbbb;
+  color: #505050;
 }
 
 .section {

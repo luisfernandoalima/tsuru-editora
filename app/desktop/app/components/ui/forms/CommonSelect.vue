@@ -40,15 +40,14 @@ div {
   display: flex;
   flex-direction: column;
   width: 100%;
-  color: #fff;
+  color: #000;
   font-size: 1.2em;
 }
 
 select {
-  color: #5b0606;
   background-color: #fff;
-  border: 2px solid #fff;
+  border: 3px solid var(--details);
   border-radius: 10px;
-  padding: 4px;
+  padding: 5px;
 }
 </style>
