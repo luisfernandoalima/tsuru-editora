@@ -44,7 +44,6 @@ defineProps({
 }
 
 p {
-  color: #fff;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -53,13 +52,14 @@ p {
 
 .button_area {
   button {
-    background-color: #fff;
-    color: #5b0606;
+    background-color: #f7f7f7;
+    color: var(--details);
     border-radius: 10px;
     width: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--shadow);
   }
 }
 </style>

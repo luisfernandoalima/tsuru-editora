@@ -1,6 +1,6 @@
 <script setup>
 import SearchBar from "~/components/layout/SearchBar.vue";
-import ItemStockCard from "~/components/layout/ItemStockCard.vue";
+import ItemStockCard from "~/components/ui/cards/ItemStockCard.vue";
 
 import { Icon } from "@iconify/vue";
 
