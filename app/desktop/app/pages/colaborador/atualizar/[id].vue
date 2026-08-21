@@ -3,6 +3,8 @@ import CommonInput from "~/components/ui/forms/CommonInput.vue";
 import CommonSelect from "~/components/ui/forms/CommonSelect.vue";
 import BackButton from "~/components/layout/BackButton.vue";
 
+import Container from "~/components/layout/Container.vue";
+
 import { cargos } from "#imports";
 
 definePageMeta({
@@ -65,113 +67,97 @@ const updateUser = async () => {
 
 <template>
   <NuxtLayout>
-    <div class="page">
-      <div class="card">
-        <div class="header">
-          <BackButton />
+    <Container>
+      <div class="header">
+        <BackButton />
 
-          <div class="title_area">
-            <div class="avatar">
-              {{ name?.charAt(0) || "U" }}
-            </div>
+        <div class="title_area">
+          <div class="avatar">
+            {{ name?.charAt(0) || "U" }}
+          </div>
 
-            <div>
-              <h1>Atualizar colaborador</h1>
-              <p>Edite os dados cadastrais do colaborador</p>
-            </div>
+          <div>
+            <h1>Atualizar colaborador</h1>
+            <p>Edite os dados cadastrais do colaborador</p>
           </div>
         </div>
-
-        <form @submit.prevent="updateUser">
-          <section class="section">
-            <h2>Dados pessoais</h2>
-
-            <div class="form_grid">
-              <CommonInput
-                text="CPF"
-                name="cpf"
-                type="text"
-                placeholder="123.456.789-10"
-                v-model="cpf"
-              />
-
-              <CommonInput
-                text="Nome"
-                name="nome"
-                type="text"
-                placeholder="Digite o nome"
-                v-model="name"
-              />
-
-              <CommonInput
-                text="E-mail"
-                name="email"
-                type="email"
-                placeholder="exemplo@empresa.com"
-                v-model="email"
-              />
-
-              <CommonInput
-                text="Telefone"
-                name="telefone"
-                type="text"
-                placeholder="(00) 00000-0000"
-                v-model="telefone"
-              />
-            </div>
-          </section>
-
-          <section class="section">
-            <h2>Dados de acesso</h2>
-
-            <div class="form_grid">
-              <CommonInput
-                text="Senha"
-                name="senha"
-                type="password"
-                placeholder="Digite a senha"
-                v-model="senha"
-              />
-
-              <CommonSelect
-                text="Função"
-                name="funcao"
-                v-model="cargo"
-                :options="cargos"
-              />
-            </div>
-          </section>
-
-          <div class="actions">
-            <button type="button" class="secondary">Cancelar</button>
-
-            <button type="submit" class="primary">Salvar alterações</button>
-          </div>
-        </form>
       </div>
-    </div>
+
+      <form @submit.prevent="updateUser">
+        <section class="section">
+          <h2>Dados pessoais</h2>
+
+          <div class="form_grid">
+            <CommonInput
+              text="CPF"
+              name="cpf"
+              type="text"
+              placeholder="123.456.789-10"
+              v-model="cpf"
+              mask="###.###.###-##"
+              :maxlength="14"
+            />
+
+            <CommonInput
+              text="Nome"
+              name="nome"
+              type="text"
+              placeholder="Digite o nome"
+              v-model="name"
+            />
+
+            <CommonInput
+              text="E-mail"
+              name="email"
+              type="email"
+              placeholder="exemplo@empresa.com"
+              v-model="email"
+            />
+
+            <CommonInput
+              text="Telefone"
+              name="telefone"
+              type="text"
+              placeholder="(00) 00000-0000"
+              v-model="telefone"
+              mask="(##) #####-####"
+              :maxlength="15"
+            />
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Dados de acesso</h2>
+
+          <div class="form_grid">
+            <CommonInput
+              text="Senha"
+              name="senha"
+              type="password"
+              placeholder="Digite a senha"
+              v-model="senha"
+            />
+
+            <CommonSelect
+              text="Função"
+              name="funcao"
+              v-model="cargo"
+              :options="cargos"
+            />
+          </div>
+        </section>
+
+        <div class="actions">
+          <button type="button" class="secondary">Cancelar</button>
+
+          <button type="submit" class="primary">Salvar alterações</button>
+        </div>
+      </form>
+    </Container>
   </NuxtLayout>
 </template>
 
 <style scoped>
-.page {
-  min-height: 100vh;
-
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.card {
-  width: 100%;
-  max-width: 1100px;
-  border-radius: 24px;
-
-  padding: 32px;
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
-
 .header {
   margin-bottom: 32px;
 }
@@ -199,7 +185,7 @@ const updateUser = async () => {
 
   border-radius: 50%;
 
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: linear-gradient(135deg, #e54646, #ed3a3a);
 
   color: white;
 
@@ -214,7 +200,6 @@ const updateUser = async () => {
 .title_area h1 {
   margin: 0;
   font-size: 28px;
-  color: #fff;
 }
 
 .title_area p {
@@ -227,9 +212,8 @@ const updateUser = async () => {
 }
 
 .section h2 {
-  font-size: 18px;
-  color: #fff;
-
+  font-size: 1.2em;
+  font-weight: 600;
   margin-bottom: 20px;
 }
 

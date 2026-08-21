@@ -131,6 +131,8 @@ watch(
   overflow-y: auto;
 
   table {
+    background-color: #fff;
+    color: black;
     width: 100%;
     overflow: auto;
 

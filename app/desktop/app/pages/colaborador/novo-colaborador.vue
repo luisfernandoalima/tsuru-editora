@@ -2,6 +2,7 @@
 import CommonInput from "~/components/ui/forms/CommonInput.vue";
 import CommonSelect from "~/components/ui/forms/CommonSelect.vue";
 import BackButton from "~/components/layout/BackButton.vue";
+import Container from "~/components/layout/Container.vue";
 
 import { useApi } from "~/composables/useApi";
 import { useToast } from "#imports";
@@ -67,63 +68,65 @@ const createUser = async () => {
 
 <template>
   <NuxtLayout>
-    <h1 class="text-3xl font-bold text-white mb-4 flex gap-5">
-      <BackButton /> Preencha os campos abaixo:
-    </h1>
+    <Container>
+      <h1 class="text-3xl font-bold text-white mb-4 flex gap-5">
+        <BackButton /> Preencha os campos abaixo:
+      </h1>
 
-    <form @submit.prevent="createUser">
-      <div class="form_area">
-        <CommonInput
-          text="CPF"
-          name="cpf"
-          type="text"
-          placeholder="123.456.789/10"
-          v-model="cpf"
-          mask="###.###.###-##"
-          :maxlength="14"
-        />
-        <CommonInput
-          text="Nome"
-          name="nome"
-          type="text"
-          placeholder="Digite o nome"
-          v-model="name"
-        />
-        <CommonInput
-          text="E-mail"
-          name="email"
-          type="email"
-          placeholder="exemplo@tsuru.com"
-          v-model="email"
-        />
-        <CommonInput
-          text="Telefone"
-          name="telefone"
-          type="text"
-          placeholder="(00) 00000-0000"
-          v-model="telefone"
-          mask="(##) #####-####"
-          :maxlength="15"
-        />
-        <CommonInput
-          text="Senha"
-          name="senha"
-          type="password"
-          placeholder="Digite a senha"
-          v-model="senha"
-        />
-        <CommonSelect
-          text="Função"
-          name="funcao"
-          v-model="cargo"
-          :options="cargos"
-        />
-      </div>
-      <div class="button_area">
-        <input type="reset" value="Cancelar" class="cancel_button" />
-        <input type="submit" value="Enviar" class="submit_button" />
-      </div>
-    </form>
+      <form @submit.prevent="createUser">
+        <div class="form_area">
+          <CommonInput
+            text="CPF"
+            name="cpf"
+            type="text"
+            placeholder="123.456.789/10"
+            v-model="cpf"
+            mask="###.###.###-##"
+            :maxlength="14"
+          />
+          <CommonInput
+            text="Nome"
+            name="nome"
+            type="text"
+            placeholder="Digite o nome"
+            v-model="name"
+          />
+          <CommonInput
+            text="E-mail"
+            name="email"
+            type="email"
+            placeholder="exemplo@tsuru.com"
+            v-model="email"
+          />
+          <CommonInput
+            text="Telefone"
+            name="telefone"
+            type="text"
+            placeholder="(00) 00000-0000"
+            v-model="telefone"
+            mask="(##) #####-####"
+            :maxlength="15"
+          />
+          <CommonInput
+            text="Senha"
+            name="senha"
+            type="password"
+            placeholder="Digite a senha"
+            v-model="senha"
+          />
+          <CommonSelect
+            text="Função"
+            name="funcao"
+            v-model="cargo"
+            :options="cargos"
+          />
+        </div>
+        <div class="button_area">
+          <input type="reset" value="Cancelar" class="cancel_button" />
+          <input type="submit" value="Enviar" class="submit_button" />
+        </div>
+      </form>
+    </Container>
   </NuxtLayout>
 </template>
 
