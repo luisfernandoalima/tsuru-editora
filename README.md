@@ -81,6 +81,17 @@ Acesse o servidor em: `http://localhost:8081/`
 
 - [x] Sistema de gerenciamento de Ordens;
 
+- [ ] Sistema de gerenciamento de Ordens de Impressão;
+  - [ ] Sistema de cadastro de Ordens de Impressão;
+
+  - [ ] Sistema de gerenciamento de produtos;
+
+  - [ ] Sistema de aprovação de Ordens de Impressão;
+
+- [x] Sistema de controle de parceiros;
+
+- [ ] Sistema de relatórios.
+
 - [ ] Sistema de controle de doações.
 
 ## 📊 Resultados / Demonstrações
