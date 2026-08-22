@@ -32,6 +32,8 @@ const data = await api(`/product/find-product/${id}`, {
 });
 
 const produto = data.produto;
+
+const genero = listGeneros.find((item) => item.id == produto._genero)?.text;
 </script>
 
 <template>
@@ -54,7 +56,7 @@ const produto = data.produto;
           <div>
             <h1 class="text-5xl mb-4">{{ produto._titulo }}</h1>
             <h2 class="text-3xl">Autor: {{ produto._autor }}</h2>
-            <p class="text-3xl mt-2 mb-2">Gênero: {{ produto._genero }}</p>
+            <p class="text-3xl mt-2 mb-2">Gênero: {{ genero }}</p>
           </div>
           <div>
             <p class="text-4xl">Valor:</p>
