@@ -30,4 +30,23 @@ export default class EnderecoController {
       return res.status(400).json({ message: "Erro no cadastro do endereço" });
     }
   };
+
+  Excluir = async (req: Request, res: Response) => {
+    try {
+      const adressId = req.params.id;
+
+      if (!(await this.dao.Excluir(Number(adressId)))) {
+        return res
+          .status(400)
+          .json({ message: "Erro ao excluir usuário", type: "error" });
+      }
+
+      return res
+        .status(201)
+        .json({ message: "Usuário excluído!", type: "success" });
+    } catch (error) {
+      console.log(`${error}`);
+      return res.status(400).json({ message: "Erro ao excluir endereço" });
+    }
+  };
 }
