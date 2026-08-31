@@ -3,12 +3,16 @@ import type { Request, Response } from "express";
 import type { IUsuario } from "../interfaces/IUsuario.js";
 import Usuario from "../class/Usuario.js";
 import UsuarioDAO from "../dal/UsuarioDAO.js";
+
+import { documentValidator } from "../utils/documentValidator.js";
 export default class UserController {
   private ACCESS_TOKEN = process.env.ACCESS_TOKEN_KEY;
 
   private dao = new UsuarioDAO();
 
   Criar = async (req: Request, res: Response) => {
+    const { validateCPF } = documentValidator();
+
     const newUser: IUsuario = {
       id: null,
       nome: req.body.nome,
@@ -20,7 +24,10 @@ export default class UserController {
     };
 
     const usuario: Usuario = new Usuario(newUser);
-
+    if (!validateCPF(usuario.getCPF())) {
+      console.log(`O CPF ${usuario.getCPF()} é inválido`);
+      return res.status(400).json({ message: "CPF Inválido" });
+    }
     if (!(await this.dao.Criar(usuario))) {
       return res
         .status(400)

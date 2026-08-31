@@ -2,7 +2,7 @@ import type { IEndereco } from "./../interfaces/IEndereco.js";
 
 export default class Endereco {
   private id?: number | undefined;
-  private cep: string;
+  private cep?: string | undefined;
   private logradouro: string;
   private numero: string;
   private bairro: string;
@@ -27,7 +27,7 @@ export default class Endereco {
     this.id = id;
   }
 
-  public getCep(): string {
+  public getCep(): string | undefined {
     return this.cep;
   }
 

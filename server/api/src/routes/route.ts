@@ -10,12 +10,14 @@ import ProdutoController from "../controller/ProductController.js";
 import EntradaController from "../controller/EntradaController.js";
 import SaidaController from "../controller/SaidaController.js";
 import OrdemDeImpressaoController from "../controller/OrdemDeImpressaoController.js";
+import EnderecoController from "../controller/EnderecoController.js";
 
 const route = Router();
 const userController = new UserController();
 const produtoController = new ProdutoController();
 const entradaController = new EntradaController();
 const saidaController = new SaidaController();
+const enderecoController = new EnderecoController();
 const ordemDeImpressaoController = new OrdemDeImpressaoController();
 
 route.post("/user/sign-up", authValidate, userController.Criar);
@@ -106,5 +108,7 @@ route.post(
   authValidate,
   ordemDeImpressaoController.salvarProdutos,
 );
+
+route.post("/partner/new-adress", authValidate, enderecoController.Criar);
 
 export default route;

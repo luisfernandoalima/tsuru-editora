@@ -1,6 +1,6 @@
 export interface IEndereco {
   id?: number;
-  cep: string;
+  cep?: string;
   logradouro: string;
   numero: string;
   bairro: string;

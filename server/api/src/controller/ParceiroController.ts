@@ -3,6 +3,8 @@ import Parceiro from "../class/Parceiro.js";
 import ParceiroDAO from "../dal/ParceiroDAO.js";
 import type { IParceiro } from "../interfaces/IParceiro.js";
 
+import { documentValidator } from "../utils/documentValidator.js";
+
 export default class ParceiroController {
   private dao: ParceiroDAO;
 
@@ -11,6 +13,8 @@ export default class ParceiroController {
   }
 
   Criar = async (req: Request, res: Response) => {
+    const { validateCNPJ } = documentValidator();
+
     try {
       const reqInfo: IParceiro = {
         nome: req.body.nome,
@@ -22,9 +26,13 @@ export default class ParceiroController {
         enderecos: req.body.enderecos,
       };
 
-      const newSeller: Parceiro = new Parceiro(reqInfo);
+      const parceiro: Parceiro = new Parceiro(reqInfo);
 
-      if (await this.dao.Criar(newSeller)) {
+      if (!validateCNPJ(parceiro.getCnpj())) {
+        console.log(`O CNPJ ${parceiro.getCnpj()} é inválido`);
+      }
+
+      if (await this.dao.Criar(parceiro)) {
         return res
           .status(201)
           .json({ message: "Parceiro criado com sucesso!" });
