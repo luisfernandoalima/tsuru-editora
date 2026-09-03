@@ -4,7 +4,16 @@ import { pool } from "../database/connection.js";
 export default class ParceiroDAO {
   Criar = async (parceiro: Parceiro) => {
     try {
-      console.log(parceiro);
+      const response = await pool.query(
+        "INSERT INTO parceiro (nome, cnpj, email, telefone, ativo) VALUES ($1, $2, $3, $4, $5)",
+        [
+          parceiro.getNome(),
+          parceiro.getCnpj(),
+          parceiro.getEmail(),
+          parceiro.getContato(),
+          parceiro.getAtivo(),
+        ],
+      );
       return true;
     } catch (err) {
       console.error(`Erro ao cadastrar parceiro: ${err}`);
@@ -14,7 +23,7 @@ export default class ParceiroDAO {
 
   Consultar = async (id: number) => {
     try {
-      const result = await pool.query("SELECT * FROM usuario WHERE id = $1", [
+      const result = await pool.query("SELECT * FROM parceiro WHERE id = $1", [
         id,
       ]);
       return result.rows[0];
@@ -43,7 +52,7 @@ export default class ParceiroDAO {
 
   Listar = async () => {
     try {
-      const result = await pool.query("SELECT * FROM usuario ORDER BY nome");
+      const result = await pool.query("SELECT * FROM parceiro ORDER BY nome");
       return result.rows;
     } catch (err) {
       console.error(`Erro ao buscar parceiro: ${err}`);

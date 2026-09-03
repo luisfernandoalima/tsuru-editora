@@ -7,7 +7,7 @@ const authValidate = (req: Request, res: Response, next: NextFunction) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token)
-    return res.status(403).json({ message: "Não autorizado", type: "error" });
+    return res.status(401).json({ message: "Não autorizado", type: "error" });
 
   jwt.verify(token, ACCESS_TOKEN!, (err, decoded) => {
     if (err)

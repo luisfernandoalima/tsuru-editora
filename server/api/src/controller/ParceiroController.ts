@@ -21,12 +21,14 @@ export default class ParceiroController {
         cnpj: req.body.cnpj,
         email: req.body.email,
         contato: req.body.contato,
-        ativo: req.body.ativo,
-        dataCadastro: new Date(req.body.dataCadastro),
-        enderecos: req.body.enderecos,
+        ativo: true,
+        data_cadastro: new Date(req.body.dataCadastro),
+        enderecos: undefined,
       };
 
       const parceiro: Parceiro = new Parceiro(reqInfo);
+
+      console.log(parceiro);
 
       if (!validateCNPJ(parceiro.getCnpj())) {
         console.log(`O CNPJ ${parceiro.getCnpj()} é inválido`);
@@ -65,7 +67,7 @@ export default class ParceiroController {
         email: req.body.email,
         contato: req.body.contato,
         ativo: req.body.ativo,
-        dataCadastro: new Date(req.body.dataCadastro),
+        data_cadastro: new Date(req.body.dataCadastro),
         enderecos: req.body.enderecos,
       };
 

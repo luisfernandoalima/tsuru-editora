@@ -6,6 +6,6 @@ export interface IParceiro {
   email: string;
   contato: string;
   ativo: boolean;
-  dataCadastro: Date;
-  enderecos: Endereco[];
+  data_cadastro: Date;
+  enderecos: Endereco[] | undefined;
 }

@@ -11,6 +11,7 @@ import EntradaController from "../controller/EntradaController.js";
 import SaidaController from "../controller/SaidaController.js";
 import OrdemDeImpressaoController from "../controller/OrdemDeImpressaoController.js";
 import EnderecoController from "../controller/EnderecoController.js";
+import ParceiroController from "../controller/ParceiroController.js";
 
 const route = Router();
 const userController = new UserController();
@@ -18,6 +19,7 @@ const produtoController = new ProdutoController();
 const entradaController = new EntradaController();
 const saidaController = new SaidaController();
 const enderecoController = new EnderecoController();
+const parceiroController = new ParceiroController();
 const ordemDeImpressaoController = new OrdemDeImpressaoController();
 
 route.post("/user/sign-up", userController.Criar);
@@ -108,6 +110,10 @@ route.post(
   authValidate,
   ordemDeImpressaoController.salvarProdutos,
 );
+
+route.post("/partner/new-partner", authValidate, parceiroController.Criar);
+route.get("/partner/list", authValidate, parceiroController.Listar);
+route.get("/partner/view/:id", authValidate, parceiroController.Consultar);
 
 route.post("/partner/new-adress", authValidate, enderecoController.Criar);
 

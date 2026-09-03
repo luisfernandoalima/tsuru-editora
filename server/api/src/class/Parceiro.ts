@@ -9,7 +9,7 @@ export default class Parceiro {
   private contato: string;
   private ativo: boolean;
   private dataCadastro: Date;
-  private enderecos: Endereco[];
+  private enderecos?: Endereco[] | undefined;
 
   constructor(parceiro: IParceiro) {
     this.id = parceiro.id;
@@ -18,7 +18,7 @@ export default class Parceiro {
     this.email = parceiro.email;
     this.contato = parceiro.contato;
     this.ativo = parceiro.ativo;
-    this.dataCadastro = parceiro.dataCadastro;
+    this.dataCadastro = parceiro.data_cadastro;
     this.enderecos = parceiro.enderecos;
   }
 
@@ -62,7 +62,7 @@ export default class Parceiro {
     this.contato = contato;
   }
 
-  public isAtivo(): boolean {
+  public getAtivo(): boolean {
     return this.ativo;
   }
 
@@ -78,7 +78,7 @@ export default class Parceiro {
     this.dataCadastro = dataCadastro;
   }
 
-  public getEnderecos(): Endereco[] {
+  public getEnderecos() {
     return this.enderecos;
   }
 
