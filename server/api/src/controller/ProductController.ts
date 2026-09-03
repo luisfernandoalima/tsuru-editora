@@ -24,7 +24,7 @@ export default class ProdutoController {
         autor: req.body.autor,
         serie: req.body.serie,
         volume: req.body.volume,
-        isbn13: req.body.isbn,
+        isbn: req.body.isbn,
         numero_paginas: req.body.numPaginas,
         idioma: req.body.idioma,
         data_publicacao: new Date(req.body.dataPublicacao),
@@ -32,7 +32,7 @@ export default class ProdutoController {
         classificacao_indicativa: req.body.classIndicativa,
         preco: Number(req.body.preco),
         estoque: 0,
-        imagem_capa: imagem_capa,
+        capa_url: imagem_capa,
       };
 
       const newProduct = new Produto(data);
@@ -90,7 +90,7 @@ export default class ProdutoController {
         autor: req.body.autor,
         serie: req.body.serie,
         volume: req.body.volume,
-        isbn13: req.body.isbn,
+        isbn: req.body.isbn,
         numero_paginas: Number(req.body.numPaginas),
         idioma: req.body.idioma,
         data_publicacao: new Date(req.body.dataPublicacao),
@@ -98,7 +98,7 @@ export default class ProdutoController {
         classificacao_indicativa: req.body.classIndicativa,
         preco: Number(req.body.preco),
         estoque: 0,
-        imagem_capa: produtoExistente.getImgCapa(),
+        capa_url: produtoExistente.getImgCapa(),
       };
 
       const updatedData = new Produto(data);

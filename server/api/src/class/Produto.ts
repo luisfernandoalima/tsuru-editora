@@ -22,7 +22,7 @@ export default class Produto {
     this._autor = produto.autor;
     this._serie = produto.serie;
     this._volume = produto.volume;
-    this._isbn13 = produto.isbn13;
+    this._isbn13 = produto.isbn;
     this._numPaginas = produto.numero_paginas;
     this._idioma = produto.idioma;
     this._dataPublicacao = produto.data_publicacao;
@@ -30,7 +30,7 @@ export default class Produto {
     this._classIndicativa = produto.classificacao_indicativa;
     this._preco = produto.preco;
     this._estoque = produto.estoque;
-    this._imgCapa = produto.imagem_capa;
+    this._imgCapa = produto.capa_url;
   }
 
   getId(): number | null {

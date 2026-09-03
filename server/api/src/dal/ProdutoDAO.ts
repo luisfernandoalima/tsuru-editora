@@ -5,20 +5,19 @@ export class ProdutoDAO {
   Criar = async (produto: Produto) => {
     try {
       await pool.query(
-        "INSERT INTO produto (id, titulo, autor, serie, volume, isbn13, numero_paginas, idioma, data_publicacao, genero, classificacao_indicativa, preco, estoque, imagem_capa) VALUES (default, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
+        "INSERT INTO produto (isbn, titulo, autor, preco, numero_paginas, idioma,data_publicacao, serie, volume, genero, classificacao_indicativa, capa_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
         [
+          produto.getIsbn13(),
           produto.getTitulo(),
           produto.getAutor(),
-          produto.getSerie(),
-          produto.getVolume(),
-          produto.getIsbn13(),
+          produto.getPreco(),
           produto.getNumPaginas(),
           produto.getIdioma(),
           produto.getDataPublicacao(),
+          produto.getSerie(),
+          produto.getVolume(),
           produto.getGenero(),
           produto.getClassIndicativa(),
-          produto.getPreco(),
-          produto.getEstoque(),
           produto.getImgCapa(),
         ],
       );

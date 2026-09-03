@@ -4,7 +4,7 @@ export interface IProduto {
   autor: String;
   serie: String;
   volume: String;
-  isbn13: String;
+  isbn: String;
   numero_paginas: number;
   idioma: String;
   data_publicacao: Date;
@@ -12,5 +12,5 @@ export interface IProduto {
   classificacao_indicativa: String;
   preco: number;
   estoque: number;
-  imagem_capa: string;
+  capa_url: string;
 }
