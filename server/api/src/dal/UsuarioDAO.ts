@@ -64,12 +64,11 @@ export default class UsuarioDAO {
     }
   };
 
-  Login = async (email: string, password: string) => {
+  Login = async (email: string) => {
     try {
-      const result = await pool.query(
-        "SELECT * FROM usuario WHERE email=$1 AND senha=$2",
-        [email, password],
-      );
+      const result = await pool.query("SELECT * FROM usuario WHERE email=$1", [
+        email,
+      ]);
 
       if (result.rowCount == 1) return result.rows[0];
     } catch (err) {

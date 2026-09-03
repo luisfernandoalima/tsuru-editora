@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import type { Request, Response } from "express";
 import type { IUsuario } from "../interfaces/IUsuario.js";
 import Usuario from "../class/Usuario.js";
@@ -11,32 +12,37 @@ export default class UserController {
   private dao = new UsuarioDAO();
 
   Criar = async (req: Request, res: Response) => {
-    const { validateCPF } = documentValidator();
+    try {
+      const { validateCPF } = documentValidator();
 
-    const newUser: IUsuario = {
-      id: null,
-      nome: req.body.nome,
-      email: req.body.email,
-      senha: req.body.senha,
-      telefone: req.body.telefone,
-      cpf: req.body.cpf,
-      id_cargo: req.body.cargo,
-    };
+      const salt = await bcrypt.genSalt(10);
 
-    const usuario: Usuario = new Usuario(newUser);
-    if (!validateCPF(usuario.getCPF())) {
-      console.log(`O CPF ${usuario.getCPF()} é inválido`);
-      return res.status(400).json({ message: "CPF Inválido" });
+      const newUser: IUsuario = {
+        id: null,
+        nome: req.body.nome,
+        email: req.body.email,
+        senha: req.body.senha,
+        telefone: req.body.telefone,
+        cpf: req.body.cpf,
+        id_cargo: req.body.cargo,
+      };
+
+      const usuario: Usuario = new Usuario(newUser);
+
+      usuario.setSenha(await bcrypt.hash(usuario.getSenha(), salt));
+
+      if (!validateCPF(usuario.getCPF())) {
+        console.log(`O CPF ${usuario.getCPF()} é inválido`);
+        return res.status(400).json({ message: "CPF Inválido" });
+      }
+      if (!(await this.dao.Criar(usuario))) {
+        return res.status(400).json({ message: "Erro ao cadastrar usuário" });
+      }
+
+      return res.status(201).json({ message: "Usuário cadastrado!" });
+    } catch (error) {
+      return res.status(400).json({ message: error });
     }
-    if (!(await this.dao.Criar(usuario))) {
-      return res
-        .status(400)
-        .json({ message: "Erro ao cadastrar usuário", type: "error" });
-    }
-
-    return res
-      .status(201)
-      .json({ message: "Usuário cadastrado!", type: "success" });
   };
 
   Consultar = async (req: Request, res: Response) => {
@@ -92,19 +98,21 @@ export default class UserController {
   };
 
   Login = async (req: Request, res: Response) => {
-    console.log("Password type:", typeof process.env.DB_PASSWORD);
-    console.log("Password value:", process.env.DB_PASSWORD);
     const { email, senha } = req.body;
 
-    const user = await this.dao.Login(email, senha);
+    const user = await this.dao.Login(email);
 
     if (!user) {
-      return res
-        .status(403)
-        .json({ message: "Erro ao executar login", type: "error" });
+      return res.status(403).json({ message: "Erro ao executar login" });
     }
 
     const usuario: Usuario = new Usuario(user);
+
+    const isMatch = await bcrypt.compare(senha, usuario.getSenha());
+
+    if (!isMatch) {
+      return res.status(403).json({ message: "Erro ao executar login" });
+    }
 
     const token = jwt.sign(
       {
