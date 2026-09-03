@@ -20,7 +20,7 @@ const saidaController = new SaidaController();
 const enderecoController = new EnderecoController();
 const ordemDeImpressaoController = new OrdemDeImpressaoController();
 
-route.post("/user/sign-up", authValidate, userController.Criar);
+route.post("/user/sign-up", userController.Criar);
 route.post("/user/login", userController.Login);
 route.get("/user/find-user/:id", authValidate, userController.Consultar);
 route.patch("/user/update", authValidate, userController.Alterar);

@@ -5,14 +5,16 @@ export default class UsuarioDAO {
   Criar = async (user: Usuario) => {
     try {
       await pool.query(
-        "INSERT INTO usuario VALUES (default, $1, $2, $3, $4, $5, $6)",
+        "INSERT INTO usuario (nome, email, senha, ativo, perfil, primeiro_login, telefone, cpf) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
         [
           user.getNome(),
           user.getEmail(),
           user.getSenha(),
+          user.getAtivo(),
+          user.getCargo(),
+          user.getPrimeiroLogin(),
           user.getTelefone(),
           user.getCPF(),
-          user.getCargo(),
         ],
       );
       return true;

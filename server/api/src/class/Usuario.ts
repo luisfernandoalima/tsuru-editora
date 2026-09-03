@@ -8,6 +8,8 @@ export default class Usuario {
     this._telefone = user.telefone;
     this._cpf = user.cpf;
     this._cargo = user.id_cargo;
+    this.ativo = user.ativo;
+    this.privateprimeiroLogin = user.primeiro_login;
   }
 
   private _id: number | null;
@@ -17,6 +19,8 @@ export default class Usuario {
   private _telefone: string;
   private _cpf: string;
   private _cargo: number;
+  private ativo: boolean;
+  private privateprimeiroLogin: boolean;
 
   getId = (): number | null => this._id;
 
@@ -47,4 +51,11 @@ export default class Usuario {
 
   setCargo = (cargo: number) => (this._cargo = cargo);
   getCargo = (): number => this._cargo;
+
+  setAtivo = (ativo: boolean) => (this.ativo = ativo);
+  getAtivo = (): boolean => this.ativo;
+
+  setPrimeiroLogin = (primeiroLogin: boolean) =>
+    (this.privateprimeiroLogin = primeiroLogin);
+  getPrimeiroLogin = (): boolean => this.privateprimeiroLogin;
 }

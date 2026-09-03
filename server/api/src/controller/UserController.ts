@@ -24,6 +24,8 @@ export default class UserController {
         senha: req.body.senha,
         telefone: req.body.telefone,
         cpf: req.body.cpf,
+        ativo: true,
+        primeiro_login: true,
         id_cargo: req.body.cargo,
       };
 
@@ -125,9 +127,6 @@ export default class UserController {
         expiresIn: "5h",
       },
     );
-
-    console.log("Password type:", typeof process.env.ACCESS_TOKEN_KEY);
-    console.log("Password value:", process.env.ACCESS_TOKEN_KEY);
 
     res.json({ token });
   };
