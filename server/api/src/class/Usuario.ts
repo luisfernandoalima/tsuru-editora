@@ -7,7 +7,7 @@ export default class Usuario {
     this._senha = user.senha;
     this._telefone = user.telefone;
     this._cpf = user.cpf;
-    this._cargo = user.id_cargo;
+    this._cargo = user.perfil;
     this.ativo = user.ativo;
     this.privateprimeiroLogin = user.primeiro_login;
   }

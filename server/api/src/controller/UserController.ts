@@ -26,7 +26,7 @@ export default class UserController {
         cpf: req.body.cpf,
         ativo: true,
         primeiro_login: true,
-        id_cargo: req.body.cargo,
+        perfil: req.body.cargo,
       };
 
       const usuario: Usuario = new Usuario(newUser);
@@ -69,7 +69,9 @@ export default class UserController {
       senha: req.body.senha,
       telefone: req.body.telefone,
       cpf: req.body.cpf,
-      id_cargo: req.body.cargo,
+      ativo: true,
+      primeiro_login: true,
+      perfil: req.body.cargo,
     };
 
     const usuario: Usuario = new Usuario(user);
@@ -100,35 +102,41 @@ export default class UserController {
   };
 
   Login = async (req: Request, res: Response) => {
-    const { email, senha } = req.body;
+    try {
+      const { email, senha } = req.body;
 
-    const user = await this.dao.Login(email);
+      const user = await this.dao.Login(email);
 
-    if (!user) {
-      return res.status(403).json({ message: "Erro ao executar login" });
+      if (!user) {
+        return res.status(403).json({ message: "Erro ao executar login" });
+      }
+
+      const usuario: Usuario = new Usuario(user);
+
+      const isMatch = await bcrypt.compare(senha, usuario.getSenha());
+
+      if (!isMatch) {
+        return res.status(403).json({ message: "Erro ao executar login" });
+      }
+
+      console.log(usuario);
+
+      const token = jwt.sign(
+        {
+          id: usuario.getId(),
+          email: usuario.getEmail(),
+          funcao: usuario.getCargo(),
+        },
+        this.ACCESS_TOKEN!,
+        {
+          expiresIn: "5h",
+        },
+      );
+
+      res.json({ token });
+    } catch (error) {
+      console.log(error);
     }
-
-    const usuario: Usuario = new Usuario(user);
-
-    const isMatch = await bcrypt.compare(senha, usuario.getSenha());
-
-    if (!isMatch) {
-      return res.status(403).json({ message: "Erro ao executar login" });
-    }
-
-    const token = jwt.sign(
-      {
-        id: usuario.getId(),
-        email: usuario.getEmail(),
-        funcao: usuario.getCargo(),
-      },
-      this.ACCESS_TOKEN!,
-      {
-        expiresIn: "5h",
-      },
-    );
-
-    res.json({ token });
   };
 
   listarUsuarios = async (req: Request, res: Response) => {
