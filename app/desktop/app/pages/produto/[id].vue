@@ -34,6 +34,10 @@ const data = await api(`/product/find-product/${id}`, {
 const produto = data.produto;
 
 const genero = listGeneros.find((item) => item.id == produto._genero)?.text;
+
+const clasIndicativa = listClassificacoesIndicativas.find(
+  (item) => item.id == produto._classIndicativa,
+)?.text;
 </script>
 
 <template>
@@ -88,7 +92,7 @@ const genero = listGeneros.find((item) => item.id == produto._genero)?.text;
                 Classificação Indicativa
               </td>
               <td class="border border-gray-300">
-                {{ produto._classIndicativa }}
+                {{ clasIndicativa }}
               </td>
             </tr>
             <tr>

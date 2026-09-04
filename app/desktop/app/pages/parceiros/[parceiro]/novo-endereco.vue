@@ -9,8 +9,14 @@ definePageMeta({
   middleware: "admin",
 });
 
+const { getToken } = useAuthToken();
+
 const router = useRoute();
 const id = router.params.parceiro;
+
+const api = useApi();
+const toast = useToast();
+const token = getToken();
 
 const cep = ref("");
 const logradouro = ref("");
@@ -25,15 +31,17 @@ const disableInput = ref(true);
 const consultaEndereco = async () => {
   const cepLimpo = cep.value.split("-").join("");
 
-  const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-  const data = await response.json();
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+    const data = await response.json();
 
-  console.log(data);
-
-  logradouro.value = data.logradouro;
-  bairro.value = data.bairro;
-  cidade.value = data.localidade;
-  estado.value = data.uf;
+    logradouro.value = data.logradouro;
+    bairro.value = data.bairro;
+    cidade.value = data.localidade;
+    estado.value = data.uf;
+  } catch (error) {
+    toast.error({ title: "Erro!", message: "Falha ao buscar CEP" });
+  }
 };
 
 const resetForms = () => {
@@ -45,10 +53,42 @@ const resetForms = () => {
   estado.value = "";
 };
 
-const salvarEndereco = () => {
-  alert("OI");
-  navigateTo(`/parceiros/${id}/visualizar`);
+const salvarEndereco = async () => {
+  try {
+    const data = {
+      parceiroId: id,
+      cep: (cep.value = "" ? undefined : cep.value),
+      logradouro: logradouro.value,
+      numero: numero.value,
+      bairro: bairro.value,
+      cidade: cidade.value,
+      estado: estado.value,
+    };
+
+    const response = await api(`/partner/new-adress/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    toast.success({ title: "Sucesso!", message: response.message });
+    console.log(response);
+    // navigateTo(`/parceiros/${id}/visualizar`);
+  } catch (error) {
+    toast.error({ title: "Erro!", message: error.message });
+  }
 };
+
+const response = await api(`/partner/view/${id}`, {
+  method: "GET",
+  headers: {
+    authorization: `Bearer ${token}`,
+  },
+});
+
+const parceiro = response.parceiro;
 
 watch(CheckCep, (marcado) => {
   if (marcado) {
@@ -69,36 +109,36 @@ watch(CheckCep, (marcado) => {
   <NuxtLayout
     ><div class="parceiro_main_page">
       <Container>
-        <h1 class="text-4xl font-semibold mb-2">Amazon Brasil</h1>
+        <h1 class="text-4xl font-semibold mb-2">{{ parceiro.nome }}</h1>
         <section>
           <div class="info-grid">
             <div class="info-item">
               <span class="label">ID do Parceiro</span>
-              <strong># {{ id }}</strong>
+              <strong># {{ parceiro.id }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">CNPJ do Parceiro</span>
-              <strong></strong>
+              <strong>{{ parceiro.cnpj }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">E-mail de contanto</span>
-              <strong></strong>
+              <strong>{{ parceiro.email }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">Contato do Parceiro</span>
-              <strong></strong>
+              <strong>{{ parceiro.contato }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">Status</span>
-              <strong></strong>
+              <strong>{{ parceiro.ativo ? "Ativo" : "Desativado" }}</strong>
             </div>
             <div class="info-item">
               <span class="label">Data de cadastro</span>
-              <strong></strong>
+              <strong>{{ formatDate(parceiro.dataCadastro) }}</strong>
             </div>
           </div>
         </section>

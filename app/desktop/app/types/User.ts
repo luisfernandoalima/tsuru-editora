@@ -6,5 +6,5 @@ export type LoginUser = {
 export interface TokenPayload {
   id: number;
   email: string;
-  funcao: number;
+  funcao: string;
 }

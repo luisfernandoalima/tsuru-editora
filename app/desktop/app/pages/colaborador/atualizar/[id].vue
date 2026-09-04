@@ -45,7 +45,7 @@ const updateUser = async () => {
       senha: senha.value,
       telefone: telefone.value,
       cpf: cpf.value,
-      cargo: Number(cargo.value),
+      cargo: cargo.value,
     };
 
     const response = await api(`/user/update`, {

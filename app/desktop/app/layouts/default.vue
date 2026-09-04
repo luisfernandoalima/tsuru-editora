@@ -2,6 +2,8 @@
 import { Icon } from "@iconify/vue";
 
 const { user } = useAuth();
+
+const perfil = getPerfil(user.value?.funcao);
 </script>
 
 <template>
@@ -21,7 +23,7 @@ const { user } = useAuth();
               />Home</NuxtLink
             >
           </li>
-          <li v-if="user?.funcao === 1">
+          <li v-if="perfil === 1">
             <NuxtLink to="/estoque">
               <Icon icon="fluent:box-24-regular" />Estoque</NuxtLink
             >
@@ -33,7 +35,9 @@ const { user } = useAuth();
           </li>
           <li>
             <NuxtLink to="/parceiros">
-              <Icon icon="material-symbols:store-outline-rounded" />Parceiros</NuxtLink
+              <Icon
+                icon="material-symbols:store-outline-rounded"
+              />Parceiros</NuxtLink
             >
           </li>
           <li>
@@ -41,7 +45,7 @@ const { user } = useAuth();
               ><Icon icon="fluent:arrow-sort-16-filled" />Operações</NuxtLink
             >
           </li>
-          <li v-if="user?.funcao === 1">
+          <li v-if="perfil === 1">
             <NuxtLink to="/colaborador"
               ><Icon icon="ri:team-line" />Colaboradores</NuxtLink
             >

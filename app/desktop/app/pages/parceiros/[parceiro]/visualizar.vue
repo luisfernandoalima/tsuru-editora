@@ -2,50 +2,69 @@
 import SearchBar from "~/components/layout/SearchBar.vue";
 import Container from "~/components/layout/Container.vue";
 
+import AddressCard from "~/components/ui/cards/AddressCard.vue";
+
 definePageMeta({
   middleware: "admin",
   layout: "default",
 });
 
+const { getToken } = useAuthToken();
+
 const route = useRoute();
+const api = useApi();
+const token = getToken();
+const toast = useToast();
 
 const id = route.params.parceiro;
+
+const enderecos = ref([]);
+
+const response = await api(`/partner/view/${id}`, {
+  method: "GET",
+  headers: {
+    authorization: `Bearer ${token}`,
+  },
+});
+
+const parceiro = response.parceiro;
+enderecos.value = parceiro.enderecos;
 </script>
 
 <template>
   <NuxtLayout>
     <div class="parceiro_main_page">
       <Container>
-        <h1 class="text-4xl font-semibold mb-2">Amazon Brasil</h1>
+        <h1 class="text-4xl font-semibold mb-2">{{ parceiro.nome }}</h1>
         <section>
           <div class="info-grid">
             <div class="info-item">
               <span class="label">ID do Parceiro</span>
-              <strong># {{ id }}</strong>
+              <strong># {{ parceiro.id }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">CNPJ do Parceiro</span>
-              <strong></strong>
+              <strong>{{ parceiro.cnpj }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">E-mail de contanto</span>
-              <strong></strong>
+              <strong>{{ parceiro.email }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">Contato do Parceiro</span>
-              <strong></strong>
+              <strong>{{ parceiro.contato }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">Status</span>
-              <strong></strong>
+              <strong>{{ parceiro.ativo ? "Ativo" : "Desativado" }}</strong>
             </div>
             <div class="info-item">
               <span class="label">Data de cadastro</span>
-              <strong></strong>
+              <strong>{{ formatDate(parceiro.dataCadastro) }}</strong>
             </div>
           </div>
         </section>
@@ -61,9 +80,18 @@ const id = route.params.parceiro;
             Novo endereço +
           </NuxtLink>
         </div>
-        <div class="flex justify-center text-2xl">
+        <div v-if="!parceiro.enderecos" class="flex justify-center text-2xl">
           Não há endereços cadastrados
         </div>
+        <AddressCard
+          v-for="value in parceiro.enderecos"
+          :logradouro="value.logradouro"
+          :bairro="value.bairro"
+          :cep="value.cep"
+          :estado="value.estado"
+          :numero="value.numero"
+          :cidade="value.cidade"
+        />
       </Container>
     </div>
   </NuxtLayout>

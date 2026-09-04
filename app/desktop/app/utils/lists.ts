@@ -136,11 +136,11 @@ export const listGeneros = [
 
 export const cargos = [
   {
-    id: 1,
+    id: "Admin",
     text: "Administrador",
   },
   {
-    id: 2,
+    id: "Colaborador",
     text: "Colaborador",
   },
 ];

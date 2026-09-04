@@ -7,6 +7,43 @@ definePageMeta({
   middleware: "admin",
   layout: "default",
 });
+
+const { getToken } = useAuthToken();
+
+const api = useApi();
+const toast = useToast();
+
+const token = getToken();
+
+const parceiros = ref([]);
+
+const carregarParceiros = async () => {
+  try {
+    let response;
+
+    response = await api("/partner/list", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    parceiros.value = response.parceiros;
+  } catch (error) {
+    toast.error({
+      title: "Erro",
+      message: "Não foi possível buscar os parceiros",
+    });
+    console.log(error);
+  }
+};
+
+watch(
+  () => {
+    carregarParceiros();
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
@@ -15,44 +52,14 @@ definePageMeta({
     <Container>
       <section class="section_card">
         <ParceiroCard
-          id="10"
-          nome="Amazon Brasil"
-          cnpj="435413541"
-          email="contato.brasil@amazon.com"
-          ativo
-          data-cadastro=""
-        />
-        <ParceiroCard
-          id="10"
-          nome="Amazon Brasil"
-          cnpj="435413541"
-          email="contato.brasil@amazon.com"
-          ativo
-          data-cadastro=""
-        />
-        <ParceiroCard
-          id="10"
-          nome="Amazon Brasil"
-          cnpj="435413541"
-          email="contato.brasil@amazon.com"
-          ativo
-          data-cadastro=""
-        />
-        <ParceiroCard
-          id="10"
-          nome="Amazon Brasil"
-          cnpj="435413541"
-          email="contato.brasil@amazon.com"
-          ativo
-          data-cadastro=""
-        />
-        <ParceiroCard
-          id="10"
-          nome="Amazon Brasil"
-          cnpj="435413541"
-          email="contato.brasil@amazon.com"
-          ativo
-          data-cadastro=""
+          v-for="item in parceiros"
+          :id="item.id"
+          :nome="item.nome"
+          :cnpj="item.cnpj"
+          :contato="item.contato"
+          :email="item.email"
+          :ativo="item.ativo"
+          :data-cadastro="item.dataCadastro"
         />
       </section>
     </Container>

@@ -10,11 +10,16 @@ definePageMeta({
 const route = useRoute();
 
 const id = route.params.id;
+
+const orderItems = ref([]);
+
+const buscarProduto = async () => {
+  alert("Buscando");
+};
 </script>
 
 <template>
   <NuxtLayout>
-    <SearchBar placeholder="Insi" />
     <div class="order_main_page">
       <Container>
         <h1 class="text-4xl font-semibold mb-2">{{ id }}</h1>
@@ -67,6 +72,18 @@ const id = route.params.id;
         <div class="obras_area">
           <div class="obras_adicionadas">
             <h2>Obras para Impressão</h2>
+
+            <SearchBar
+              placeholder="Insira o título ou ISBN do produto"
+              :handleForms="buscarProduto"
+            />
+
+            <div class="flex gap-3 search_obras">
+              <img
+                src="http://localhost:8081/uploads/f20a073f-cfdf-4afa-9b5c-f8488884e695.jpg"
+                alt=""
+              />
+            </div>
           </div>
           <div class="obras_cadastradas">
             <h2>Obras Cadastradas</h2>
@@ -110,12 +127,20 @@ const id = route.params.id;
 .obras_area {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: 50px;
   flex: 1;
   width: 100%;
 
   h2 {
     font-size: 1.3em;
     font-weight: 700;
+  }
+
+  .search_obras {
+    img {
+      width: 150px;
+      cursor: pointer;
+    }
   }
 }
 

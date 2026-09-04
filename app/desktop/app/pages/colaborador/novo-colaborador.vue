@@ -47,8 +47,6 @@ const createUser = async () => {
     cargo: Number(cargo.value),
   };
 
-  console.log(data);
-
   try {
     const response = await api("/user/sign-up", {
       method: "POST",
@@ -61,7 +59,7 @@ const createUser = async () => {
 
     toast.success({ title: "Sucesso!", message: response });
   } catch (error) {
-    toast.error({ title: "Erro!", message: error });
+    toast.error({ title: "Erro!", message: error.message });
   }
 };
 </script>
