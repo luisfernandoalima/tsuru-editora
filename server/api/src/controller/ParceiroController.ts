@@ -3,7 +3,10 @@ import Parceiro from "../class/Parceiro.js";
 import ParceiroDAO from "../dal/ParceiroDAO.js";
 import type { IParceiro } from "../interfaces/IParceiro.js";
 
+import Endereco from "../class/Endereco.js";
+import EnderecoDAO from "../dal/EnderecoDAO.js";
 import { documentValidator } from "../utils/documentValidator.js";
+import type { IEndereco } from "../interfaces/IEndereco.js";
 
 export default class ParceiroController {
   private dao: ParceiroDAO;
@@ -47,12 +50,27 @@ export default class ParceiroController {
   Consultar = async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
+      let enderecoDAO = new EnderecoDAO();
+      let enderecos: Endereco[] = [];
 
       const parceiro = new Parceiro(await this.dao.Consultar(id));
 
-      if (parceiro) {
-        return res.status(200).json({ parceiro });
+      if (!parceiro) {
+        return res.status(400).json({ message: "Erro ao buscar Parceiro" });
       }
+
+      const enderecosReq: IEndereco[] = await enderecoDAO.Consultar(id);
+      console.log(enderecosReq);
+
+      enderecosReq.forEach((item) => {
+        let endereco = new Endereco(item);
+
+        enderecos.push(endereco);
+      });
+
+      parceiro.setEnderecos(enderecos);
+
+      return res.status(200).json({ parceiro });
     } catch (err) {
       console.log(err);
       return res.status(404).json({ message: "Erro ao buscar Parceiro" });

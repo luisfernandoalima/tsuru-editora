@@ -8,6 +8,8 @@ export default class EnderecoController {
 
   Criar = async (req: Request, res: Response) => {
     try {
+      const partnerId = Number(req.params.id);
+
       const reqInfo: IEndereco = {
         cep: req.body.cep,
         logradouro: req.body.logradouro,
@@ -22,12 +24,14 @@ export default class EnderecoController {
       console.log("Id do parceiro: " + req.body.parceiroId);
       console.log(endereco);
 
-      await this.dao.Criar(endereco);
+      const response = await this.dao.Criar(endereco, partnerId);
 
-      return res.status(201).json({ message: "Endereço cadastrado!" });
+      if (response) {
+        return res.status(201).json({ message: "Endereço cadastrado!" });
+      }
     } catch (error) {
       console.log(error);
-      return res.status(400).json({ message: "Erro no cadastro do endereço" });
+      return res.status(400).json({ message: error });
     }
   };
 
