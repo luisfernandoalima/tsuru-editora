@@ -32,8 +32,7 @@ export class ProdutoDAO {
   Alterar = async (produto: Produto) => {
     try {
       await pool.query(
-        `UPDATE produto SET titulo = $1, autor = $2, serie = $3, volume = $4, isbn13 = $5, numero_paginas = $6, idioma = $7,
- data_publicacao = $8, genero = $9, classificacao_indicativa = $10, preco = $11, estoque = $12, imagem_capa = $13 WHERE id = $14`,
+        `UPDATE produto SET titulo = $1, autor = $2, serie = $3, volume = $4, isbn = $5, numero_paginas = $6, idioma = $7, data_publicacao = $8, genero = $9, classificacao_indicativa = $10, preco = $11, capa_url = $12 WHERE id = $13`,
         [
           produto.getTitulo(),
           produto.getAutor(),
@@ -46,11 +45,11 @@ export class ProdutoDAO {
           produto.getGenero(),
           produto.getClassIndicativa(),
           produto.getPreco(),
-          produto.getEstoque(),
           produto.getImgCapa(),
           produto.getId(),
         ],
       );
+
       return true;
     } catch (err) {
       console.error(`Erro ao atualizar produto: ${err}`);
