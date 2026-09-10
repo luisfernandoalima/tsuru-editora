@@ -38,7 +38,7 @@ export default class UsuarioDAO {
   Alterar = async (updatedUser: Usuario) => {
     try {
       await pool.query(
-        "UPDATE usuario SET nome = $1, email = $2, senha = $3, telefone = $4, cpf = $5, id_cargo = $6 WHERE id = $7",
+        "UPDATE usuario SET nome = $1, email = $2, senha = $3, telefone = $4, cpf = $5, perfil = $6, ativo = $7, primeiro_login = $8 WHERE id = $9",
         [
           updatedUser.getNome(),
           updatedUser.getEmail(),
@@ -46,9 +46,12 @@ export default class UsuarioDAO {
           updatedUser.getTelefone(),
           updatedUser.getCPF(),
           updatedUser.getCargo(),
+          updatedUser.getAtivo(),
+          updatedUser.getPrimeiroLogin(),
           updatedUser.getId(),
         ],
       );
+
       return true;
     } catch (err) {
       console.error(`Erro ao atualizar usuário: ${err}`);

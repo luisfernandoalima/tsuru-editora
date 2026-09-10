@@ -133,9 +133,39 @@ export default class UserController {
         },
       );
 
-      res.json({ token });
+      res.json({ token, firstLogin: usuario.getPrimeiroLogin() });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  atualizarSenha = async (req: Request, res: Response) => {
+    try {
+      const userInfo = (req as any).user;
+
+      const { password, repeatPassword } = req.body;
+
+      if (!password || !repeatPassword || password != repeatPassword) {
+        return res.status(400).json({ message: "Erro ao atualizar senha." });
+      }
+
+      const usuario = new Usuario(await this.dao.Consultar(userInfo.id));
+
+      if (!usuario) {
+        return res.status(400).json({ message: "Usuário não encontrado." });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const newHash = await bcrypt.hash(password, salt);
+
+      usuario.setSenha(newHash);
+      usuario.setPrimeiroLogin(false);
+
+      if (await this.dao.Alterar(usuario)) {
+        return res.status(200).json({ message: "Senha alterada com sucesso!" });
+      }
+    } catch (error) {
+      return res.status(400).json({ message: error });
     }
   };
 

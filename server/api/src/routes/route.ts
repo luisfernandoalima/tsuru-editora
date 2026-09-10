@@ -27,6 +27,11 @@ route.post("/user/login", userController.Login);
 route.get("/user/find-user/:id", authValidate, userController.Consultar);
 route.patch("/user/update", authValidate, userController.Alterar);
 route.delete("/user/delete/:id", authValidate, userController.Excluir);
+route.patch(
+  "/user/update-password",
+  authValidate,
+  userController.atualizarSenha,
+);
 route.get("/user/list-users", authValidate, userController.listarUsuarios);
 route.get(
   "/user/list-by-name/:name",
