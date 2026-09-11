@@ -79,23 +79,23 @@ export default class ParceiroController {
 
   Alterar = async (req: Request, res: Response) => {
     try {
-      const reqInfo: IParceiro = {
-        nome: req.body.nome,
-        cnpj: req.body.cnpj,
-        email: req.body.email,
-        contato: req.body.contato,
-        ativo: req.body.ativo,
-        data_cadastro: new Date(req.body.dataCadastro),
-        enderecos: req.body.enderecos,
-      };
+      const partnerId = Number(req.params.id);
 
-      const parceiro = new Parceiro(reqInfo);
+      const parceiro = new Parceiro(await this.dao.Consultar(partnerId));
 
-      if (await this.dao.Alterar(parceiro)) {
-      }
+      const { nome, cnpj, email, contato } = req.body;
+
+      parceiro.setNome(nome);
+      parceiro.setCnpj(cnpj);
+      parceiro.setEmail(email);
+      parceiro.setContato(contato);
+
+      return res
+        .status(200)
+        .json({ message: "Atualização realizada com sucesso!" });
     } catch (err) {
       console.log(err);
-      return res.status(400).json({ message: "Erro ao atualizar Parceiro" });
+      return res.status(400).json({ message: "Erro ao atualizar Parceiro." });
     }
   };
 

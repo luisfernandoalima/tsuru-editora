@@ -119,6 +119,7 @@ route.post(
 route.post("/partner/new-partner", authValidate, parceiroController.Criar);
 route.get("/partner/list", authValidate, parceiroController.Listar);
 route.get("/partner/view/:id", authValidate, parceiroController.Consultar);
+route.patch("/partner/edit/:id", authValidate, parceiroController.Alterar);
 
 route.post("/partner/new-adress/:id", authValidate, enderecoController.Criar);
 

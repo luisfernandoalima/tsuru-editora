@@ -32,8 +32,19 @@ export default class ParceiroDAO {
     }
   };
 
-  Alterar = async (updatedSeller: Parceiro) => {
+  Alterar = async (parceiro: Parceiro) => {
     try {
+      await pool.query(
+        `UPDATE parceiro SET nome = $1, cnpj = $2, email = $3, contato = $4 WHERE id = $6`,
+        [
+          parceiro.getNome(),
+          parceiro.getCnpj(),
+          parceiro.getEmail(),
+          parceiro.getContato(),
+          parceiro.getId(),
+        ],
+      );
+      console.log("Alterado");
       return true;
     } catch (err) {
       console.error(`Erro ao atualizar parceiro: ${err}`);
