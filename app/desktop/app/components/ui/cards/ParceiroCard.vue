@@ -63,7 +63,7 @@ const props = defineProps({
             </NuxtLink>
           </button>
           <button type="button" aria-label="Editar">
-            <NuxtLink to="">
+            <NuxtLink :to="`/parceiros/${props.id}/editar`">
               <Icon icon="material-symbols:edit-outline" />
             </NuxtLink>
           </button>

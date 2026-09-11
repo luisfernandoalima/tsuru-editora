@@ -1,4 +1,6 @@
 <script setup>
+import { Icon } from "@iconify/vue";
+
 import SearchBar from "~/components/layout/SearchBar.vue";
 import Container from "~/components/layout/Container.vue";
 import ParceiroCard from "~/components/ui/cards/ParceiroCard.vue";
@@ -49,6 +51,11 @@ watch(
 <template>
   <NuxtLayout>
     <SearchBar />
+    <div class="flex justify-end">
+      <NuxtLink to="/parceiros/novo-parceiro" class="new_info"
+        ><Icon icon="akar-icons:plus" class="inline" /> Nova Ordem</NuxtLink
+      >
+    </div>
     <Container>
       <section class="section_card">
         <ParceiroCard
@@ -71,5 +78,13 @@ watch(
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 25px;
+}
+
+.new_info {
+  background-color: var(--main);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  padding: 1px 6px;
+  margin-bottom: 15px;
 }
 </style>

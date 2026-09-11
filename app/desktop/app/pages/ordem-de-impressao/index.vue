@@ -1,4 +1,5 @@
 <script setup>
+import { Icon } from "@iconify/vue";
 definePageMeta({
   layout: "default",
   middleware: "auth",
@@ -18,7 +19,7 @@ import OrderCard from "~/components/ui/cards/OrderCard.vue";
 
     <div class="flex justify-end">
       <NuxtLink to="/ordem-de-impressao/nova-ordem" class="new_order"
-        >+ Nova Janela</NuxtLink
+        ><Icon icon="akar-icons:plus" class="inline" /> Nova Ordem</NuxtLink
       >
     </div>
 
