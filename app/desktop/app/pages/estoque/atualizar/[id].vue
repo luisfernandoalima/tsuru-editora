@@ -85,131 +85,132 @@ const updateProduct = async () => {
       <div class="header">
         <BackButton />
 
-        <div class="product_preview mt-4">
-          <div class="cover_preview">
-            <img v-if="previewImage" :src="previewImage" />
+        <div class="grid-div">
+          <div class="product_preview mt-4">
+            <div class="cover_preview">
+              <img v-if="previewImage" :src="previewImage" />
 
-            <div v-else class="empty_cover">Sem capa</div>
+              <div v-else class="empty_cover">Sem capa</div>
+            </div>
+
+            <div class="product_info">
+              <h1>
+                {{ titulo || "Novo Produto" }}
+              </h1>
+
+              <p>
+                {{ autor || "Autor" }}
+              </p>
+
+              <span> ISBN: {{ isbn || "0000000000000" }} </span>
+            </div>
           </div>
+          <form @submit.prevent="updateProduct">
+            <section class="section">
+              <h2>Informações básicas</h2>
 
-          <div class="product_info">
-            <h1>
-              {{ titulo || "Novo Produto" }}
-            </h1>
+              <div class="form_grid">
+                <CommonInput
+                  text="Titulo"
+                  name="titulo"
+                  type="text"
+                  placeholder="Insira o titulo do produto"
+                  v-model="titulo"
+                />
 
-            <p>
-              {{ autor || "Autor" }}
-            </p>
+                <CommonInput
+                  text="Autor"
+                  name="autor"
+                  type="text"
+                  placeholder="Digite o nome do autor"
+                  v-model="autor"
+                />
 
-            <span> ISBN: {{ isbn || "0000000000000" }} </span>
-          </div>
+                <CommonInput
+                  text="ISBN-13"
+                  name="isbn"
+                  type="text"
+                  placeholder="1234567890123"
+                  v-model="isbn"
+                />
+
+                <CommonInput
+                  text="Idioma"
+                  name="idioma"
+                  type="text"
+                  placeholder="Português"
+                  v-model="idioma"
+                />
+
+                <CommonInput
+                  text="Serie"
+                  name="serie"
+                  type="text"
+                  placeholder="Insira a série"
+                  v-model="serie"
+                />
+
+                <CommonInput
+                  text="Volume"
+                  name="volume"
+                  type="text"
+                  placeholder="Volume"
+                  v-model="volume"
+                />
+              </div>
+            </section>
+
+            <section class="section">
+              <h2>Detalhes</h2>
+
+              <div class="form_grid">
+                <CommonInput
+                  text="Número de Páginas"
+                  name="numPaginas"
+                  type="number"
+                  placeholder="Número de páginas"
+                  v-model="numPaginas"
+                />
+
+                <CommonInput
+                  text="Data de Publicação"
+                  name="dataPublicacao"
+                  type="date"
+                  v-model="dataPublicacao"
+                />
+
+                <CommonSelect
+                  text="Genero"
+                  name="genero"
+                  v-model="genero"
+                  :options="listGeneros"
+                />
+
+                <CommonSelect
+                  text="Classificação Indicativa"
+                  name="classIndicativa"
+                  v-model="classIndicativa"
+                  :options="listClassificacoesIndicativas"
+                />
+
+                <CommonInput
+                  text="Preço"
+                  name="preco"
+                  type="text"
+                  placeholder="55.00"
+                  v-model="preco"
+                />
+              </div>
+            </section>
+
+            <div class="actions">
+              <button type="button" class="secondary">Cancelar</button>
+
+              <button type="submit" class="primary">Salvar alterações</button>
+            </div>
+          </form>
         </div>
       </div>
-
-      <form @submit.prevent="updateProduct">
-        <section class="section">
-          <h2>Informações básicas</h2>
-
-          <div class="form_grid">
-            <CommonInput
-              text="Titulo"
-              name="titulo"
-              type="text"
-              placeholder="Insira o titulo do produto"
-              v-model="titulo"
-            />
-
-            <CommonInput
-              text="Autor"
-              name="autor"
-              type="text"
-              placeholder="Digite o nome do autor"
-              v-model="autor"
-            />
-
-            <CommonInput
-              text="ISBN-13"
-              name="isbn"
-              type="text"
-              placeholder="1234567890123"
-              v-model="isbn"
-            />
-
-            <CommonInput
-              text="Idioma"
-              name="idioma"
-              type="text"
-              placeholder="Português"
-              v-model="idioma"
-            />
-
-            <CommonInput
-              text="Serie"
-              name="serie"
-              type="text"
-              placeholder="Insira a série"
-              v-model="serie"
-            />
-
-            <CommonInput
-              text="Volume"
-              name="volume"
-              type="text"
-              placeholder="Volume"
-              v-model="volume"
-            />
-          </div>
-        </section>
-
-        <section class="section">
-          <h2>Detalhes</h2>
-
-          <div class="form_grid">
-            <CommonInput
-              text="Número de Páginas"
-              name="numPaginas"
-              type="number"
-              placeholder="Número de páginas"
-              v-model="numPaginas"
-            />
-
-            <CommonInput
-              text="Data de Publicação"
-              name="dataPublicacao"
-              type="date"
-              v-model="dataPublicacao"
-            />
-
-            <CommonSelect
-              text="Genero"
-              name="genero"
-              v-model="genero"
-              :options="listGeneros"
-            />
-
-            <CommonSelect
-              text="Classificação Indicativa"
-              name="classIndicativa"
-              v-model="classIndicativa"
-              :options="listClassificacoesIndicativas"
-            />
-
-            <CommonInput
-              text="Preço"
-              name="preco"
-              type="text"
-              placeholder="55.00"
-              v-model="preco"
-            />
-          </div>
-        </section>
-
-        <div class="actions">
-          <button type="button" class="secondary">Cancelar</button>
-
-          <button type="submit" class="primary">Salvar alterações</button>
-        </div>
-      </form>
     </Container>
   </NuxtLayout>
 </template>
@@ -218,6 +219,12 @@ const updateProduct = async () => {
 .container {
   flex: 1;
 }
+
+.grid-div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .header {
   margin-bottom: 40px;
   width: 100%;
@@ -225,13 +232,14 @@ const updateProduct = async () => {
 
 .product_preview {
   display: flex;
+  flex-direction: column;
   gap: 28px;
+  justify-items: center;
   align-items: center;
 }
 
 .cover_preview {
-  width: 140px;
-  height: 200px;
+  width: 60%;
 
   border-radius: 18px;
 
@@ -277,15 +285,10 @@ const updateProduct = async () => {
   color: #505050;
 }
 
-.section {
-  margin-bottom: 40px;
-}
-
 .section h2 {
-  margin-bottom: 24px;
-
-  color: #fff;
-  font-size: 20px;
+  margin: 12px 0;
+  font-weight: 600;
+  font-size: 1.5em;
 }
 
 .form_grid {
