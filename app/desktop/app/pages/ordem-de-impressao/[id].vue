@@ -7,15 +7,37 @@ definePageMeta({
   middleware: "auth",
 });
 
+const { getToken } = useAuthToken();
+
 const route = useRoute();
+const api = useApi();
+const token = getToken();
 
 const id = route.params.id;
 
+const pesquisa = ref();
+const produtos = ref([]);
 const orderItems = ref([]);
 
 const buscarProduto = async () => {
-  alert("Buscando");
+  try {
+    const response = await api(`/product/search?pesquisa=${pesquisa.value}`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    produtos.value = response.produtos;
+    console.log(produtos.value);
+  } catch (error) {
+    console.error(error);
+  }
 };
+
+onMounted(() => {
+  buscarProduto();
+});
 </script>
 
 <template>
@@ -76,12 +98,15 @@ const buscarProduto = async () => {
             <SearchBar
               placeholder="Insira o título ou ISBN do produto"
               :handleForms="buscarProduto"
+              :value="pesquisa"
+              @update:value="pesquisa = $event"
             />
 
             <div class="flex gap-3 search_obras">
               <img
-                src="http://localhost:8081/uploads/f20a073f-cfdf-4afa-9b5c-f8488884e695.jpg"
-                alt=""
+                v-for="produto in produtos"
+                :src="`http://localhost:8081${produto._imgCapa}`"
+                :alt="produto._titulo"
               />
             </div>
           </div>
@@ -137,6 +162,9 @@ const buscarProduto = async () => {
   }
 
   .search_obras {
+    display: flex;
+    flex: 1;
+    overflow: auto;
     img {
       width: 150px;
       cursor: pointer;
