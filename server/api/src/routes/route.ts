@@ -53,6 +53,7 @@ route.get(
   authValidate,
   produtoController.listarProdutos,
 );
+route.get("/product/search", authValidate, produtoController.pesquisarProduto);
 route.get(
   "/product/list-by-name/:produto",
   authValidate,

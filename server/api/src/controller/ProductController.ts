@@ -218,4 +218,37 @@ export default class ProdutoController {
         .json({ message: "Erro ao buscar produtos", type: "error" });
     }
   };
+
+  pesquisarProduto = async (req: Request, res: Response) => {
+    const { pesquisa } = req.query;
+
+    console.log(req.query);
+
+    const produtos: Produto[] = [];
+
+    try {
+      if (!pesquisa || pesquisa === undefined) {
+        return this.listarProdutos(req, res);
+      }
+
+      if (typeof pesquisa !== "string") {
+        return res.status(400).json({
+          mensagem: "Pesquisa inválida",
+        });
+      }
+
+      const results = await this.dao.pesquisarProduto(pesquisa);
+
+      if (!results)
+        return res
+          .status(400)
+          .json({ message: "Erro ao buscar produtos", type: "error" });
+
+      results.forEach((item) => {
+        produtos.push(new Produto(item));
+      });
+
+      return res.status(200).json({ produtos });
+    } catch (error) {}
+  };
 }
