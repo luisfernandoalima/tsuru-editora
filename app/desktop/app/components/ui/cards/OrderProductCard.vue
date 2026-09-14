@@ -1,4 +1,6 @@
 <script setup>
+import { Icon } from "@iconify/vue";
+
 const props = defineProps({
   item: Object,
 });
@@ -29,24 +31,19 @@ const emit = defineEmits(["remover"]);
 
     <input type="number" v-model="item.quantidade" min="1" />
 
-    <p class="flex items-center justify-center">
-      R$
-      {{ item.produto._preco * item.quantidade }}
-    </p>
-
-    <button @click="emit('remover', item.produto.id)">Remover</button>
+    <button @click="emit('remover', item.produto._id)">
+      <Icon icon="tabler:trash" />
+    </button>
   </div>
 </template>
 
 <style scoped>
 .item_card {
   display: grid;
-  grid-template-columns: 7% 63% 10% 10% 10%;
+  grid-template-columns: 17% 63% 10% 10%;
 
-  border: 2px solid #fff;
+  border: 2px solid var(--details);
   border-radius: 10px;
-
-  color: #fff;
 
   .image_container {
     background-position: top center;

@@ -1,6 +1,8 @@
 <script setup>
 import Container from "~/components/layout/Container.vue";
 import SearchBar from "~/components/layout/SearchBar.vue";
+import OrderProductCard from "~/components/ui/cards/OrderProductCard.vue";
+import CommonButtons from "~/components/ui/forms/CommonButtons.vue";
 
 definePageMeta({
   layout: "default",
@@ -33,6 +35,30 @@ const buscarProduto = async () => {
   } catch (error) {
     console.error(error);
   }
+};
+
+const adicionarProduto = (produto) => {
+  const produtoExiste = orderItems.value.find(
+    (item) => item.produto._id === produto._id,
+  );
+
+  if (produtoExiste) {
+    produtoExiste.quantidade++;
+  } else {
+    orderItems.value.push({
+      produto: produto,
+      quantidade: 1,
+    });
+  }
+};
+
+const removerProduto = (id) => {
+  orderItems.value = orderItems.value.filter((item) => item.produto._id !== id);
+};
+
+const salvarOrdem = () => {
+  console.log(id);
+  console.log(orderItems.value);
 };
 
 onMounted(() => {
@@ -107,11 +133,21 @@ onMounted(() => {
                 v-for="produto in produtos"
                 :src="`http://localhost:8081${produto._imgCapa}`"
                 :alt="produto._titulo"
+                @click="adicionarProduto(produto)"
               />
             </div>
           </div>
           <div class="obras_cadastradas">
             <h2>Obras Cadastradas</h2>
+            <div class="flex flex-col gap-y-3">
+              <OrderProductCard
+                v-for="value in orderItems"
+                :key="value.produto._id"
+                :item="value"
+                @remover="removerProduto"
+              />
+            </div>
+            <button @click="salvarOrdem">Salvar</button>
           </div>
         </div>
       </Container>

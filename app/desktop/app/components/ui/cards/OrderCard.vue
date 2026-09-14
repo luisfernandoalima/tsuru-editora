@@ -3,7 +3,7 @@ const props = defineProps({
   id: Number,
   nome: String,
   status: String,
-  dataCriacao: String,
+  dataCriacao: Date,
   dataFechamento: String,
   totalObras: Number,
   totalUnidades: Number,
@@ -12,19 +12,14 @@ const props = defineProps({
 
 const classStatus = computed(() => {
   switch (props.status) {
-    case "Aberto":
+    case "aberta":
       return "status_aberto";
-    case "Fechado":
+    case "fechada":
       return "status_fechado";
     default:
       return "";
   }
 });
-
-const dataFormatada = (data) => {
-  if (!data) return "";
-  return new Date(data).toLocaleDateString("pt-BR");
-};
 </script>
 
 <template>
@@ -46,9 +41,9 @@ const dataFormatada = (data) => {
     </div>
 
     <div class="card_footer">
-      <span>Criada em {{ dataFormatada(dataCriacao) }}</span>
+      <span>Criada em {{ dataCriacao }}</span>
       <span v-if="status === 'Fechado' && dataFechamento">
-        · Fechada em {{ dataFormatada(dataFechamento) }}
+        · Fechada em {{ formatDate(dataFechamento) }}
       </span>
       <span v-if="aprovador">· Aprovador: {{ aprovador }}</span>
     </div>

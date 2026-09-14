@@ -8,9 +8,74 @@ definePageMeta({
 import SearchBar from "~/components/layout/SearchBar.vue";
 import Container from "~/components/layout/Container.vue";
 import OrderCard from "~/components/ui/cards/OrderCard.vue";
+import ConfirmPopUp from "~/components/ui/utils/ConfirmPopUp.vue";
+
+const { getToken } = useAuthToken();
+
+const api = useApi();
+const token = getToken();
+const toast = useToast();
+
+const popUpActive = ref(false);
+const nomeOrdem = ref("");
+const ordens = ref([]);
+
+const listarOrdens = async () => {
+  try {
+    const response = await api("/print-order/list", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    ordens.value = response.orders;
+  } catch (error) {
+    console.error(error);
+    toast.error({ title: "Erro!", message: error.message });
+  }
+};
+
+const criarOrdem = async () => {
+  try {
+    const data = {
+      nome: nomeOrdem.value,
+      status: "aberta",
+    };
+    const response = await api("/print-order/create", {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "POST",
+      body: data,
+    });
+
+    popUpActive.value = false;
+    listarOrdens();
+    toast.success({ title: "Sucesso!", message: response.message });
+  } catch (error) {
+    toast.error({ title: error, message: error.message });
+  }
+};
+
+const abrirConfirmação = () => {
+  nomeOrdem.value = generateOrderName();
+  popUpActive.value = true;
+};
+
+onMounted(() => {
+  listarOrdens();
+});
 </script>
 <template>
   <NuxtLayout>
+    <ConfirmPopUp
+      title="Confirmação para criar Ordem"
+      :message="`Deseja criar a ordem:${nomeOrdem}`"
+      :active="popUpActive"
+      :handleClick="criarOrdem"
+      @close="popUpActive = false"
+    />
     <SearchBar
       :handleForms="buscarProduto"
       :value="produto"
@@ -18,28 +83,27 @@ import OrderCard from "~/components/ui/cards/OrderCard.vue";
     />
 
     <div class="flex justify-end">
-      <NuxtLink to="/ordem-de-impressao/nova-ordem" class="new_order"
-        ><Icon icon="akar-icons:plus" class="inline" /> Nova Ordem</NuxtLink
+      <Button
+        to="/ordem-de-impressao/nova-ordem"
+        class="new_order"
+        @click="abrirConfirmação"
+        ><Icon icon="akar-icons:plus" class="inline" /> Nova Ordem</Button
       >
     </div>
 
     <Container>
       <div class="order_container">
         <OrderCard
-          :id="12345"
-          nome="Janeiro"
-          status="Fechado"
-          dataCriacao="2026-01-05"
-          dataFechamento="2026-01-31"
-          :totalObras="12"
-          :totalUnidades="340"
-          aprovador="Denise"
+          v-for="item in ordens"
+          :id="item.id"
+          :nome="item.nome"
+          :status="item.statusOrdem"
+          :dataCriacao="formatDate(item.dataCriacao)"
+          :dataFechamento="formatDate(item.dataFechamento)"
+          :totalObras="item.totalObras"
+          :totalUnidades="item.totalUnidades"
+          :aprovador="item.aprovador"
         />
-        <OrderCard :id="12345" nome="Janeiro" status="Fechado" />
-        <OrderCard :id="12345" nome="Janeiro" status="Fechado" />
-        <OrderCard :id="12345" nome="Janeiro" status="Fechado" />
-        <OrderCard :id="12345" nome="Janeiro" status="Fechado" />
-        <OrderCard :id="12345" nome="Janeiro" status="Fechado" />
       </div>
     </Container>
   </NuxtLayout>
