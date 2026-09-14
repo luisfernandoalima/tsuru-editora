@@ -15,14 +15,24 @@ export default class OrdemDeImpressaoController {
 
   Criar = async (req: Request, res: Response) => {
     try {
+      const user = (req as any).user;
+      const usuarioDAO = new UsuarioDAO();
+
+      const usuario = new Usuario(await usuarioDAO.Consultar(user.id));
+
+      if (!usuario) {
+        return res.status(400).json({ message: "Erro ao encontrar usuário" });
+      }
+
       const reqInfo: IOrdemDeImpressao = {
         nome: req.body.nome,
-        dataCriacao: req.body.dataCriacao,
-        dataFechamento: null,
-        totalObras: null,
-        totalUnidades: null,
-        statusOrdem: req.body.statusOrdem,
-        aprovador: req.body.aprovador,
+        data_criacao: new Date(),
+        data_aprovacao: null,
+        total_obras: null,
+        total_unidades: null,
+        status: req.body.status,
+        fk_usuario_criador_id: usuario,
+        fk_usuario_aprovador_id: null,
       };
 
       const novaOrdem = new OrdemDeImpressao(reqInfo);
@@ -48,9 +58,7 @@ export default class OrdemDeImpressaoController {
   Consultar = async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
-
       const ordem = new OrdemDeImpressao(await this.dao.Consultar(id));
-
       res.status(200).json({ ordem });
     } catch (err) {
       console.log(`Erro ao consultar Ordem: ${err}`);
@@ -93,7 +101,7 @@ export default class OrdemDeImpressaoController {
     try {
       const usuarioDAO = new UsuarioDAO();
 
-      const { id } = req.body.id;
+      const { id } = req.body;
       const userInfo = (req as any).user;
 
       const user = new Usuario(await usuarioDAO.Consultar(userInfo.id));
@@ -122,10 +130,21 @@ export default class OrdemDeImpressaoController {
   };
 
   Listar = async (req: Request, res: Response) => {
+    console.log("OI");
     try {
+      const orders: OrdemDeImpressao[] = [];
+
       const ordersDB = await this.dao.Listar();
 
-      const orders: OrdemDeImpressao[] = [];
+      if (!ordersDB) {
+        return res.status(400).json({
+          message: `Erro ao buscar Ordem de Impressão.`,
+        });
+      }
+
+      ordersDB.forEach((item) => {
+        orders.push(new OrdemDeImpressao(item));
+      });
 
       res.status(200).json({ orders });
     } catch (err) {

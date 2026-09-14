@@ -11,18 +11,18 @@ export default class OrdemDeImpressao {
   private totalUnidades: number | null;
   private statusOrdem: StatusOrdem;
   private criador: Usuario;
-  private aprovador: Usuario;
+  private aprovador: Usuario | null;
 
   constructor(ordem: IOrdemDeImpressao) {
     this.id = ordem.id;
     this.nome = ordem.nome;
-    this.dataCriacao = new Date(ordem.dataCriacao);
-    this.dataFechamento = ordem.dataFechamento;
-    this.totalObras = ordem.totalObras;
-    this.totalUnidades = ordem.totalUnidades;
-    this.statusOrdem = ordem.statusOrdem;
-    this.criador = ordem.criador;
-    this.aprovador = ordem.aprovador;
+    this.dataCriacao = new Date(ordem.data_criacao);
+    this.dataFechamento = ordem.data_aprovacao;
+    this.totalObras = ordem.total_obras;
+    this.totalUnidades = ordem.total_unidades;
+    this.statusOrdem = ordem.status;
+    this.criador = ordem.fk_usuario_criador_id;
+    this.aprovador = ordem.fk_usuario_aprovador_id;
   }
 
   public getId(): number | undefined {
@@ -89,7 +89,7 @@ export default class OrdemDeImpressao {
     this.criador = criador;
   }
 
-  public getAprovador(): Usuario {
+  public getAprovador(): Usuario | null {
     return this.aprovador;
   }
 

@@ -4,11 +4,11 @@ import { StatusOrdem } from "../enums/StatusOrdem.js";
 export interface IOrdemDeImpressao {
   id?: number;
   nome: string;
-  dataCriacao: Date;
-  dataFechamento: Date | null;
-  totalObras: number | null;
-  totalUnidades: number | null;
-  statusOrdem: StatusOrdem;
-  criador: Usuario;
-  aprovador: Usuario;
+  data_criacao: Date;
+  data_aprovacao: Date | null;
+  total_obras: number | null;
+  total_unidades: number | null;
+  status: StatusOrdem;
+  fk_usuario_criador_id: Usuario;
+  fk_usuario_aprovador_id: Usuario | null;
 }

@@ -227,7 +227,7 @@ export default class ProdutoController {
     const produtos: Produto[] = [];
 
     try {
-      if (!pesquisa || pesquisa === undefined) {
+      if (!pesquisa || pesquisa === undefined || pesquisa == "undefined") {
         return this.listarProdutos(req, res);
       }
 

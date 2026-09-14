@@ -4,6 +4,15 @@ import { pool } from "../database/connection.js";
 export default class OrdemDeImpressaoDAO {
   Criar = async (novaOrdem: OrdemDeImpressao) => {
     try {
+      const result = await pool.query(
+        " INSERT INTO ordem_impressao ( nome, data_criacao, fk_usuario_criador_id, status ) VALUES ($1, $2, $3, $4)",
+        [
+          novaOrdem.getNome(),
+          novaOrdem.getDataCriacao(),
+          novaOrdem.getCriador().getId(),
+          novaOrdem.getStatusOrdem(),
+        ],
+      );
       return true;
     } catch (err) {
       console.log(`Erro ao criar nova Ordem de Impressão: ${err}`);
@@ -14,6 +23,7 @@ export default class OrdemDeImpressaoDAO {
     try {
       return true;
     } catch (err) {
+      console.log("Olá 2");
       console.log(`Erro ao atualizar Ordem de Impressão: ${err}`);
       return false;
     }
@@ -45,7 +55,16 @@ export default class OrdemDeImpressaoDAO {
       return false;
     }
   };
-  Listar = async () => {};
+  Listar = async () => {
+    try {
+      const response = await pool.query("SELECT * FROM ordem_impressao");
+      console.log(response.rows);
+      return response.rows;
+    } catch (error) {
+      console.error("Erro ao listar as ordens: " + error);
+      throw error;
+    }
+  };
   Buscar = async () => {};
   salvarProdutos = async () => {};
 }

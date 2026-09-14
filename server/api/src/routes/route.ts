@@ -88,8 +88,17 @@ route.get(
 );
 
 // registro de ordens
-route.post("/print-order", authValidate, ordemDeImpressaoController.Criar);
-route.put("/print-order/:id", authValidate, ordemDeImpressaoController.Alterar);
+route.post(
+  "/print-order/create",
+  authValidate,
+  ordemDeImpressaoController.Criar,
+);
+route.get("/print-order/list", authValidate, ordemDeImpressaoController.Listar);
+route.put(
+  "/print-order/update/:id",
+  authValidate,
+  ordemDeImpressaoController.Alterar,
+);
 route.get(
   "/print-order/:id",
   authValidate,
@@ -105,7 +114,6 @@ route.put(
   authValidate,
   ordemDeImpressaoController.Rejeitar,
 );
-route.get("/print-order/list", authValidate, ordemDeImpressaoController.Listar);
 route.get(
   "/print-order/search",
   authValidate,
