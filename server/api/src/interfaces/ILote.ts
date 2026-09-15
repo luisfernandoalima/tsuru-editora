@@ -4,8 +4,10 @@ import { StatusLote } from "../enums/StatusLote.js";
 export interface ILote {
   id?: number;
   codigo: string;
-  quantidadeInicial: number;
-  quantidadeAtual: number;
-  statusLote: StatusLote;
-  produto: Produto;
+  quantidade_inicial: number;
+  quantidade_atual: number;
+  data_criacao: Date;
+  status: StatusLote;
+  fk_ordem_impressao_id: number;
+  fk_produto_id: number;
 }

@@ -4,12 +4,18 @@ import OrdemDeImpressaoDAO from "../dal/OrdemDeImpressaoDAO.js";
 import type { Request, Response } from "express";
 import type { IOrdemDeImpressao } from "../interfaces/IOrdemDeImpressao.js";
 import LoteController from "./LoteController.js";
-import type Produto from "../class/Produto.js";
+import Produto from "../class/Produto.js";
 
 import type { IUsuario } from "../interfaces/IUsuario.js";
 import UsuarioDAO from "../dal/UsuarioDAO.js";
 import Usuario from "../class/Usuario.js";
-
+import { ProdutoDAO } from "../dal/ProdutoDAO.js";
+import LoteDAO from "../dal/LoteDAO.js";
+import { loteNomeador } from "../utils/loteNomeador.js";
+type TLoteProduto = {
+  produto: Produto;
+  quantidade: number;
+};
 export default class OrdemDeImpressaoController {
   private dao = new OrdemDeImpressaoDAO();
 
@@ -47,18 +53,23 @@ export default class OrdemDeImpressaoController {
       res.status(400).json({ message: `Erro ao criar Ordem: ${err}` });
     }
   };
-  Alterar = async (req: Request, res: Response) => {
-    try {
-      return true;
-    } catch (err) {
-      console.log(`Erro ao atualizar Ordem de Impressão: ${err}`);
-      return false;
-    }
-  };
+
   Consultar = async (req: Request, res: Response) => {
     try {
+      const usuarioDAO = new UsuarioDAO();
       const id = Number(req.params.id);
-      const ordem = new OrdemDeImpressao(await this.dao.Consultar(id));
+      const ordemDB = await this.dao.Consultar(id);
+
+      const usuario = new Usuario(
+        await usuarioDAO.Consultar(ordemDB.fk_usuario_criador_id),
+      );
+
+      const ordem = new OrdemDeImpressao(ordemDB);
+
+      ordem.setCriador(usuario);
+
+      // console.log(ordem);
+
       res.status(200).json({ ordem });
     } catch (err) {
       console.log(`Erro ao consultar Ordem: ${err}`);
@@ -154,24 +165,117 @@ export default class OrdemDeImpressaoController {
       });
     }
   };
-  Buscar = async (req: Request, res: Response) => {};
   salvarProdutos = async (req: Request, res: Response) => {
     try {
-      const reqItems = req.body.items;
+      const { orderId } = req.body;
+
+      const ordem = new OrdemDeImpressao(await this.dao.Consultar(orderId));
 
       const loteController = new LoteController();
+      const loteDAO = new LoteDAO();
+      const produtoDAO = new ProdutoDAO();
 
-      const reqInfo: Produto[] = [];
+      // Lotes que já existem no banco
+      const lotesBanco = await loteDAO.Consultar(orderId);
 
-      reqInfo.forEach((item) => {
-        loteController.Criar(item);
+      const produtos: TLoteProduto[] = [];
+      const lotesRecebidos: string[] = [];
+
+      // ==========================================
+      // 1. Processar produtos enviados pelo front
+      // ==========================================
+
+      for (const item of req.body.items) {
+        const produtoBD = await produtoDAO.Consultar(item.produto._id);
+
+        if (!produtoBD) {
+          return res.status(404).json({
+            message: "Produto não encontrado",
+          });
+        }
+
+        const produto = new Produto(produtoBD);
+        const quantidade = Number(item.quantidade);
+
+        // Nome único do lote
+        const nomeLote = loteNomeador(ordem, produto);
+
+        lotesRecebidos.push(nomeLote);
+
+        produtos.push({
+          produto,
+          quantidade,
+        });
+      }
+
+      // ==========================================
+      // 2. Criar ou atualizar os lotes
+      // ==========================================
+
+      for (const item of produtos) {
+        const nomeLote = loteNomeador(ordem, item.produto);
+
+        const loteExistente = lotesBanco.find(
+          (lote) => lote.codigo === nomeLote,
+        );
+
+        if (loteExistente) {
+          // Já existe → atualizar
+          if (!loteExistente.id) {
+            return;
+          }
+          await loteDAO.Atualizar(loteExistente.id, item.quantidade);
+        } else {
+          // Não existe → criar
+          await loteController.Criar(item.produto, ordem, item.quantidade);
+        }
+      }
+
+      // ==========================================
+      // 3. Deletar lotes removidos no frontend
+      // ==========================================
+
+      for (const lote of lotesBanco) {
+        if (!lotesRecebidos.includes(lote.codigo)) {
+          if (!lote.id) return;
+          await loteDAO.Deletar(lote.id);
+        }
+      }
+
+      return res.status(200).json({
+        message: "Produtos sincronizados com sucesso!",
       });
-
-      res.status(201).json({ message: `Produtos salvos com sucesso!` });
     } catch (err) {
       console.log(`Erro ao salvar produtos na Ordem de Impressão: ${err}`);
-      res.status(400).json({
+
+      return res.status(400).json({
         message: `Erro ao salvar produtos na Ordem de Impressão: ${err}`,
+      });
+    }
+  };
+
+  listarProdutos = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const result = await this.dao.listarProdutos(Number(id));
+
+      const produtos: TLoteProduto[] = [];
+
+      result.forEach((item) => {
+        let quantidade = item.quantidade_inicial;
+        delete item.quantidade_inicial;
+        let produto = new Produto(item);
+
+        produtos.push({ produto, quantidade });
+      });
+
+      return res.status(200).json({
+        produtos,
+      });
+    } catch (error) {
+      console.log(`Erro ao salvar produtos na Ordem de Impressão: ${error}`);
+      res.status(400).json({
+        message: `Erro ao salvar produtos na Ordem de Impressão: ${error}`,
       });
     }
   };

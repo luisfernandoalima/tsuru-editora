@@ -30,9 +30,12 @@ export default class OrdemDeImpressaoDAO {
   };
   Consultar = async (id: number) => {
     try {
-      const result = await pool.query("SELECT * FROM produto WHERE id = $1", [
-        id,
-      ]);
+      const result = await pool.query(
+        "SELECT * FROM ordem_impressao WHERE id = $1",
+        [id],
+      );
+
+      console.log(result.rows);
 
       return result.rows[0];
     } catch (err) {
@@ -67,4 +70,25 @@ export default class OrdemDeImpressaoDAO {
   };
   Buscar = async () => {};
   salvarProdutos = async () => {};
+  listarProdutos = async (orderId: number) => {
+    try {
+      const result = await pool.query(
+        `
+    SELECT 
+        p.*,
+        l.id AS lote_id,
+        l.quantidade_inicial
+    FROM lote l
+    JOIN produto p ON p.id = l.fk_produto_id
+    WHERE l.fk_ordem_impressao_id = $1
+  `,
+        [orderId],
+      );
+
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao listar os produtos: " + error);
+      throw error;
+    }
+  };
 }

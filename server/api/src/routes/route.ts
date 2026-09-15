@@ -12,6 +12,7 @@ import SaidaController from "../controller/SaidaController.js";
 import OrdemDeImpressaoController from "../controller/OrdemDeImpressaoController.js";
 import EnderecoController from "../controller/EnderecoController.js";
 import ParceiroController from "../controller/ParceiroController.js";
+import LoteController from "../controller/LoteController.js";
 
 const route = Router();
 const userController = new UserController();
@@ -21,6 +22,7 @@ const saidaController = new SaidaController();
 const enderecoController = new EnderecoController();
 const parceiroController = new ParceiroController();
 const ordemDeImpressaoController = new OrdemDeImpressaoController();
+const loteController = new LoteController();
 
 route.post("/user/sign-up", userController.Criar);
 route.post("/user/login", userController.Login);
@@ -94,11 +96,18 @@ route.post(
   ordemDeImpressaoController.Criar,
 );
 route.get("/print-order/list", authValidate, ordemDeImpressaoController.Listar);
-route.put(
-  "/print-order/update/:id",
+
+route.post(
+  "/print-order/save-products",
   authValidate,
-  ordemDeImpressaoController.Alterar,
+  ordemDeImpressaoController.salvarProdutos,
 );
+route.get(
+  "/print-order/list-items/:id",
+  authValidate,
+  ordemDeImpressaoController.listarProdutos,
+);
+
 route.get(
   "/print-order/:id",
   authValidate,
@@ -114,16 +123,7 @@ route.put(
   authValidate,
   ordemDeImpressaoController.Rejeitar,
 );
-route.get(
-  "/print-order/search",
-  authValidate,
-  ordemDeImpressaoController.Buscar,
-);
-route.post(
-  "/print-order/save-products/:id",
-  authValidate,
-  ordemDeImpressaoController.salvarProdutos,
-);
+
 
 route.post("/partner/new-partner", authValidate, parceiroController.Criar);
 route.get("/partner/list", authValidate, parceiroController.Listar);
