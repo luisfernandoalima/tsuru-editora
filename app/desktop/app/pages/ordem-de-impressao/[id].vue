@@ -14,12 +14,66 @@ const { getToken } = useAuthToken();
 const route = useRoute();
 const api = useApi();
 const token = getToken();
+const toast = useToast();
 
 const id = route.params.id;
+const ordem = ref({
+  nome: "",
+  id: "",
+  criador: {
+    _nome: "",
+    _email: "",
+  },
+  totalObras: 0,
+  totalUnidades: 0,
+  statusOrdem: "",
+  dataCriacao: null,
+  dataFechamento: null,
+  aprovador: null,
+});
 
 const pesquisa = ref();
 const produtos = ref([]);
 const orderItems = ref([]);
+
+const consultarOrdem = async () => {
+  try {
+    const response = await api(`/print-order/${id}`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    ordem.value = response.ordem;
+  } catch (error) {
+    toast.error({ title: "Erro!", message: error.message });
+  }
+};
+
+const consultarItens = async () => {
+  try {
+    const response = await api(`/print-order/list-items/${id}`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("RESPOSTA DOS ITENS:", response);
+
+    orderItems.value = response.produtos;
+
+    console.log(orderItems.value);
+  } catch (error) {
+    console.error("Erro ao buscar itens:", error);
+
+    toast.error({
+      title: "Erro!",
+      message: error.message,
+    });
+  }
+};
 
 const buscarProduto = async () => {
   try {
@@ -56,13 +110,26 @@ const removerProduto = (id) => {
   orderItems.value = orderItems.value.filter((item) => item.produto._id !== id);
 };
 
-const salvarOrdem = () => {
+const salvarOrdem = async () => {
   console.log(id);
   console.log(orderItems.value);
+
+  const response = await api("/print-order/save-products", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+    body: {
+      items: orderItems.value,
+      orderId: id,
+    },
+  });
 };
 
 onMounted(() => {
+  consultarOrdem();
   buscarProduto();
+  consultarItens();
 });
 </script>
 
@@ -70,48 +137,50 @@ onMounted(() => {
   <NuxtLayout>
     <div class="order_main_page">
       <Container>
-        <h1 class="text-4xl font-semibold mb-2">{{ id }}</h1>
+        <h1 class="text-4xl font-semibold mb-2">{{ ordem.nome }}</h1>
         <section>
           <div class="info-grid">
             <div class="info-item">
               <span class="label">ID da Ordem</span>
-              <strong>#</strong>
+              <strong>#{{ ordem.id }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">Nome do criador</span>
-              <strong></strong>
+              <strong>{{ ordem.criador._nome }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">E-mail do criador</span>
-              <strong></strong>
+              <strong>{{ ordem.criador._email }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">Total de Obras</span>
-              <strong> obras</strong>
+              <strong>{{ ordem.totalObras }} obras</strong>
             </div>
 
             <div class="info-item">
               <span class="label">Total de itens</span>
-              <strong> itens</strong>
+              <strong>{{ ordem.totalUnidades }} itens</strong>
             </div>
             <div class="info-item">
               <span class="label">Status</span>
-              <strong></strong>
+              <strong>{{ ordem.statusOrdem }}</strong>
             </div>
             <div class="info-item">
               <span class="label">Data de criação</span>
-              <strong></strong>
+              <strong>{{ formatDate(ordem.dataCriacao) }}</strong>
             </div>
             <div class="info-item">
               <span class="label">Data de fechamento</span>
-              <strong>R$</strong>
+              <strong>{{
+                formatDate(ordem.dataFechamento) || "Nenhuma"
+              }}</strong>
             </div>
             <div class="info-item">
               <span class="label">Aprovador</span>
-              <strong></strong>
+              <strong>{{ ordem.aprovador || "Não Aprovado" }}</strong>
             </div>
           </div>
         </section>
