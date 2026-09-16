@@ -181,6 +181,9 @@ export default class OrdemDeImpressaoController {
       const produtos: TLoteProduto[] = [];
       const lotesRecebidos: string[] = [];
 
+      let quantidadeObra = 0;
+      let quantidadeUnidade = 0;
+
       // ==========================================
       // 1. Processar produtos enviados pelo front
       // ==========================================
@@ -197,6 +200,9 @@ export default class OrdemDeImpressaoController {
         const produto = new Produto(produtoBD);
         const quantidade = Number(item.quantidade);
 
+        quantidadeObra++;
+        quantidadeUnidade += item.quantidade;
+
         // Nome único do lote
         const nomeLote = loteNomeador(ordem, produto);
 
@@ -206,6 +212,18 @@ export default class OrdemDeImpressaoController {
           produto,
           quantidade,
         });
+      }
+
+      if (
+        ordem.getTotalObras() != quantidadeObra ||
+        ordem.getTotalUnidades() != quantidadeUnidade
+      ) {
+        ordem.setTotalObras(quantidadeObra);
+        ordem.setTotalUnidades(quantidadeUnidade);
+
+        if (await this.dao.Alterar(ordem)) {
+          console.log(`A ordem ${ordem.getNome()} foi alterada com sucesso!`);
+        }
       }
 
       // ==========================================

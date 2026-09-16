@@ -21,6 +21,29 @@ export default class OrdemDeImpressaoDAO {
   };
   Alterar = async (ordem: OrdemDeImpressao) => {
     try {
+      const result = await pool.query(
+        `
+    UPDATE ordem_impressao
+    SET
+      nome = $1,
+      data_aprovacao = $2,
+      total_obras = $3,
+      total_unidades = $4,
+      status = $5,
+      fk_usuario_aprovador_id = $6
+    WHERE id = $7
+    RETURNING *
+  `,
+        [
+          ordem.getNome(),
+          ordem.getDataAprovacao(),
+          ordem.getTotalObras(),
+          ordem.getTotalUnidades(),
+          ordem.getStatusOrdem(),
+          ordem.getAprovador(),
+          ordem.getId(),
+        ],
+      );
       return true;
     } catch (err) {
       console.log("Olá 2");
