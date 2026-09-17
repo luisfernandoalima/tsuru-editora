@@ -3,7 +3,7 @@ const props = defineProps({
   id: Number,
   nome: String,
   status: String,
-  dataCriacao: Date,
+  dataCriacao: String,
   dataFechamento: String,
   totalObras: Number,
   totalUnidades: Number,
@@ -12,9 +12,11 @@ const props = defineProps({
 
 const classStatus = computed(() => {
   switch (props.status) {
-    case "aberta":
+    case "ABERTA":
       return "status_aberto";
-    case "fechada":
+    case "APROVADA":
+      return "status_fechado";
+    case "CANCELADA":
       return "status_fechado";
     default:
       return "";
@@ -42,8 +44,8 @@ const classStatus = computed(() => {
 
     <div class="card_footer">
       <span>Criada em {{ dataCriacao }}</span>
-      <span v-if="status === 'Fechado' && dataFechamento">
-        · Fechada em {{ formatDate(dataFechamento) }}
+      <span v-if="status != 'ABERTA' && dataFechamento">
+        · Fechada em {{ dataFechamento }}
       </span>
       <span v-if="aprovador">· Aprovador: {{ aprovador }}</span>
     </div>

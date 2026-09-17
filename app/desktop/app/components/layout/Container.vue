@@ -9,6 +9,7 @@ const props = defineProps({ customClass: String });
 </template>
 <style>
 .page_container {
+  position: relative;
   background-color: var(--main);
   border-radius: 15px;
   box-shadow: var(--shadow);

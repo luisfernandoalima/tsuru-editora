@@ -3,6 +3,7 @@ import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   item: Object,
+  orderStatus: String,
 });
 
 const emit = defineEmits(["remover"]);
@@ -29,9 +30,18 @@ const emit = defineEmits(["remover"]);
       </p>
     </div>
 
-    <input type="number" v-model="item.quantidade" min="1" />
+    <input
+      type="number"
+      v-model="item.quantidade"
+      min="1"
+      v-if="orderStatus == 'ABERTA'"
+    />
+    <spam v-if="orderStatus != 'ABERTA'">{{ item.quantidade }}</spam>
 
-    <button @click="emit('remover', item.produto._id)">
+    <button
+      @click="emit('remover', item.produto._id)"
+      v-if="orderStatus == 'ABERTA'"
+    >
       <Icon icon="tabler:trash" />
     </button>
   </div>
@@ -69,6 +79,11 @@ const emit = defineEmits(["remover"]);
     &:focus {
       outline: none;
     }
+  }
+
+  spam {
+    align-self: center;
+    padding: 2px 5px;
   }
 }
 </style>

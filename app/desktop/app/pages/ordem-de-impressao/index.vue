@@ -30,6 +30,7 @@ const listarOrdens = async () => {
     });
 
     ordens.value = response.orders;
+    console.log(ordens.value);
   } catch (error) {
     console.error(error);
     toast.error({ title: "Erro!", message: error.message });
@@ -40,7 +41,7 @@ const criarOrdem = async () => {
   try {
     const data = {
       nome: nomeOrdem.value,
-      status: "aberta",
+      status: "ABERTA",
     };
     const response = await api("/print-order/create", {
       headers: {
@@ -102,7 +103,7 @@ onMounted(() => {
           :dataFechamento="formatDate(item.dataFechamento)"
           :totalObras="item.totalObras"
           :totalUnidades="item.totalUnidades"
-          :aprovador="item.aprovador"
+          :aprovador="item.aprovador?._nome || null"
         />
       </div>
     </Container>

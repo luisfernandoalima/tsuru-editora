@@ -2,7 +2,7 @@
 import Container from "~/components/layout/Container.vue";
 import SearchBar from "~/components/layout/SearchBar.vue";
 import OrderProductCard from "~/components/ui/cards/OrderProductCard.vue";
-import CommonButtons from "~/components/ui/forms/CommonButtons.vue";
+import Button from "~/components/ui/utils/Button.vue";
 
 definePageMeta({
   layout: "default",
@@ -12,6 +12,7 @@ definePageMeta({
 const { getToken } = useAuthToken();
 
 const route = useRoute();
+const router = useRouter();
 const api = useApi();
 const token = getToken();
 const toast = useToast();
@@ -29,12 +30,34 @@ const ordem = ref({
   statusOrdem: "",
   dataCriacao: null,
   dataFechamento: null,
-  aprovador: null,
+  aprovador: {
+    _nome: null,
+  },
 });
+
+const situacao = ref("");
 
 const pesquisa = ref();
 const produtos = ref([]);
 const orderItems = ref([]);
+
+const buscarProduto = async () => {
+  if (ordem.value.statusOrdem == "ABERTA") {
+    try {
+      const response = await api(`/product/search?pesquisa=${pesquisa.value}`, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      produtos.value = response.produtos;
+      console.log(produtos.value);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
 
 const consultarOrdem = async () => {
   try {
@@ -46,6 +69,10 @@ const consultarOrdem = async () => {
     });
 
     ordem.value = response.ordem;
+    buscarProduto();
+    situacao.value =
+      ordem.value.statusOrdem.charAt(0).toUpperCase() +
+      ordem.value.statusOrdem.slice(1).toLowerCase();
   } catch (error) {
     toast.error({ title: "Erro!", message: error.message });
   }
@@ -75,60 +102,79 @@ const consultarItens = async () => {
   }
 };
 
-const buscarProduto = async () => {
-  try {
-    const response = await api(`/product/search?pesquisa=${pesquisa.value}`, {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-
-    produtos.value = response.produtos;
-    console.log(produtos.value);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const adicionarProduto = (produto) => {
-  const produtoExiste = orderItems.value.find(
-    (item) => item.produto._id === produto._id,
-  );
+  if (ordem.value.statusOrdem == "ABERTA") {
+    const produtoExiste = orderItems.value.find(
+      (item) => item.produto._id === produto._id,
+    );
 
-  if (produtoExiste) {
-    produtoExiste.quantidade++;
-  } else {
-    orderItems.value.push({
-      produto: produto,
-      quantidade: 1,
-    });
+    if (produtoExiste) {
+      produtoExiste.quantidade++;
+    } else {
+      orderItems.value.push({
+        produto: produto,
+        quantidade: 1,
+      });
+    }
   }
 };
 
 const removerProduto = (id) => {
-  orderItems.value = orderItems.value.filter((item) => item.produto._id !== id);
+  if (ordem.value.statusOrdem == "ABERTA") {
+    orderItems.value = orderItems.value.filter(
+      (item) => item.produto._id !== id,
+    );
+  }
 };
 
 const salvarOrdem = async () => {
-  console.log(id);
-  console.log(orderItems.value);
+  if (ordem.value.statusOrdem == "ABERTA") {
+    console.log(id);
+    console.log(orderItems.value);
 
-  const response = await api("/print-order/save-products", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-    body: {
-      items: orderItems.value,
-      orderId: id,
-    },
-  });
+    const response = await api("/print-order/save-products", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      body: {
+        items: orderItems.value,
+        orderId: id,
+      },
+    });
+
+    toast.success({ title: "Sucesso!", message: "Os produtos foram salvos!" });
+  }
+};
+
+const definirStatus = async (status) => {
+  try {
+    let response;
+    if (status == "aprovada") {
+      response = await api(`/print-order/approve/${id}`, {
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+    } else if (status == "cancelada") {
+      response = await api(`/print-order/reject/${id}`, {
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+    }
+
+    toast.success({ title: "Sucesso!", message: response.message });
+  } catch (error) {
+    console.log(error);
+    toast.error({ title: "Erro!", message: error.message });
+  }
 };
 
 onMounted(() => {
   consultarOrdem();
-  buscarProduto();
   consultarItens();
 });
 </script>
@@ -138,6 +184,20 @@ onMounted(() => {
     <div class="order_main_page">
       <Container>
         <h1 class="text-4xl font-semibold mb-2">{{ ordem.nome }}</h1>
+        <div class="area_aprovacao" v-if="ordem.statusOrdem == 'ABERTA'">
+          <Button
+            text="CANCELAR"
+            className="secondary"
+            :width="50"
+            :click="() => definirStatus('cancelada')"
+          />
+          <Button
+            text="APROVAR"
+            className="primary"
+            :width="50"
+            :click="() => definirStatus('aprovada')"
+          />
+        </div>
         <section>
           <div class="info-grid">
             <div class="info-item">
@@ -175,12 +235,14 @@ onMounted(() => {
             <div class="info-item">
               <span class="label">Data de fechamento</span>
               <strong>{{
-                formatDate(ordem.dataFechamento) || "Nenhuma"
+                ordem.dataFechamento
+                  ? formatDate(ordem.dataFechamento)
+                  : "Nenhuma"
               }}</strong>
             </div>
             <div class="info-item">
-              <span class="label">Aprovador</span>
-              <strong>{{ ordem.aprovador || "Não Aprovado" }}</strong>
+              <span class="label">{{ situacao }} por:</span>
+              <strong>{{ ordem.aprovador?._nome || "Não Aprovado" }}</strong>
             </div>
           </div>
         </section>
@@ -214,10 +276,27 @@ onMounted(() => {
                 :key="value.produto._id"
                 :item="value"
                 @remover="removerProduto"
+                :orderStatus="ordem.statusOrdem"
               />
             </div>
-            <button @click="salvarOrdem">Salvar</button>
           </div>
+        </div>
+        <div
+          class="button_area flex gap-2 w-[50%] self-end"
+          v-if="ordem.statusOrdem == 'ABERTA'"
+        >
+          <Button
+            text="CANCELAR"
+            :width="50"
+            :click="router.back"
+            className="secondary"
+          />
+          <Button
+            text="SALVAR"
+            :width="50"
+            :click="salvarOrdem"
+            className="primary"
+          />
         </div>
       </Container>
     </div>
@@ -232,6 +311,16 @@ onMounted(() => {
   flex: 1;
   min-height: 0;
 }
+
+.area_aprovacao {
+  position: absolute;
+  display: flex;
+  gap: 0px 15px;
+  bottom: 15px;
+  right: 15px;
+  width: 400px;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -279,6 +368,7 @@ onMounted(() => {
 
 .obras_container {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
   flex: 1;
 }
