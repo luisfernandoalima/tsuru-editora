@@ -39,7 +39,7 @@ export default class LoteDAO {
       throw error;
     }
   };
-  Consultar = async (ordemId: number): Promise<ILote[]> => {
+  consultarOrdem = async (ordemId: number): Promise<ILote[]> => {
     try {
       const result = await pool.query(
         `
@@ -74,11 +74,28 @@ export default class LoteDAO {
     );
     return result.rows[0];
   };
-  /** * Deleta um lote */ Deletar = async (id: number) => {
+  /** * Deleta um lote */
+  Deletar = async (id: number) => {
     const result = await pool.query(
       ` DELETE FROM lote WHERE id = $1 RETURNING * `,
       [id],
     );
     return result.rows[0];
+  };
+
+  Aprovar = async (id: number) => {
+    const result = await pool.query(
+      "UPDATE lote set status='EM ESTOQUE' WHERE id=$1",
+      [id],
+    );
+    return true;
+  };
+
+  Cancelar = async (id: number) => {
+    const result = await pool.query(
+      "UPDATE lote set status='CANCELADO' WHERE id=$1",
+      [id],
+    );
+    return true;
   };
 }

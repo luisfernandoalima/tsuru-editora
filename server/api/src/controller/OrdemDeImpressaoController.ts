@@ -12,6 +12,7 @@ import Usuario from "../class/Usuario.js";
 import { ProdutoDAO } from "../dal/ProdutoDAO.js";
 import LoteDAO from "../dal/LoteDAO.js";
 import { loteNomeador } from "../utils/loteNomeador.js";
+import Lote from "../class/Lote.js";
 type TLoteProduto = {
   produto: Produto;
   quantidade: number;
@@ -60,27 +61,37 @@ export default class OrdemDeImpressaoController {
       const id = Number(req.params.id);
       const ordemDB = await this.dao.Consultar(id);
 
-      const usuario = new Usuario(
-        await usuarioDAO.Consultar(ordemDB.fk_usuario_criador_id),
-      );
+      console.log("ORDEM:", ordemDB);
+      console.log("ID CRIADOR:", ordemDB.fk_usuario_criador_id);
+      console.log("ID APROVADOR:", ordemDB.fk_usuario_aprovador_id);
 
       const ordem = new OrdemDeImpressao(ordemDB);
 
-      ordem.setCriador(usuario);
+      const criador = new Usuario(
+        await usuarioDAO.Consultar(ordemDB.fk_usuario_criador_id),
+      );
+      ordem.setCriador(criador);
 
-      // console.log(ordem);
+      if (ordemDB.fk_usuario_aprovador_id) {
+        const aprovador = new Usuario(
+          await usuarioDAO.Consultar(ordemDB.fk_usuario_aprovador_id),
+        );
+        ordem.setAprovador(aprovador);
+      }
 
       res.status(200).json({ ordem });
     } catch (err) {
-      console.log(`Erro ao consultar Ordem: ${err}`);
+      console.error(`server/Erro ao consultar Ordem: ${err}`);
       res.status(400).json({ message: `Erro ao consultar Ordem: ${err}` });
     }
   };
   Rejeitar = async (req: Request, res: Response) => {
     try {
+      console.log("Iniciando cancelamento da ordem");
+      const loteDAO = new LoteDAO();
       const usuarioDAO = new UsuarioDAO();
 
-      const { id } = req.body.id;
+      const id = Number(req.params.id);
       const userInfo = (req as any).user;
 
       const user = new Usuario(await usuarioDAO.Consultar(userInfo.id));
@@ -94,9 +105,17 @@ export default class OrdemDeImpressaoController {
           .json({ message: `Erro ao buscar ID de colaborador...` });
       }
 
-      if (user.getCargo() === 2) {
+      if (user.getCargo() === "ADMINISTRADOR") {
         if (await this.dao.Rejeitar(id, userId)) {
           res.status(200).json({ message: `Ordem rejeitada com sucesso!` });
+        }
+
+        const lotes = await loteDAO.consultarOrdem(id);
+
+        for (let loteItem of lotes) {
+          const lote = new Lote(loteItem);
+
+          await loteDAO.Cancelar(Number(lote.getId()));
         }
 
         return true;
@@ -110,9 +129,12 @@ export default class OrdemDeImpressaoController {
   };
   Aprovar = async (req: Request, res: Response) => {
     try {
+      console.log("Iniciando aprovação da ordem");
+      const loteDAO = new LoteDAO();
       const usuarioDAO = new UsuarioDAO();
 
-      const { id } = req.body;
+      const id = Number(req.params.id);
+
       const userInfo = (req as any).user;
 
       const user = new Usuario(await usuarioDAO.Consultar(userInfo.id));
@@ -120,16 +142,25 @@ export default class OrdemDeImpressaoController {
       const userId = user.getId();
 
       if (userId === null) {
+        console.log("Usuário não encontrado");
         return res
           .status(400)
           .json({ message: `Erro ao buscar ID de colaborador...` });
       }
 
-      if (user.getCargo() == 1) {
+      const lotes = await loteDAO.consultarOrdem(id);
+
+      for (let loteItem of lotes) {
+        const lote = new Lote(loteItem);
+
+        await loteDAO.Aprovar(Number(lote.getId()));
+      }
+
+      if (user.getCargo() === "ADMINISTRADOR") {
         if (await this.dao.Aprovar(id, userId)) {
           res.status(200).json({ message: `Ordem aprovada com sucesso!` });
         }
-
+        console.log("Sucesso ao aprovar a ordem no Banco");
         return true;
       }
     } catch (err) {
@@ -141,9 +172,10 @@ export default class OrdemDeImpressaoController {
   };
 
   Listar = async (req: Request, res: Response) => {
-    console.log("OI");
+    console.log("Listando as ordens.");
     try {
       const orders: OrdemDeImpressao[] = [];
+      const usuarioDAO = new UsuarioDAO();
 
       const ordersDB = await this.dao.Listar();
 
@@ -153,9 +185,27 @@ export default class OrdemDeImpressaoController {
         });
       }
 
-      ordersDB.forEach((item) => {
-        orders.push(new OrdemDeImpressao(item));
-      });
+      for (let item of ordersDB) {
+        console.log("ORDEM:", item);
+        console.log("ID CRIADOR:", item.fk_usuario_criador_id);
+        console.log("ID APROVADOR:", item.fk_usuario_aprovador_id);
+
+        const order = new OrdemDeImpressao(item);
+
+        const criador = new Usuario(
+          await usuarioDAO.Consultar(item.fk_usuario_criador_id),
+        );
+        order.setCriador(criador);
+
+        if (item.fk_usuario_aprovador_id) {
+          const aprovador = new Usuario(
+            await usuarioDAO.Consultar(item.fk_usuario_aprovador_id),
+          );
+          order.setAprovador(aprovador);
+        }
+
+        orders.push(order);
+      }
 
       res.status(200).json({ orders });
     } catch (err) {
@@ -176,7 +226,7 @@ export default class OrdemDeImpressaoController {
       const produtoDAO = new ProdutoDAO();
 
       // Lotes que já existem no banco
-      const lotesBanco = await loteDAO.Consultar(orderId);
+      const lotesBanco = await loteDAO.consultarOrdem(orderId);
 
       const produtos: TLoteProduto[] = [];
       const lotesRecebidos: string[] = [];

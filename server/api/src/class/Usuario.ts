@@ -18,7 +18,7 @@ export default class Usuario {
   private _senha: string;
   private _telefone: string;
   private _cpf: string;
-  private _cargo: number;
+  private _cargo: string;
   private ativo: boolean;
   private privateprimeiroLogin: boolean;
 
@@ -49,8 +49,8 @@ export default class Usuario {
   setCPF = (cpf: string) => (this._cpf = cpf);
   getCPF = () => this._cpf;
 
-  setCargo = (cargo: number) => (this._cargo = cargo);
-  getCargo = (): number => this._cargo;
+  setCargo = (cargo: string) => (this._cargo = cargo);
+  getCargo = (): string => this._cargo;
 
   setAtivo = (ativo: boolean) => (this.ativo = ativo);
   getAtivo = (): boolean => this.ativo;

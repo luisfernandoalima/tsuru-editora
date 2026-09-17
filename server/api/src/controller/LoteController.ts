@@ -29,7 +29,7 @@ export default class LoteController {
     const { id } = req.params;
 
     try {
-      const response = await this.dao.Consultar(Number(id));
+      const response = await this.dao.consultarOrdem(Number(id));
       console.log(response);
       return res.status(200).json({ response });
     } catch (error) {

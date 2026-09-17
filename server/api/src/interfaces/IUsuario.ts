@@ -7,5 +7,5 @@ export interface IUsuario {
   cpf: string;
   ativo: boolean;
   primeiro_login: boolean;
-  perfil: number;
+  perfil: string;
 }

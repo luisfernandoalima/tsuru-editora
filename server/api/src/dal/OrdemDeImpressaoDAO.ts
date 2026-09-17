@@ -67,6 +67,12 @@ export default class OrdemDeImpressaoDAO {
   };
   Rejeitar = async (id: number, userId: number) => {
     try {
+      const response = await pool.query(
+        "UPDATE ordem_impressao set data_aprovacao = $1, status = 'CANCELADA', fk_usuario_aprovador_id = $2 WHERE id = $3",
+        [new Date(), userId, id],
+      );
+
+      console.log("Ordem " + id + " rejeitada com sucesso: " + response);
       return true;
     } catch (err) {
       console.log(`Erro ao rejeitar Ordem de Impressão: ${err}`);
@@ -75,15 +81,23 @@ export default class OrdemDeImpressaoDAO {
   };
   Aprovar = async (id: number, userId: number) => {
     try {
+      const response = await pool.query(
+        "UPDATE ordem_impressao set data_aprovacao = $1, status = 'APROVADA', fk_usuario_aprovador_id = $2 WHERE id = $3",
+        [new Date(), userId, id],
+      );
+
+      console.log("Ordem " + id + " aprovada com sucesso: " + response);
       return true;
     } catch (err) {
       console.log(`Erro ao aprovar Ordem de Impressão: ${err}`);
-      return false;
+      return err;
     }
   };
   Listar = async () => {
     try {
-      const response = await pool.query("SELECT * FROM ordem_impressao");
+      const response = await pool.query(
+        "SELECT * FROM ordem_impressao ORDER BY data_criacao DESC",
+      );
       console.log(response.rows);
       return response.rows;
     } catch (error) {
@@ -92,7 +106,6 @@ export default class OrdemDeImpressaoDAO {
     }
   };
   Buscar = async () => {};
-  salvarProdutos = async () => {};
   listarProdutos = async (orderId: number) => {
     try {
       const result = await pool.query(

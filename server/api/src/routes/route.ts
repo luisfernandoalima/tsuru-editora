@@ -108,22 +108,23 @@ route.get(
   ordemDeImpressaoController.listarProdutos,
 );
 
-route.get(
-  "/print-order/:id",
-  authValidate,
-  ordemDeImpressaoController.Consultar,
-);
-route.put(
+route.patch(
   "/print-order/approve/:id",
   authValidate,
   ordemDeImpressaoController.Aprovar,
 );
-route.put(
+
+route.patch(
   "/print-order/reject/:id",
   authValidate,
   ordemDeImpressaoController.Rejeitar,
 );
 
+route.get(
+  "/print-order/:id",
+  authValidate,
+  ordemDeImpressaoController.Consultar,
+);
 
 route.post("/partner/new-partner", authValidate, parceiroController.Criar);
 route.get("/partner/list", authValidate, parceiroController.Listar);
