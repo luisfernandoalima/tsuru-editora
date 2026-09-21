@@ -1,6 +1,12 @@
 export default defineNuxtRouteMiddleware((to, from) => {
   if (import.meta.client) {
-    const token = localStorage.getItem("auth_token");
-    if (!token) return navigateTo("/login");
+    const { getToken, isTokenExpired, clearToken } = useAuthToken();
+
+    const token = getToken();
+
+    if (!token || isTokenExpired(token)) {
+      clearToken();
+      return navigateTo("/login");
+    }
   }
 });
