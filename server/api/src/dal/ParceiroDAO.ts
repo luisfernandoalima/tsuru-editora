@@ -64,21 +64,25 @@ export default class ParceiroDAO {
   Listar = async () => {
     try {
       const result = await pool.query("SELECT * FROM parceiro ORDER BY nome");
+
+      console.log(result.rows);
       return result.rows;
     } catch (err) {
       console.error(`Erro ao buscar parceiro: ${err}`);
     }
   };
 
-  pesquisarParceiros = async (name: string) => {
+  pesquisarParceiros = async (pesquisa: string) => {
     try {
       const result = await pool.query(
-        "SELECT * FROM usuario WHERE nome ILIKE $1 ORDER BY nome",
-        [`%${name}%`],
+        "SELECT * FROM parceiro WHERE nome ILIKE $1 OR cnpj ILIKE $1",
+        [`%${pesquisa}%`],
       );
+      console.log(result.rows);
       return result.rows;
     } catch (err) {
       console.error(`Erro ao buscar parceiro: ${err}`);
+      throw err;
     }
   };
 }

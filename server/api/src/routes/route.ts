@@ -128,6 +128,7 @@ route.get(
 
 route.post("/partner/new-partner", authValidate, parceiroController.Criar);
 route.get("/partner/list", authValidate, parceiroController.Listar);
+route.get("/partner/search", authValidate, parceiroController.pesquisarParceiros);
 route.get("/partner/view/:id", authValidate, parceiroController.Consultar);
 route.patch("/partner/edit/:id", authValidate, parceiroController.Alterar);
 

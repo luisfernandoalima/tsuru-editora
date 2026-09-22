@@ -126,6 +126,7 @@ export default class ParceiroController {
         parceiros.push(new Parceiro(item));
       });
 
+      console.log("Listando");
       return res.status(200).json({ parceiros });
     } catch (err) {
       console.log(err);
@@ -134,15 +135,21 @@ export default class ParceiroController {
   };
 
   pesquisarParceiros = async (req: Request, res: Response) => {
-    try {
-      const reqInfo = String(req.params.name);
-      console.log(reqInfo);
+    const { pesquisa } = req.query;
+    const parceiros: Parceiro[] = [];
 
-      if (!reqInfo) {
-        return res.status(400).json({ message: "Erro ao buscar Parceiros" });
+    try {
+      if (!pesquisa || pesquisa === undefined || pesquisa == "undefined") {
+        return this.Listar(req, res);
       }
 
-      const parceirosDB = await this.dao.pesquisarParceiros(reqInfo);
+      if (typeof pesquisa !== "string") {
+        return res.status(400).json({
+          mensagem: "Pesquisa inválida",
+        });
+      }
+
+      const parceirosDB = await this.dao.pesquisarParceiros(pesquisa);
 
       console.log(parceirosDB);
 
@@ -152,11 +159,11 @@ export default class ParceiroController {
           .json({ message: "Erro ao buscar usuário", type: "error" });
       }
 
-      const parceiros: Parceiro[] = [];
-
       parceirosDB.forEach((item) => {
         parceiros.push(new Parceiro(item));
       });
+
+      console.log(parceiros);
 
       return res.status(201).json({ parceiros });
     } catch (err) {
