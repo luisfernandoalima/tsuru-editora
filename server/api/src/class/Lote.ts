@@ -3,24 +3,23 @@ import { StatusLote } from "../enums/StatusLote.js";
 import type { ILote } from "../interfaces/ILote.js";
 
 export default class Lote {
-  private id?: number | undefined;
+  private id?: number;
   private codigo: string;
   private quantidadeInicial: number;
   private quantidadeAtual: number;
   private statusLote: StatusLote;
-  private produto: Produto;
+  private produto?: Produto;
 
   constructor(lote: ILote) {
-    this.id = lote.id;
+    if (lote.id) this.id = lote.id;
     this.codigo = lote.codigo;
-    this.quantidadeInicial = lote.quantidadeInicial;
-    this.quantidadeAtual = lote.quantidadeAtual;
-    this.statusLote = lote.statusLote;
-    this.produto = lote.produto;
+    this.quantidadeInicial = lote.quantidade_inicial;
+    this.quantidadeAtual = lote.quantidade_atual;
+    this.statusLote = lote.status;
   }
 
-  public getId(): number | undefined {
-    return this.id;
+  public getId() {
+    if (this.id) return this.id;
   }
 
   public setId(id: number): void {
@@ -59,7 +58,7 @@ export default class Lote {
     this.statusLote = statusLote;
   }
 
-  public getProduto(): Produto {
+  public getProduto() {
     return this.produto;
   }
 

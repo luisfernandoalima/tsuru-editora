@@ -1,109 +1,141 @@
-import ProdutoSaida from "./ProdutoSaida.js";
+import ProdutoSaida from "./SaidaLote.js";
 import Usuario from "./Usuario.js";
 import { TipoPagamento } from "../enums/TipoPagamento.js";
 import type { ISaida } from "./../interfaces/ISaida.js";
+import type Endereco from "./Endereco.js";
+
 export default class Saida {
-  private _id: number | null;
-  private _cupomFiscal: string;
-  private _precoTotal: number;
-  private _cliente: String;
-  private _data: Date;
-  private _cpfCliente: String;
-  private _tipoPagamento: TipoPagamento;
-  private _produtos: ProdutoSaida[];
-  private _colaborador: Usuario;
+  private id: number | null;
+  private cupomFiscal: string;
+  private data: Date;
+  private valorTotal: number;
+  private creditoUsado: number;
+  private valorFinal: number;
+  private tipoPagamento: TipoPagamento;
+  private produtos: ProdutoSaida[];
+  private endereco: Endereco;
+  private colaborador: Usuario;
 
   constructor(saida: ISaida) {
-    this._id = saida.id;
-    this._cupomFiscal = saida.cupomFiscal;
-    this._precoTotal = saida.precoTotal;
-    this._cliente = saida.cliente;
-    this._data = saida.data;
-    this._cpfCliente = saida.cpfCliente;
-    this._tipoPagamento = saida.tipoPagamento;
-    this._produtos = saida.produtos;
-    this._colaborador = saida.colaborador;
+    this.id = saida.id;
+    this.cupomFiscal = saida.numero_cupom_fiscal;
+    this.valorTotal = saida.valor_total;
+    this.creditoUsado = saida.credito_usado;
+    this.valorFinal = saida.valor_final;
+    this.data = saida.data_saida;
+    this.tipoPagamento = saida.tipoPagamento;
+    this.produtos = saida.produtos;
+    this.endereco = saida.endereco;
+    this.colaborador = saida.colaborador;
   }
 
-  getId = () => this._id;
+  getId = (): number | null => this.id;
 
   setId = (id: number): boolean => {
     if (!id || id <= 0) {
       return false;
     }
-    this._id = id;
+
+    this.id = id;
     return true;
   };
 
-  getCupomFiscal = () => this._cupomFiscal;
+  getCupomFiscal = (): string => this.cupomFiscal;
 
-  getPrecoTotal = (): number => this._precoTotal;
-
-  setPrecoTotal = (precoTotal: number): boolean => {
-    if (precoTotal == null || precoTotal < 0) {
+  setCupomFiscal = (cupomFiscal: string): boolean => {
+    if (!cupomFiscal || cupomFiscal.trim() === "") {
       return false;
     }
-    this._precoTotal = precoTotal;
+
+    this.cupomFiscal = cupomFiscal;
     return true;
   };
 
-  getCliente = (): String => this._cliente;
+  getValorTotal = (): number => this.valorTotal;
 
-  setCliente = (cliente: String): boolean => {
-    if (!cliente || cliente == "") {
+  setValorTotal = (valorTotal: number): boolean => {
+    if (valorTotal == null || valorTotal < 0) {
       return false;
     }
-    this._cliente = cliente;
+
+    this.valorTotal = valorTotal;
     return true;
   };
 
-  getData = (): Date => this._data;
+  getCreditoUsado = (): number => this.creditoUsado;
+
+  setCreditoUsado = (creditoUsado: number): boolean => {
+    if (creditoUsado == null || creditoUsado < 0) {
+      return false;
+    }
+
+    this.creditoUsado = creditoUsado;
+    return true;
+  };
+
+  getValorFinal = (): number => this.valorFinal;
+
+  setValorFinal = (valorFinal: number): boolean => {
+    if (valorFinal == null || valorFinal < 0) {
+      return false;
+    }
+
+    this.valorFinal = valorFinal;
+    return true;
+  };
+
+  getData = (): Date => this.data;
 
   setData = (data: Date): boolean => {
     if (!data) {
       return false;
     }
-    this._data = data;
+
+    this.data = data;
     return true;
   };
 
-  getCpfCliente = (): String => this._cpfCliente;
+  getTipoPagamento = (): TipoPagamento => this.tipoPagamento;
 
-  setCpfCliente = (cpfCliente: String): boolean => {
-    if (!cpfCliente || cpfCliente == "") {
+  setTipoPagamento = (tipoPagamento: TipoPagamento): boolean => {
+    if (!tipoPagamento) {
       return false;
     }
-    this._cpfCliente = cpfCliente;
+
+    this.tipoPagamento = tipoPagamento;
     return true;
   };
 
-  getTipoPagamento = () => this._tipoPagamento;
-
-  setTipoPagamento = (tipoPagamento: any): boolean => {
-    if (!tipoPagamento || tipoPagamento == "") {
-      return false;
-    }
-    this._tipoPagamento = tipoPagamento;
-    return true;
-  };
-
-  getProdutos = (): ProdutoSaida[] => this._produtos;
+  getProdutos = (): ProdutoSaida[] => this.produtos;
 
   setProdutos = (produtos: ProdutoSaida[]): boolean => {
     if (!produtos) {
       return false;
     }
-    this._produtos = produtos;
+
+    this.produtos = produtos;
     return true;
   };
 
-  getColaborador = (): Usuario => this._colaborador;
+  getEndereco = (): Endereco => this.endereco;
+
+  setEndereco = (endereco: Endereco): boolean => {
+    if (!endereco) {
+      return false;
+    }
+
+    this.endereco = endereco;
+    return true;
+  };
+
+  getColaborador = (): Usuario => this.colaborador;
 
   setColaborador = (colaborador: Usuario): boolean => {
     if (!colaborador) {
       return false;
     }
-    this._colaborador = colaborador;
+
+    this.colaborador = colaborador;
     return true;
   };
 }

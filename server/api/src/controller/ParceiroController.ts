@@ -59,7 +59,7 @@ export default class ParceiroController {
         return res.status(400).json({ message: "Erro ao buscar Parceiro" });
       }
 
-      const enderecosReq: IEndereco[] = await enderecoDAO.Consultar(id);
+      const enderecosReq: IEndereco[] = await enderecoDAO.listarEndereco(id);
       console.log(enderecosReq);
 
       enderecosReq.forEach((item) => {

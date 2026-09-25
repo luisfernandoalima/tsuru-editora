@@ -65,7 +65,44 @@ export default class LoteDAO {
       throw error;
     }
   };
-  atualizarEstoque = async () => {};
+
+  consultarPorProduto = async (produto: Produto) => {
+    try {
+      const result = await pool.query(
+        `SELECT * FROM lote WHERE fk_produto_id=$1`,
+        [produto.getId()],
+      );
+
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao consultar lotes:", error);
+      throw error;
+    }
+  };
+
+  atualizarEstoque = async (id: number, quantidade: number) => {
+    try {
+      const result = await pool.query(
+        `UPDATE lote
+       SET quantidade_atual = quantidade_atual - $1
+       WHERE id = $2
+         AND quantidade_atual >= $1
+       RETURNING id, quantidade_atual`,
+        [quantidade, id],
+      );
+
+      if (result.rowCount === 0) {
+        throw new Error(
+          `Falha ao debitar lote ${id}: saldo insuficiente ou lote inexistente`,
+        );
+      }
+
+      return result.rows[0];
+    } catch (error) {
+      console.error("Erro ao atualizar lotes:", error);
+      throw error;
+    }
+  };
 
   Atualizar = async (id: number, quantidade: number) => {
     const result = await pool.query(

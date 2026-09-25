@@ -25,14 +25,30 @@ export default class EnderecoDAO {
     }
   };
 
-  Consultar = async (partnerId: number) => {
+  Consultar = async (id: number) => {
+    try {
+      const response = await pool.query(`SELECT * FROM endereco WHERE id=$1`, [
+        id,
+      ]);
+
+      console.log("Busca de endereço para o ID: " + id);
+      let result = response.rows[0];
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  listarEndereco = async (id: number) => {
     try {
       const response = await pool.query(
-        "SELECT * FROM endereco WHERE fk_parceiro_id=$1",
-        [partnerId],
+        `SELECT * FROM endereco WHERE fk_parceiro_id=$1`,
+        [id],
       );
 
-      console.log("Busca de endereço para o ID: " + partnerId);
+      console.log("Busca de endereço para o ID: " + id);
       let result: IEndereco[] = response.rows;
 
       return result;
