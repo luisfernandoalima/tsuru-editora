@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from "uuid";
 
 import UserController from "../controller/UserController.js";
 import ProdutoController from "../controller/ProductController.js";
-import EntradaController from "../controller/EntradaController.js";
 import SaidaController from "../controller/SaidaController.js";
 import OrdemDeImpressaoController from "../controller/OrdemDeImpressaoController.js";
 import EnderecoController from "../controller/EnderecoController.js";
@@ -17,7 +16,6 @@ import LoteController from "../controller/LoteController.js";
 const route = Router();
 const userController = new UserController();
 const produtoController = new ProdutoController();
-const entradaController = new EntradaController();
 const saidaController = new SaidaController();
 const enderecoController = new EnderecoController();
 const parceiroController = new ParceiroController();
@@ -56,19 +54,6 @@ route.get(
   produtoController.listarProdutos,
 );
 route.get("/product/search", authValidate, produtoController.pesquisarProduto);
-
-route.post("/entry/register", authValidate, entradaController.Registrar);
-route.get(
-  "/entry/find-registration/:cupom",
-  authValidate,
-  entradaController.Consultar,
-);
-route.get("/entry/list-registration", authValidate, entradaController.Listar);
-route.get(
-  "/entry/list-registration-cupom/:cupom",
-  authValidate,
-  entradaController.listarPorCupom,
-);
 
 // Registro de saídas
 route.post("/outgoing/register", authValidate, saidaController.Registrar);
