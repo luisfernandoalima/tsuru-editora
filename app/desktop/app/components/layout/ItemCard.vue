@@ -51,7 +51,7 @@ const classStatus = computed(() => {
   height: 180px;
 
   background-position: center center;
-  background-size: contain;
+  background-size: cover;
 
   box-shadow: var(--shadow);
 }

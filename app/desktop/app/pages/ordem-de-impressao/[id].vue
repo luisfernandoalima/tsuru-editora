@@ -347,7 +347,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 50px;
-  flex: 1;
+  flex: 100%;
   width: 100%;
 
   h2 {

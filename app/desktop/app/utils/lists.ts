@@ -148,7 +148,7 @@ export const cargos = [
 export const metodosPagamento = [
   {
     id: "Pix",
-    text: "Pix",
+    text: "PIX",
   },
   {
     id: "Credito",
