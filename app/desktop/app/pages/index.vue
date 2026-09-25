@@ -25,25 +25,16 @@ const buscarProduto = () => {
 };
 
 const carregarProdutos = async () => {
-  const tituloProduto = produto.value;
+  const pesquisa = produto.value;
 
   let response;
 
-  if (!tituloProduto) {
-    response = await api("/product/list-products", {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-  } else {
-    response = await api(`/product/list-by-name/${tituloProduto}`, {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-  }
+  response = await api(`/product/search?pesquisa=${pesquisa}`, {
+    method: "GET",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
 
   produtos.value = response.produtos;
 };
@@ -63,6 +54,7 @@ watch(
       :handleForms="buscarProduto"
       :value="produto"
       @update:value="produto = $event"
+      placeholder="Pesquise pelo título ou ISBN do produto"
     />
 
     <div class="main_area">

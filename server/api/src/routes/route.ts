@@ -56,11 +56,6 @@ route.get(
   produtoController.listarProdutos,
 );
 route.get("/product/search", authValidate, produtoController.pesquisarProduto);
-route.get(
-  "/product/list-by-name/:produto",
-  authValidate,
-  produtoController.listarPorNome,
-);
 
 route.post("/entry/register", authValidate, entradaController.Registrar);
 route.get(
@@ -128,7 +123,11 @@ route.get(
 
 route.post("/partner/new-partner", authValidate, parceiroController.Criar);
 route.get("/partner/list", authValidate, parceiroController.Listar);
-route.get("/partner/search", authValidate, parceiroController.pesquisarParceiros);
+route.get(
+  "/partner/search",
+  authValidate,
+  parceiroController.pesquisarParceiros,
+);
 route.get("/partner/view/:id", authValidate, parceiroController.Consultar);
 route.patch("/partner/edit/:id", authValidate, parceiroController.Alterar);
 
