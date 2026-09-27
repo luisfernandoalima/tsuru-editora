@@ -1,17 +1,25 @@
-import Parceiro from "./Parceiro.js";
 import type { IDevolucao } from "./../interfaces/IDevolucao.js";
+import type { CampanhaDoacao } from "./CampanhaDoacao.js";
+import Credito from "./Credito.js";
+import type Parceiro from "./Parceiro.js";
 
 export default class Devolucao {
-  private id?: number | undefined;
-  private dataDevolucao: number;
-  private saldoAtual: number;
-  private parceiro: Parceiro;
+  private id?: number;
+  private data_devolucao: number;
+  private motivo: string;
+  private credito: Credito;
+  private parceiro?: Parceiro;
+  private campanha?: CampanhaDoacao;
 
   constructor(devolucao: IDevolucao) {
-    this.id = devolucao.id;
-    this.dataDevolucao = devolucao.dataDevolucao;
-    this.saldoAtual = devolucao.saldoAtual;
-    this.parceiro = devolucao.parceiro;
+    if (devolucao.id !== undefined) {
+      this.id = devolucao.id;
+    }
+
+    this.data_devolucao = devolucao.data_devolucao;
+    this.motivo = devolucao.motivo;
+
+    this.credito = new Credito(devolucao.valor_atual, devolucao.valor_original);
   }
 
   public getId(): number | undefined {
@@ -23,26 +31,42 @@ export default class Devolucao {
   }
 
   public getDataDevolucao(): number {
-    return this.dataDevolucao;
+    return this.data_devolucao;
   }
 
-  public setDataDevolucao(dataDevolucao: number): void {
-    this.dataDevolucao = dataDevolucao;
+  public setDataDevolucao(data_devolucao: number): void {
+    this.data_devolucao = data_devolucao;
   }
 
-  public getSaldoAtual(): number {
-    return this.saldoAtual;
+  public getMotivo(): string {
+    return this.motivo;
   }
 
-  public setSaldoAtual(saldoAtual: number): void {
-    this.saldoAtual = saldoAtual;
+  public setMotivo(motivo: string): void {
+    this.motivo = motivo;
   }
 
-  public getParceiro(): Parceiro {
+  public getParceiro() {
     return this.parceiro;
   }
 
   public setParceiro(parceiro: Parceiro): void {
     this.parceiro = parceiro;
+  }
+
+  public getCampanha() {
+    return this.campanha;
+  }
+
+  public setCampanha(campanha: CampanhaDoacao): void {
+    this.campanha = campanha;
+  }
+
+  public getCredito() {
+    return this.credito;
+  }
+
+  public setCredito(credito: Credito) {
+    this.credito = credito;
   }
 }

@@ -1,8 +1,9 @@
-import Parceiro from "../class/Parceiro.js";
-
 export interface IDevolucao {
   id?: number;
-  dataDevolucao: number;
-  saldoAtual: number;
-  parceiro: Parceiro;
+  data_devolucao: number;
+  motivo: string;
+  valor_original: number;
+  valor_atual: number;
+  fk_parceiro_id: number;
+  fk_campanha_id?: number;
 }
