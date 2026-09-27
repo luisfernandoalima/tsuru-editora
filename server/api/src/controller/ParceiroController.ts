@@ -7,6 +7,7 @@ import Endereco from "../class/Endereco.js";
 import EnderecoDAO from "../dal/EnderecoDAO.js";
 import { documentValidator } from "../utils/documentValidator.js";
 import type { IEndereco } from "../interfaces/IEndereco.js";
+import CreditoController from "./CreditoController.js";
 
 export default class ParceiroController {
   private dao: ParceiroDAO;
@@ -50,6 +51,9 @@ export default class ParceiroController {
   Consultar = async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
+
+      let creditoController = new CreditoController();
+
       let enderecoDAO = new EnderecoDAO();
       let enderecos: Endereco[] = [];
 
@@ -70,7 +74,9 @@ export default class ParceiroController {
 
       parceiro.setEnderecos(enderecos);
 
-      return res.status(200).json({ parceiro });
+      const creditos = await creditoController.Consultar(id);
+
+      return res.status(200).json({ parceiro, creditos });
     } catch (err) {
       console.log(err);
       return res.status(404).json({ message: "Erro ao buscar Parceiro" });

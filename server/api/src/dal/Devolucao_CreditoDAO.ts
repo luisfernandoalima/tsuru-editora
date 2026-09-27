@@ -4,7 +4,8 @@ export default class Devolucao_CreditoDAO {
   public Consultar = async (partnerId: number) => {
     try {
       const result = await pool.query(
-        "SELECT * FROM devolucao_credito WHERE fk_parceiro_id",
+        "SELECT * FROM devolucao_credito WHERE fk_parceiro_id=$1",
+        [partnerId],
       );
 
       return result.rows;

@@ -57,6 +57,10 @@ const valorTotal = computed(() =>
   ),
 );
 
+const valorFinal = computed(() => {
+  return valorTotal.value - creditosUtilizados.value / 100;
+});
+
 const pesquisarParceiros = async () => {
   try {
     const response = await api(
@@ -88,6 +92,7 @@ const consultarParceiro = async (empresaID) => {
     });
 
     let parceiro = response.parceiro;
+    creditos.value = response.creditos.valor_atual;
 
     nome.value = parceiro.nome;
     cnpj.value = parceiro.cnpj;
@@ -154,7 +159,7 @@ const finalizarVenda = async () => {
       saida: {
         numero_cupom_fiscal: cupomFiscal.value,
         valor_total: valorTotal.value,
-        valor_final: valorTotal.value - creditosUtilizados.value / 100,
+        valor_final: valorFinal.value,
         credito_usado: creditosUtilizados.value,
         metodo_pagamento: tipoPagamento.value,
         endereco_id: enderecoEntrega.value,
@@ -267,7 +272,10 @@ onMounted(() => {
               :text="`Cupom fiscal (Disponíveis: ${creditos})`"
               placeholder="cupom fiscal"
               name="cupomFiscal"
-              :model-value="creditosUtilizados"
+              type="number"
+              :max="Number(creditos)"
+              :min="0"
+              v-model="creditosUtilizados"
             />
             <Select
               text="Método de Pagamento:"
@@ -321,10 +329,19 @@ onMounted(() => {
                 formatCurrency(valorTotal)
               }}</span>
             </p>
+            <p class="mb-1 text-lg" v-if="creditosUtilizados != 0">
+              Descontos: <br />
+              <span class="text-sm"
+                >Créditos:
+                <span class="font-semibold text-green-900"
+                  >-{{ formatCurrency(creditosUtilizados / 100) }}</span
+                ></span
+              >
+            </p>
             <p class="mb-1 text-2xl">
               Valor Final
               <span class="font-semibold">{{
-                formatCurrency(valorTotal - creditosUtilizados)
+                formatCurrency(valorFinal)
               }}</span>
             </p>
             <Button

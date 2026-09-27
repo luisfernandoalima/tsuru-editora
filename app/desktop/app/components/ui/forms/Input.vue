@@ -13,6 +13,8 @@ defineProps({
 
   mask: String,
   maxlength: Number,
+  max: Number,
+  min: Number,
   disabled: Boolean,
 });
 
@@ -31,6 +33,8 @@ const emit = defineEmits(["update:modelValue"]);
       :class="className"
       :value="modelValue"
       :maxlength="maxlength"
+      :max="max"
+      :min="min"
       @input="emit('update:modelValue', $event.target.value)"
       autocomplete="off"
       :disabled="disabled"
