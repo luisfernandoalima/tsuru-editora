@@ -81,7 +81,6 @@ watch(
         statusItem="Baixo"
       />
     </Container>
-    <!-- <div class="main_area"></div> -->
   </NuxtLayout>
 </template>
 

@@ -1,4 +1,5 @@
 <script setup>
+import Button from "./Button.vue";
 defineProps({
   title: String,
   message: String,
@@ -12,10 +13,20 @@ const emit = defineEmits(["close"]);
 <template>
   <div v-if="active" class="background">
     <div class="popup_div">
-      <h1>{{ title }}</h1>
-      <p>{{ message }}</p>
-      <Button @click="handleClick">Confirmar</Button>
-      <Button @click="emit('close')">Cancelar</Button>
+      <div class="card_title">
+        <h1>{{ title }}</h1>
+      </div>
+      <div class="card_body">
+        <p>{{ message }}</p>
+        <div class="card_button">
+          <Button text="Confirmar" class-name="primary" @click="handleClick" />
+          <Button
+            text="Cancelar"
+            class-name="secondary"
+            @click="emit('close')"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +46,34 @@ const emit = defineEmits(["close"]);
 }
 
 .popup_div {
+  width: 750px;
+  border-radius: 15px;
   background-color: var(--main);
+
+  .card_title {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+
+    padding: 5px;
+    background-color: var(--secondary);
+    color: var(--main);
+
+    h1 {
+      font-size: 1.3em;
+      font-weight: 700;
+    }
+  }
+
+  .card_body {
+    padding: 5px;
+  }
+}
+
+.card_button {
+  width: 100%;
+  display: flex;
+  gap: 5px;
+
+  align-items: end;
 }
 </style>

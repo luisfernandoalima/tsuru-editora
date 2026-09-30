@@ -24,6 +24,8 @@ const buscarProduto = () => {
 
 const id = route.params.id;
 
+const lotes = ref([]);
+
 const data = await api(`/product/find-product/${id}`, {
   method: "GET",
   headers: {
@@ -32,12 +34,39 @@ const data = await api(`/product/find-product/${id}`, {
 });
 
 const produto = data.produto;
+lotes.value = data.lotes;
 
 const genero = listGeneros.find((item) => item.id == produto._genero)?.text;
 
 const clasIndicativa = listClassificacoesIndicativas.find(
   (item) => item.id == produto._classIndicativa,
 )?.text;
+
+const spanFichaTecnica = ref(null);
+const divFichaTecnica = ref(null);
+const spanLote = ref(null);
+const divLote = ref(null);
+
+const showLote = () => {
+  spanFichaTecnica.value.classList.remove("active");
+  divFichaTecnica.value.classList.remove("active");
+
+  spanLote.value.classList.add("active");
+  divLote.value.classList.add("active");
+};
+
+const showFichaTecnca = () => {
+  spanFichaTecnica.value.classList.add("active");
+  divFichaTecnica.value.classList.add("active");
+
+  spanLote.value.classList.remove("active");
+  divLote.value.classList.remove("active");
+};
+
+onMounted(() => {
+  spanFichaTecnica.value.classList.add("active");
+  divFichaTecnica.value.classList.add("active");
+});
 </script>
 
 <template>
@@ -72,59 +101,95 @@ const clasIndicativa = listClassificacoesIndicativas.find(
         </div>
       </div>
       <div class="product_info py-5 px-3">
-        <p class="text-3xl font-bold mb-2">Ficha técnica</p>
-        <table class="table-fixed border-collapse border-gray-400 w-full">
-          <tbody>
-            <tr>
-              <td class="border border-gray-300 font-bold">ISBN</td>
-              <td class="border border-gray-300">
-                {{ produto._isbn13 }}
-              </td>
-            </tr>
-            <tr>
-              <td class="border border-gray-300 font-bold">Idioma</td>
-              <td class="border border-gray-300">
-                {{ produto._idioma }}
-              </td>
-            </tr>
-            <tr>
-              <td class="border border-gray-300 font-bold">
-                Classificação Indicativa
-              </td>
-              <td class="border border-gray-300">
-                {{ clasIndicativa }}
-              </td>
-            </tr>
-            <tr>
-              <td class="border border-gray-300 font-bold">
-                Data de publicação
-              </td>
-              <td class="border border-gray-300">
-                {{ formatDate(produto._dataPublicacao) }}
-              </td>
-            </tr>
-            <tr>
-              <td class="border border-gray-300 font-bold">
-                Número de páginas
-              </td>
-              <td class="border border-gray-300">
-                {{ produto._numPaginas }}
-              </td>
-            </tr>
-            <tr>
-              <td class="border border-gray-300 font-bold">Série</td>
-              <td class="border border-gray-300">
-                {{ produto._serie }}
-              </td>
-            </tr>
-            <tr>
-              <td class="border border-gray-300 font-bold">Volume</td>
-              <td class="border border-gray-300">
-                {{ produto._volume }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div>
+          <h2 class="text-3xl font-bold mb-2">
+            <span class="span" ref="spanFichaTecnica" @click="showFichaTecnca"
+              >Ficha técnica</span
+            >
+            /
+            <span class="span" ref="spanLote" @click="showLote">Lotes</span>
+          </h2>
+        </div>
+        <div ref="divFichaTecnica" class="product_info_table">
+          <table
+            class="ficha_info_table table-fixed border-collapse border-gray-400 w-full"
+          >
+            <tbody>
+              <tr>
+                <td class="border border-gray-300 font-bold">ISBN</td>
+                <td class="border border-gray-300">
+                  {{ produto._isbn13 }}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 font-bold">Idioma</td>
+                <td class="border border-gray-300">
+                  {{ produto._idioma }}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 font-bold">
+                  Classificação Indicativa
+                </td>
+                <td class="border border-gray-300">
+                  {{ clasIndicativa }}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 font-bold">
+                  Data de publicação
+                </td>
+                <td class="border border-gray-300">
+                  {{ formatDate(produto._dataPublicacao) }}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 font-bold">
+                  Número de páginas
+                </td>
+                <td class="border border-gray-300">
+                  {{ produto._numPaginas }}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 font-bold">Série</td>
+                <td class="border border-gray-300">
+                  {{ produto._serie }}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 font-bold">Volume</td>
+                <td class="border border-gray-300">
+                  {{ produto._volume }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="product_info_table " ref="divLote">
+          <table
+            class="lote_info_table table-fixed border-collapse border-gray-400 w-full"
+          >
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Qtd. Produzida</th>
+                <th>Qtd. Atual</th>
+                <th>Data de produção</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="lote in lotes">
+                <td>{{ lote.codigo }}</td>
+                <td>{{ lote.quantidade_inicial }}</td>
+                <td>{{ lote.quantidade_atual }}</td>
+                <td>{{ formatDate(lote.data_criacao) }}</td>
+                <td>{{ lote.status }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </NuxtLayout>
@@ -167,25 +232,63 @@ img {
   box-shadow: var(--shadow);
 }
 
+.span {
+  padding: 4px 6px;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  &:hover {
+    background-color: rgb(255, 213, 213);
+  }
+
+  &.active {
+    color: #fff;
+    background-color: var(--secondary);
+  }
+}
+
+.product_info_table {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+.ficha_info_table {
+  height: 250px;
+  font-size: 1.2em;
+  td:nth-child(1) {
+    font-weight: bold;
+  }
+}
+
+.lote_info_table {
+  td {
+    text-align: center;
+  }
+  td:nth-child(1) {
+    text-align: left;
+  }
+}
+
 table {
   color: var(--main_text);
-  height: 250px;
 
-  td {
+  td,
+  th {
     padding: 2px 8px;
-    font-size: 1.2em;
   }
 
   tr:nth-child(even) {
-    background-color: #f1e4e4; /* rosado bem claro */
+    background-color: #f1e4e4;
   }
 
   tr:nth-child(odd) {
-    background-color: #fff; /* rosado um pouco mais forte */
-  }
-
-  td:nth-child(1) {
-    font-weight: bold;
+    background-color: #fff;
   }
 }
 </style>

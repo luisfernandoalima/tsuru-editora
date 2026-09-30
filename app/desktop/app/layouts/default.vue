@@ -71,7 +71,7 @@ const perfil = getPerfil(user.value?.funcao);
   grid-template-columns: 15% 85%;
   grid-template-rows: 100vh;
   height: 100vh;
-  background-color: var(--main_secundary);
+  background-color: var(--main_secondary);
 }
 
 header {
