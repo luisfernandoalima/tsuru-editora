@@ -269,7 +269,7 @@ onMounted(() => {
           <div class="form__input__div">
             <Input
               :label="true"
-              :text="`Cupom fiscal (Disponíveis: ${creditos})`"
+              :text="`Créditos disponíveis (Disponíveis: ${creditos})`"
               placeholder="cupom fiscal"
               name="cupomFiscal"
               type="number"

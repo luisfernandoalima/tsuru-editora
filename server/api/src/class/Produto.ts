@@ -1,7 +1,7 @@
 import type { IProduto } from "../interfaces/IProduto.js";
 
 export default class Produto {
-  private _id: number | null;
+  private _id?: number;
   private _titulo: String;
   private _autor: String;
   private _serie: String;
@@ -17,7 +17,9 @@ export default class Produto {
   private _imgCapa: string;
 
   constructor(produto: IProduto) {
-    this._id = produto.id || null;
+    if (produto.id !== undefined) {
+      this._id = produto.id;
+    }
     this._titulo = produto.titulo;
     this._autor = produto.autor;
     this._serie = produto.serie;
@@ -33,7 +35,7 @@ export default class Produto {
     this._imgCapa = produto.capa_url;
   }
 
-  getId(): number | null {
+  getId() {
     return this._id;
   }
 

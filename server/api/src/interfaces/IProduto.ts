@@ -1,5 +1,5 @@
 export interface IProduto {
-  id: number | null;
+  id?: number;
   titulo: String;
   autor: String;
   serie: String;

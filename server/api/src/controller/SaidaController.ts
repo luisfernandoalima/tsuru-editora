@@ -80,7 +80,7 @@ export default class SaidaController {
           quantidadeRestante -= quantidadeAbatida;
         }
         if (quantidadeRestante > 0) {
-          return res.status(400).json({
+          throw res.status(400).json({
             message: `Estoque insuficiente para o produto ${produto.getTitulo?.() ?? item.produto_id}.`,
           });
         }
@@ -101,16 +101,21 @@ export default class SaidaController {
 
       const novaSaida = new Saida(saidaInfo);
 
+      if (await this.dao.Consultar(novaSaida.getCupomFiscal())) {
+        throw res.status(400).json({
+          message: "Número do cupom já registrado",
+        });
+      }
+
       if (!validarTipoPagamento(novaSaida.getTipoPagamento()))
-        return res.status(400).json({
+        throw res.status(400).json({
           message: "Erro ao registrar saída, erro de pagamento",
-          type: "error",
         });
 
       const precoTotal = calcularPrecoTotal(novaSaida.getProdutos());
 
       if (precoTotal != novaSaida.getValorTotal()) {
-        return res.json({
+        throw res.json({
           message: `Erro ao registrar saída: Erro de cálculo de valor do produto`,
           type: "error",
         });

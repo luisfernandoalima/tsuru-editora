@@ -5,6 +5,7 @@ import type { Request, Response } from "express";
 import Produto from "../class/Produto.js";
 import { ProdutoDAO } from "../dal/ProdutoDAO.js";
 import type { IProduto } from "../interfaces/IProduto.js";
+import LoteDAO from "../dal/LoteDAO.js";
 export default class ProdutoController {
   private dao = new ProdutoDAO();
 
@@ -66,7 +67,11 @@ export default class ProdutoController {
         .json({ message: "Erro ao encontrar produto.", type: "error" });
     }
 
-    return res.status(201).json({ produto });
+    const loteDAO = new LoteDAO();
+
+    const lotes = await loteDAO.consultarPorProduto(produto);
+
+    return res.status(201).json({ produto, lotes });
   };
 
   Alterar = async (req: Request, res: Response) => {
@@ -164,7 +169,7 @@ export default class ProdutoController {
         });
       }
 
-      await this.dao.Excluir(produto.getId());
+      await this.dao.Excluir(produto);
 
       return res
         .status(200)
