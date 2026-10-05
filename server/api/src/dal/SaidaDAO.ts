@@ -35,20 +35,47 @@ export default class SaidaDAO {
   Consultar = async (cupomFiscal: string) => {
     try {
       const result = await pool.query(
-        "SELECT * FROM saida WHERE numero_cupom_fiscal = $1",
+        `  SELECT
+    s.id,
+    s.numero_cupom_fiscal,
+    to_char(s.data_saida, 'YYYY-MM-DD') AS data_saida,
+    s.valor_total,
+    s.credito_usado,
+    s.valor_final,
+    s.metodo_pagamento,
+    u.nome  AS usuario_nome,
+    u.email AS usuario_email,
+    sl.quantidade,
+    sl.subtotal,
+    l.id     AS lote_id,
+    l.codigo AS lote_codigo,
+    p.id     AS produto_id,
+    p.titulo,
+    p.capa_url
+  FROM saida s
+  JOIN usuario u ON u.id = s.fk_usuario_id
+  LEFT JOIN saida_lote sl ON sl.fk_saida_id = s.id
+  LEFT JOIN lote l ON l.id = sl.fk_lote_id
+  LEFT JOIN produto p ON p.id = l.fk_produto_id
+  WHERE s.numero_cupom_fiscal = $1
+  ORDER BY l.id;`,
         [cupomFiscal],
       );
 
-      return result.rows;
+      return result.rows[0];
     } catch (err) {
       console.error(`Erro ao buscar saida: ${err}`);
       return false;
     }
   };
 
-  Listar = async () => {
+  Listar = async (cupom: string) => {
     try {
-      const result = await pool.query("SELECT * FROM saida");
+      const result = await pool.query(
+        "SELECT * FROM saida WHERE numero_cupom_fiscal ILIKE $1;",
+        [`%${cupom}%`],
+      );
+      console.log(result.rows);
       return result.rows;
     } catch (err) {
       console.log(`Erro ao buscar entradas: ${err}`);

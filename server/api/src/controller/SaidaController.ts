@@ -22,6 +22,13 @@ import Lote from "../class/Lote.js";
 
 export default class SaidaController {
   private dao = new SaidaDAO();
+  limpar = (obj: any) =>
+    Object.fromEntries(
+      Object.entries(JSON.parse(JSON.stringify(obj ?? {}))).map(([k, v]) => [
+        k.replace(/^_/, ""),
+        v,
+      ]),
+    );
 
   Registrar = async (req: Request, res: Response) => {
     try {
@@ -148,24 +155,31 @@ export default class SaidaController {
     }
   };
   Listar = async (req: Request, res: Response) => {
-    const saidas = await this.dao.Listar();
+    try {
+      const cupom = req.params.pesquisa;
+      let cupomPesquisa = cupom === undefined ? "" : String(cupom);
 
-    res.json({ saidas });
+      const saidas = await this.dao.Listar(cupomPesquisa);
+
+      res.json({ saidas });
+    } catch (error) {
+      console.log(error);
+      res.json({
+        message: `Erro ao registrar saída: ${error}`,
+      });
+    }
   };
 
   Consultar = async (req: Request, res: Response) => {
-    const cupomFiscal = String(req.params.cupom);
-
-    const result = await this.dao.Consultar(cupomFiscal);
-
-    if (!result) {
-      return res.status(400).json({
-        message: "Erro ao buscar saídas",
-        type: "error",
-      });
+    try {
+      const cupomFiscal = String(req.params.cupom);
+      console.log("Consultando saída, cupom:", cupomFiscal);
+    } catch (error) {
+      console.error("Erro ao consultar saída:", error);
+      return res
+        .status(500)
+        .json({ message: "Erro ao buscar saída", type: "error" });
     }
-
-    res.json(result);
   };
 
   listarPorCupom = async (req: Request, res: Response) => {

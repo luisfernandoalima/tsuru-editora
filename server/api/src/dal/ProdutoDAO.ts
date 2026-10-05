@@ -91,20 +91,6 @@ export class ProdutoDAO {
     }
   };
 
-  listarPorNome = async (titulo: string) => {
-    try {
-      const produtos = await pool.query(
-        "SELECT * FROM produto WHERE titulo ILIKE $1 ORDER BY titulo",
-        [`%${titulo}%`],
-      );
-      console.log(produtos.rows);
-      console.log(titulo);
-      return produtos.rows;
-    } catch (err) {
-      console.log(`Erro ao buscar produtos: ${err}`);
-    }
-  };
-
   pesquisarProduto = async (pesquisa: string) => {
     try {
       const produtos = await pool.query(
@@ -119,14 +105,5 @@ export class ProdutoDAO {
     }
   };
 
-  salvarEstoque = async (id: number | null, novaQuantidade: number) => {
-    try {
-      await pool.query("UPDATE produto SET estoque = $1 WHERE id = $2", [
-        novaQuantidade,
-        id,
-      ]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+
 }

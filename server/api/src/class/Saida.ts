@@ -1,4 +1,4 @@
-import ProdutoSaida from "./SaidaLote.js";
+import SaidaLote from "./SaidaLote.js";
 import Usuario from "./Usuario.js";
 import { TipoPagamento } from "../enums/TipoPagamento.js";
 import type { ISaida } from "./../interfaces/ISaida.js";
@@ -12,7 +12,7 @@ export default class Saida {
   private creditoUsado: number;
   private valorFinal: number;
   private tipoPagamento: TipoPagamento;
-  private produtos: ProdutoSaida[];
+  private produtos: SaidaLote[];
   private endereco: Endereco;
   private colaborador: Usuario;
 
@@ -106,9 +106,9 @@ export default class Saida {
     return true;
   };
 
-  getProdutos = (): ProdutoSaida[] => this.produtos;
+  getProdutos = (): SaidaLote[] => this.produtos;
 
-  setProdutos = (produtos: ProdutoSaida[]): boolean => {
+  setProdutos = (produtos: SaidaLote[]): boolean => {
     if (!produtos) {
       return false;
     }

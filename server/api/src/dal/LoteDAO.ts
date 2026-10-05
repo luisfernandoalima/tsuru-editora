@@ -39,6 +39,17 @@ export default class LoteDAO {
       throw error;
     }
   };
+
+  Consultar = async (id: number) => {
+    try {
+      const result = await pool.query(`SELECT * FROM lote WHERE id=$1`, [id]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error("Erro ao consultar lotes:", error);
+      throw error;
+    }
+  };
   consultarOrdem = async (ordemId: number): Promise<ILote[]> => {
     try {
       const result = await pool.query(
