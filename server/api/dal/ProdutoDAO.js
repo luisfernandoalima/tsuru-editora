@@ -1,7 +1,5 @@
 import { pool } from "../database/connection.js";
 
-import Produto from "../class/Produto.js";
-
 export class ProdutoDAO {
   Criar = async (produto) => {
     try {

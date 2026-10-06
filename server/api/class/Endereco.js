@@ -1,75 +1,75 @@
 export default class Endereco {
-  #id;
-  #cep;
-  #logradouro;
-  #numero;
-  #bairro;
-  #cidade;
-  #estado;
+  // #id;
+  // #cep;
+  // #logradouro;
+  // #numero;
+  // #bairro;
+  // #cidade;
+  // #estado;
 
   constructor(endereco) {
-    this.#id = endereco.id;
-    this.#cep = endereco.cep;
-    this.#logradouro = endereco.logradouro;
-    this.#numero = endereco.numero;
-    this.#bairro = endereco.bairro;
-    this.#cidade = endereco.cidade;
-    this.#estado = endereco.estado;
+    this.id = endereco.id;
+    this.cep = endereco.cep;
+    this.logradouro = endereco.logradouro;
+    this.numero = endereco.numero;
+    this.bairro = endereco.bairro;
+    this.cidade = endereco.cidade;
+    this.estado = endereco.estado;
   }
 
   getId() {
-    return this.#id;
+    return this.id;
   }
 
   setId(id) {
-    this.#id = id;
+    this.id = id;
   }
 
   getCep() {
-    return this.#cep;
+    return this.cep;
   }
 
   setCep(cep) {
-    this.#cep = cep;
+    this.cep = cep;
   }
 
   getLogradouro() {
-    return this.#logradouro;
+    return this.logradouro;
   }
 
   setLogradouro(logradouro) {
-    this.#logradouro = logradouro;
+    this.logradouro = logradouro;
   }
 
   getNumero() {
-    return this.#numero;
+    return this.numero;
   }
 
   setNumero(numero) {
-    this.#numero = numero;
+    this.numero = numero;
   }
 
   getBairro() {
-    return this.#bairro;
+    return this.bairro;
   }
 
   setBairro(bairro) {
-    this.#bairro = bairro;
+    this.bairro = bairro;
   }
 
   getCidade() {
-    return this.#cidade;
+    return this.cidade;
   }
 
   setCidade(cidade) {
-    this.#cidade = cidade;
+    this.cidade = cidade;
   }
 
   getEstado() {
-    return this.#estado;
+    return this.estado;
   }
 
   setEstado(estado) {
-    this.#estado = estado;
+    this.estado = estado;
   }
 }

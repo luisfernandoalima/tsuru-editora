@@ -5,8 +5,8 @@ import createUpload from "../middlewares/imageUpload.js";
 
 import { v4 as uuidv4 } from "uuid";
 
-import UserController from "../controller/UserController.js";
-import ProdutoController from "../controller/ProductController.js";
+import UsuarioController from "../controller/UsuarioController.js";
+import ProdutoController from "../controller/ProdutoController.js";
 import SaidaController from "../controller/SaidaController.js";
 import OrdemDeImpressaoController from "../controller/OrdemDeImpressaoController.js";
 import EnderecoController from "../controller/EnderecoController.js";
@@ -15,7 +15,7 @@ import LoteController from "../controller/LoteController.js";
 
 const route = Router();
 
-const userController = new UserController();
+const userController = new UsuarioController();
 const produtoController = new ProdutoController();
 const saidaController = new SaidaController();
 const enderecoController = new EnderecoController();

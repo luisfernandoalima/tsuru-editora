@@ -209,9 +209,9 @@ export default class ProdutoController {
       produtos.push(new Produto(item));
     });
 
-    return res.status(200).json({
-      produtos,
-    });
+    console.log(data);
+
+    return res.status(200).json({ produtos });
   };
 
   listarPorNome = async (req, res) => {
@@ -274,6 +274,8 @@ export default class ProdutoController {
       results.forEach((item) => {
         produtos.push(new Produto(item));
       });
+
+      console.log(produtos);
 
       return res.status(200).json({
         produtos,

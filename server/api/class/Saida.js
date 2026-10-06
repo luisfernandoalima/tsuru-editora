@@ -1,7 +1,3 @@
-import SaidaLote from "./SaidaLote.js";
-import Usuario from "./Usuario.js";
-import { TipoPagamento } from "../enums/TipoPagamento.js";
-
 export default class Saida {
   #id;
   #cupomFiscal;

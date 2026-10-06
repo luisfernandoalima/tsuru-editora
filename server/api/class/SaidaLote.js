@@ -1,60 +1,60 @@
 export default class SaidaLote {
-  #lote;
-  #quantidade;
-  #subtotal;
-  #saida;
+  // #lote;
+  // #quantidade;
+  // #subtotal;
+  // #saida;
 
   constructor(lote, quantidade, subtotal, saida) {
-    this.#lote = lote;
-    this.#quantidade = quantidade;
-    this.#subtotal = subtotal;
+    this.lote = lote;
+    this.quantidade = quantidade;
+    this.subtotal = subtotal;
 
     if (saida) {
-      this.#saida = saida;
+      this.saida = saida;
     }
   }
 
-  getLote = () => this.#lote;
+  getLote = () => this.lote;
 
   setLote = (lote) => {
     if (!lote) {
       return false;
     }
 
-    this.#lote = lote;
+    this.lote = lote;
     return true;
   };
 
-  getSaida = () => this.#saida;
+  getSaida = () => this.saida;
 
   setSaida = (saida) => {
     if (!saida) {
       return false;
     }
 
-    this.#saida = saida;
+    this.saida = saida;
     return true;
   };
 
-  getQuantidade = () => this.#quantidade;
+  getQuantidade = () => this.quantidade;
 
   setQuantidade = (quantidade) => {
     if (quantidade <= 0) {
       return false;
     }
 
-    this.#quantidade = quantidade;
+    this.quantidade = quantidade;
     return true;
   };
 
-  getSubtotal = () => this.#subtotal;
+  getSubtotal = () => this.subtotal;
 
   setSubtotal = (subtotal) => {
     if (subtotal < 0) {
       return false;
     }
 
-    this.#subtotal = subtotal;
+    this.subtotal = subtotal;
     return true;
   };
 }
