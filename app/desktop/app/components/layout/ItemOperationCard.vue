@@ -12,29 +12,29 @@ const emit = defineEmits(["remover"]);
     <div
       class="image_container"
       :style="{
-        backgroundImage: `url(http://localhost:8081${item.produto._imgCapa})`,
+        backgroundImage: `url(http://localhost:8081${item.produto.imgCapa})`,
       }"
     ></div>
 
     <div class="info_container">
       <p>
-        {{ item.produto._id }}
+        {{ item.produto.id }}
         -
-        {{ item.produto._isbn13 }}
+        {{ item.produto.isbn13 }}
       </p>
 
       <p class="text-3xl">
-        {{ item.produto._titulo }}
+        {{ item.produto.titulo }}
       </p>
     </div>
 
     <input type="number" v-model="item.quantidade" min="1" />
 
     <span class="flex items-center justify-center">
-      {{ formatCurrency(item.produto._preco * item.quantidade) }}
+      {{ formatCurrency(item.produto.preco * item.quantidade) }}
     </span>
 
-    <button @click="emit('remover', item.produto._id)" class="cursor-pointer">
+    <button @click="emit('remover', item.produto.id)" class="cursor-pointer">
       <Icon icon="tabler:trash" />
     </button>
   </div>

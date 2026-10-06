@@ -1,4 +1,5 @@
 <script setup>
+import Container from "~/components/layout/Container.vue";
 import SearchBar from "~/components/layout/SearchBar.vue";
 import { Icon } from "@iconify/vue";
 import { useAuthToken } from "~/composables/useAuthToken";
@@ -73,7 +74,7 @@ watch(
       >
     </div>
 
-    <div class="table_area">
+    <Container customClass="table_area">
       <table
         class="table-auto border-collapse border border-gray-400 text-white"
       >
@@ -81,30 +82,32 @@ watch(
           <tr>
             <th class="border border-gray-300">Nº Cupom Fiscal</th>
             <th class="border border-gray-300">Data</th>
-            <th class="border border-gray-300">Valor</th>
-            <th class="border border-gray-300">CPF - Cliente</th>
+            <th class="border border-gray-300">Valor Final</th>
+            <th class="border border-gray-300">Método de Pagamento</th>
             <th class="border border-gray-300">Ver</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="value in saidas">
-            <td class="border border-gray-300">{{ value.cupom_fiscal }}</td>
+            <td class="border border-gray-300">
+              {{ value.numero_cupom_fiscal }}
+            </td>
             <td class="border border-gray-300">
               {{ formatDate(value.data_saida) }}
             </td>
-            <td class="border border-gray-300">{{ value.preco_total }}</td>
-            <td class="border border-gray-300">{{ value.cpf_cliente }}</td>
+            <td class="border border-gray-300">{{ value.valor_final }}</td>
+            <td class="border border-gray-300">{{ value.metodo_pagamento }}</td>
             <td class="border border-gray-300">
               <NuxtLink
                 class="flex justify-center"
-                :to="`/operacoes/saida/${value.cupom_fiscal}`"
+                :to="`/operacoes/saida/${value.numero_cupom_fiscal}`"
                 ><Icon icon="mdi:eye" width="24" height="24"
               /></NuxtLink>
             </td>
           </tr>
         </tbody>
       </table>
-    </div>
+    </Container>
   </NuxtLayout>
 </template>
 
@@ -122,16 +125,18 @@ watch(
 }
 
 .table_area {
+  flex: 1;
   width: 100%;
-  max-height: 700px;
   overflow-y: auto;
 
   table {
+    color: #000;
     width: 100%;
     overflow: auto;
 
     td {
       padding-left: 4px;
+      text-align: center;
     }
   }
 }

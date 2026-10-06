@@ -14,19 +14,19 @@ const emit = defineEmits(["remover"]);
     <div
       class="image_container"
       :style="{
-        backgroundImage: `url(http://localhost:8081${item.produto._imgCapa})`,
+        backgroundImage: `url(http://localhost:8081${item.produto.imgCapa})`,
       }"
     ></div>
 
     <div class="info_container">
       <p>
-        {{ item.produto._id }}
+        {{ item.produto.id }}
         -
-        {{ item.produto._isbn13 }}
+        {{ item.produto.isbn13 }}
       </p>
 
       <p class="text-3xl">
-        {{ item.produto._titulo }}
+        {{ item.produto.titulo }}
       </p>
     </div>
 
@@ -39,7 +39,7 @@ const emit = defineEmits(["remover"]);
     <spam v-if="orderStatus != 'ABERTA'">{{ item.quantidade }}</spam>
 
     <button
-      @click="emit('remover', item.produto._id)"
+      @click="emit('remover', item.produto.id)"
       v-if="orderStatus == 'ABERTA'"
     >
       <Icon icon="tabler:trash" />

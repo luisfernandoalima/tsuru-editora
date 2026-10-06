@@ -36,10 +36,10 @@ const data = await api(`/product/find-product/${id}`, {
 const produto = data.produto;
 lotes.value = data.lotes;
 
-const genero = listGeneros.find((item) => item.id == produto._genero)?.text;
+const genero = listGeneros.find((item) => item.id == produto.genero)?.text;
 
 const clasIndicativa = listClassificacoesIndicativas.find(
-  (item) => item.id == produto._classIndicativa,
+  (item) => item.id == produto.classIndicativa,
 )?.text;
 
 const spanFichaTecnica = ref(null);
@@ -81,22 +81,20 @@ onMounted(() => {
       <div class="product_main w-full">
         <div class="py-5">
           <img
-            :src="`http://localhost:8081${produto._imgCapa}`"
+            :src="`http://localhost:8081${produto.imgCapa}`"
             :alt="data.titulo"
           />
         </div>
         <div class="py-5">
           <div>
-            <h1 class="text-5xl mb-4">{{ produto._titulo }}</h1>
-            <h2 class="text-3xl">Autor: {{ produto._autor }}</h2>
+            <h1 class="text-5xl mb-4">{{ produto.titulo }}</h1>
+            <h2 class="text-3xl">Autor: {{ produto.autor }}</h2>
             <p class="text-3xl mt-2 mb-2">Gênero: {{ genero }}</p>
           </div>
           <div>
             <p class="text-4xl">Valor:</p>
-            <p class="text-6xl">R${{ produto._preco }}</p>
-            <p class="text-2xl">
-              Quantidade em estoque: {{ produto._estoque }}
-            </p>
+            <p class="text-6xl">R${{ produto.preco }}</p>
+            <p class="text-2xl">Quantidade em estoque: {{ produto.estoque }}</p>
           </div>
         </div>
       </div>
@@ -118,13 +116,13 @@ onMounted(() => {
               <tr>
                 <td class="border border-gray-300 font-bold">ISBN</td>
                 <td class="border border-gray-300">
-                  {{ produto._isbn13 }}
+                  {{ produto.isbn13 }}
                 </td>
               </tr>
               <tr>
                 <td class="border border-gray-300 font-bold">Idioma</td>
                 <td class="border border-gray-300">
-                  {{ produto._idioma }}
+                  {{ produto.idioma }}
                 </td>
               </tr>
               <tr>
@@ -140,7 +138,7 @@ onMounted(() => {
                   Data de publicação
                 </td>
                 <td class="border border-gray-300">
-                  {{ formatDate(produto._dataPublicacao) }}
+                  {{ formatDate(produto.dataPublicacao) }}
                 </td>
               </tr>
               <tr>
@@ -148,25 +146,25 @@ onMounted(() => {
                   Número de páginas
                 </td>
                 <td class="border border-gray-300">
-                  {{ produto._numPaginas }}
+                  {{ produto.numPaginas }}
                 </td>
               </tr>
               <tr>
                 <td class="border border-gray-300 font-bold">Série</td>
                 <td class="border border-gray-300">
-                  {{ produto._serie }}
+                  {{ produto.serie }}
                 </td>
               </tr>
               <tr>
                 <td class="border border-gray-300 font-bold">Volume</td>
                 <td class="border border-gray-300">
-                  {{ produto._volume }}
+                  {{ produto.volume }}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="product_info_table " ref="divLote">
+        <div class="product_info_table" ref="divLote">
           <table
             class="lote_info_table table-fixed border-collapse border-gray-400 w-full"
           >

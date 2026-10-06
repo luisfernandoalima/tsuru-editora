@@ -42,6 +42,8 @@ const carregarProdutos = async () => {
     },
   });
 
+  console.log(response);
+
   produtos.value = response.produtos;
 };
 
@@ -73,11 +75,11 @@ watch(
         </p>
       </NuxtLink>
       <ItemCard
-        v-for="value in produtos"
-        :key="value._id"
-        :name="value._titulo"
-        :link="`/produto/${value._id}`"
-        :image="`http://localhost:8081${value._imgCapa}`"
+        v-for="produto in produtos"
+        :key="produto.id"
+        :name="produto.titulo"
+        :link="`/produto/${produto.id}`"
+        :image="`http://localhost:8081${produto.imgCapa}`"
         statusItem="Baixo"
       />
     </Container>

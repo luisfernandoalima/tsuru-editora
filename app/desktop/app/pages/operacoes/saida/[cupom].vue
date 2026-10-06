@@ -2,48 +2,57 @@
 import OperationCard from "~/components/ui/cards/OperationCard.vue";
 import BackButton from "~/components/layout/BackButton.vue";
 import { useAuthToken } from "~/composables/useAuthToken";
+
 definePageMeta({
   layout: "default",
   middleware: "auth",
 });
 
 const { getToken } = useAuthToken();
-
-const router = useRoute();
+const route = useRoute();
 const api = useApi();
-const cupom = router.params.cupom;
+const cupom = route.params.cupom;
 
-const token = getToken();
+const {
+  data: response,
+  error,
+  status,
+} = await useAsyncData(`saida-${cupom}`, () =>
+  api(`/outgoing/find-registration/${cupom}`, {
+    method: "GET",
+    headers: { authorization: `Bearer ${getToken()}` },
+  }),
+);
 
-const response = await api(`/outgoing/find-registration/${cupom}`, {
-  method: "GET",
-  headers: {
-    authorization: `Bearer ${token}`,
-  },
+console.log(response);
+
+// A API devolve { saida: { ..., itens }, user: { name, email } }
+const dadosSaida = computed(() => response.value?.saida ?? {});
+const user = computed(() => response.value?.user ?? {});
+
+const saida = computed(() => {
+  const s = dadosSaida.value;
+  return {
+    id: s.id,
+    colaboradorNome: user.value.name ?? "N/A",
+    colaboradorEmail: user.value.email ?? "N/A",
+    data: s.data,
+    valorTotal: Number(s.valorTotal) || 0,
+    tipoPagamento: s.tipoPagamento ?? "N/A",
+  };
 });
 
-const saida = computed(() => ({
-  id_saida: response[0]?.id_saida,
-  nome: response[0]?.nome,
-  email: response[0]?.email,
-  cliente: response[0]?.cliente,
-  cpf_cliente: response[0]?.cpf_cliente,
-  data_saida: response[0]?.data_saida,
-  valor_total: response[0]?.preco_total,
-  tipo_pagamento: response[0]?.tipo_pagamento,
-}));
-
+// A rota nova já devolve os itens limpos, então só garantimos os números
 const produtos = computed(() =>
-  response.map((item) => ({
-    id_produto: item.id_produto,
-    titulo: item.titulo,
-    quantidade_item: item.quantidade_item,
-    valor_itens: item.valor_itens,
+  (dadosSaida.value.itens ?? []).map((item) => ({
+    ...item,
+    quantidade: Number(item.quantidade) || 0,
+    subtotal: Number(item.subtotal) || 0,
   })),
 );
 
 const quantidadeTotal = computed(() =>
-  produtos.value.reduce((total, item) => total + item.quantidade_item, 0),
+  produtos.value.reduce((total, item) => total + item.quantidade, 0),
 );
 </script>
 
@@ -61,67 +70,70 @@ const quantidadeTotal = computed(() =>
         <div class="badge">Cupom #{{ cupom }}</div>
       </div>
 
-      <!-- Informações da saída -->
-      <section class="info-card">
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">ID da saída</span>
-            <strong>#{{ saida.id_saida }}</strong>
+      <!-- Estados de carregamento e erro -->
+      <p v-if="status === 'pending'" class="feedback">Carregando...</p>
+
+      <p v-else-if="error" class="feedback error">
+        Não foi possível carregar a saída do cupom #{{ cupom }}.
+      </p>
+
+      <template v-else>
+        <!-- Informações da saída -->
+        <section class="info-card">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">ID da saída</span>
+              <strong>#{{ saida.id }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Responsável</span>
+              <strong>{{ user.name }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Email</span>
+              <strong>{{ saida.colaboradorEmail }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Data da saída</span>
+              <strong>{{ formatDate(saida.data) }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Lotes/Produtos distintos</span>
+              <strong>{{ produtos.length }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Quantidade total</span>
+              <strong>{{ quantidadeTotal }} itens</strong>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Valor total</span>
+              <strong>{{ formatCurrency(saida.valorTotal) }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Método de pagamento</span>
+              <strong>{{ saida.tipoPagamento }}</strong>
+            </div>
+          </div>
+        </section>
+
+        <!-- Produtos -->
+        <section>
+          <div class="section-title">
+            <h2>Produtos retirados</h2>
           </div>
 
-          <div class="info-item">
-            <span class="label">Responsável</span>
-            <strong>{{ saida.nome }}</strong>
+          <div class="products-grid">
+            <OperationCard :itens="produtos" />
           </div>
-
-          <div class="info-item">
-            <span class="label">Email</span>
-            <strong>{{ saida.email }}</strong>
-          </div>
-
-          <div class="info-item">
-            <span class="label">Data da saída</span>
-            <strong>{{ formatDate(saida.data_saida) }}</strong>
-          </div>
-
-          <div class="info-item">
-            <span class="label">Produtos</span>
-            <strong>{{ produtos.length }}</strong>
-          </div>
-
-          <div class="info-item">
-            <span class="label">Quantidade total</span>
-            <strong>{{ quantidadeTotal }} itens</strong>
-          </div>
-          <div class="info-item">
-            <span class="label">CPF do cliente</span>
-            <strong>{{ saida.cpf_cliente }}</strong>
-          </div>
-          <div class="info-item">
-            <span class="label">Cliente</span>
-            <strong>{{ saida.cliente }}</strong>
-          </div>
-          <div class="info-item">
-            <span class="label">Valor total</span>
-            <strong>R$ {{ saida.valor_total }}</strong>
-          </div>
-          <div class="info-item">
-            <span class="label">Método de Pagamento</span>
-            <strong>{{ saida.tipo_pagamento }}</strong>
-          </div>
-        </div>
-      </section>
-
-      <!-- Produtos -->
-      <section>
-        <div class="section-title">
-          <h2>Produtos retirados</h2>
-        </div>
-
-        <div class="products-grid">
-          <OperationCard :produtos="produtos" />
-        </div>
-      </section>
+        </section>
+      </template>
     </div>
   </NuxtLayout>
 </template>

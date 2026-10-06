@@ -22,8 +22,8 @@ const ordem = ref({
   nome: "",
   id: "",
   criador: {
-    _nome: "",
-    _email: "",
+    nome: "",
+    email: "",
   },
   totalObras: 0,
   totalUnidades: 0,
@@ -105,7 +105,7 @@ const consultarItens = async () => {
 const adicionarProduto = (produto) => {
   if (ordem.value.statusOrdem == "ABERTA") {
     const produtoExiste = orderItems.value.find(
-      (item) => item.produto._id === produto._id,
+      (item) => item.produto.id === produto.id,
     );
 
     if (produtoExiste) {
@@ -122,7 +122,7 @@ const adicionarProduto = (produto) => {
 const removerProduto = (id) => {
   if (ordem.value.statusOrdem == "ABERTA") {
     orderItems.value = orderItems.value.filter(
-      (item) => item.produto._id !== id,
+      (item) => item.produto.id !== id,
     );
   }
 };
@@ -207,12 +207,12 @@ onMounted(() => {
 
             <div class="info-item">
               <span class="label">Nome do criador</span>
-              <strong>{{ ordem.criador._nome }}</strong>
+              <strong>{{ ordem.criador.nome }}</strong>
             </div>
 
             <div class="info-item">
               <span class="label">E-mail do criador</span>
-              <strong>{{ ordem.criador._email }}</strong>
+              <strong>{{ ordem.criador.email }}</strong>
             </div>
 
             <div class="info-item">
@@ -262,8 +262,8 @@ onMounted(() => {
             <div class="flex gap-3 search_obras">
               <img
                 v-for="produto in produtos"
-                :src="`http://localhost:8081${produto._imgCapa}`"
-                :alt="produto._titulo"
+                :src="`http://localhost:8081${produto.imgCapa}`"
+                :alt="produto.titulo"
                 @click="adicionarProduto(produto)"
               />
             </div>
@@ -273,7 +273,7 @@ onMounted(() => {
             <div class="flex flex-col gap-y-3">
               <OrderProductCard
                 v-for="value in orderItems"
-                :key="value.produto._id"
+                :key="value.produto.id"
                 :item="value"
                 @remover="removerProduto"
                 :orderStatus="ordem.statusOrdem"

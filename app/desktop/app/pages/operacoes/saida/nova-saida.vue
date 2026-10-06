@@ -52,7 +52,7 @@ const produtos = ref([]);
 
 const valorTotal = computed(() =>
   carrinho.value.reduce(
-    (total, item) => total + item.quantidade * Number(item.produto._preco),
+    (total, item) => total + item.quantidade * Number(item.produto.preco),
     0,
   ),
 );
@@ -131,7 +131,7 @@ const buscarProduto = async (id) => {
     });
 
     const produtoExiste = carrinho.value.find(
-      (item) => item.produto._id === response.produto._id,
+      (item) => item.produto.id === response.produto.id,
     );
 
     if (produtoExiste) {
@@ -150,7 +150,7 @@ const buscarProduto = async (id) => {
 };
 
 const removerItem = (id) => {
-  carrinho.value = carrinho.value.filter((item) => item.produto._id !== id);
+  carrinho.value = carrinho.value.filter((item) => item.produto.id !== id);
 };
 
 const finalizarVenda = async () => {
@@ -166,7 +166,7 @@ const finalizarVenda = async () => {
       },
 
       produtos: carrinho.value.map((item) => ({
-        produto_id: item.produto._id,
+        produto_id: item.produto.id,
         quantidade: item.quantidade,
       })),
     };
@@ -303,9 +303,9 @@ onMounted(() => {
           <div class="flex gap-3 search_obras">
             <img
               v-for="produto in produtos"
-              :src="`http://localhost:8081${produto._imgCapa}`"
-              :alt="produto._titulo"
-              @click="buscarProduto(produto._id)"
+              :src="`http://localhost:8081${produto.imgCapa}`"
+              :alt="produto.titulo"
+              @click="buscarProduto(produto.id)"
             />
           </div>
         </div>
@@ -315,7 +315,7 @@ onMounted(() => {
             <div class="flex flex-col gap-y-3">
               <ItemOperationCard
                 v-for="value in carrinho"
-                :key="value.produto._id"
+                :key="value.produto.id"
                 :item="value"
                 @remover="removerItem"
               />
