@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+import showLog from "../utils/showLog.js";
+
 import Usuario from "../class/Usuario.js";
 import UsuarioDAO from "../dal/UsuarioDAO.js";
 
@@ -120,10 +122,14 @@ export default class UsuarioController {
       const { email, senha } = req.body;
 
       const user = await this.#dao.Login(email);
+      showLog(`Tentativa de login no usuário: ${email}`);
 
       if (!user) {
+        showLog(
+          `Tentativa de login recusada. O usuário não foi encontrado no banco de dados.`,
+        );
         return res.status(403).json({
-          message: "Erro ao executar login",
+          message: "Usuário ou senha inválidos",
         });
       }
 
@@ -132,12 +138,13 @@ export default class UsuarioController {
       const isMatch = await bcrypt.compare(senha, usuario.getSenha());
 
       if (!isMatch) {
+        showLog(
+          `Tentativa de login recusada. A senha não é a mesma registrada no banco de dados`,
+        );
         return res.status(403).json({
           message: "Erro ao executar login",
         });
       }
-
-      console.log(usuario);
 
       const token = jwt.sign(
         {
@@ -150,6 +157,8 @@ export default class UsuarioController {
           expiresIn: "5h",
         },
       );
+
+      showLog(`Tentativa de Login aprovada.`);
 
       res.json({
         token,
