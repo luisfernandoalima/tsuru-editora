@@ -12,7 +12,8 @@ export default class Produto {
     this.genero = produto.genero;
     this.classIndicativa = produto.classificacao_indicativa;
     this.preco = produto.preco;
-    this.estoque = produto.estoque;
+    this.estoque = 0;
+    this.estoqueMinimo = produto.estoque_minimo
     this.imgCapa = produto.capa_url;
   }
 

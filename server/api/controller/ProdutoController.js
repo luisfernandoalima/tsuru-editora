@@ -5,14 +5,12 @@ import Produto from "../class/Produto.js";
 import { ProdutoDAO } from "../dal/ProdutoDAO.js";
 import LoteDAO from "../dal/LoteDAO.js";
 import showLog from "../utils/showLog.js";
+import { calcularEstoqueMinimo } from "../utils/calcularEstoqueMinimo.js";
 
 export default class ProdutoController {
   #dao = new ProdutoDAO();
 
   Criar = async (req, res) => {
-    console.log("REQ BODY:", req.body);
-    console.log("REQ FILE:", req.file);
-
     try {
       const file = req.file;
 
@@ -63,6 +61,7 @@ export default class ProdutoController {
     const produtoBD = await this.#dao.Consultar(Number(id));
 
     const produto = new Produto(produtoBD);
+    let quantidadeAtual = 0;
 
     if (!produto) {
       return res.status(400).json({
@@ -75,17 +74,23 @@ export default class ProdutoController {
 
     const lotes = await loteDAO.consultarPorProduto(produto);
 
+    const estoque = await this.#dao.buscarEstoqueAtual(produto.getId());
+    estoque.forEach((item) => {
+      quantidadeAtual += item.quantidade_atual;
+    });
+
+    this.calcularEstoqueMinimo(req, res);
+
     return res.status(201).json({
       produto,
       lotes,
+      quantidadeAtual,
     });
   };
 
   Alterar = async (req, res) => {
     try {
       const id = Number(req.params.id);
-
-      console.log(req.body);
 
       const produtoExistente = new Produto(await this.#dao.Consultar(id));
 
@@ -127,7 +132,7 @@ export default class ProdutoController {
         type: "success",
       });
     } catch (err) {
-      console.log(err);
+      showLog(err);
 
       return res.status(500).json({
         message: `Erro no update: ${err}`,
@@ -207,9 +212,18 @@ export default class ProdutoController {
 
       const produtos = [];
 
-      data.forEach((item) => {
-        produtos.push(new Produto(item));
-      });
+      for (let item of data) {
+        let quantidadeAtual = 0;
+        let produto = new Produto(item);
+        const estoque = await this.#dao.buscarEstoqueAtual(produto.getId());
+
+        for (let item of estoque) {
+          quantidadeAtual += item.quantidade_atual;
+        }
+
+        produto.setEstoque(quantidadeAtual);
+        produtos.push(produto);
+      }
 
       return res.status(200).json({ produtos });
     } catch (error) {
@@ -251,9 +265,9 @@ export default class ProdutoController {
   pesquisarProduto = async (req, res) => {
     const { pesquisa } = req.query;
 
-    console.log(req.query);
-
     const produtos = [];
+
+    showLog(`Buscando produtos pela pesquisa: ${pesquisa || "''"}`);
 
     try {
       if (!pesquisa || pesquisa === undefined || pesquisa == "undefined") {
@@ -279,13 +293,57 @@ export default class ProdutoController {
         produtos.push(new Produto(item));
       });
 
-      console.log(produtos);
-
       return res.status(200).json({
         produtos,
       });
-    } catch (error) {}
+    } catch (error) {
+      showLog(`Erro ao pesquisar produtos: ${error}`);
+      return res.status(400).json({ message: "Erro ao listar produtos" });
+    }
   };
 
-  calcularEstoqueMinimo = async () => {};
+  calcularEstoqueMinimo = async (req, res) => {
+    try {
+      const produtoId = Number(req.params.id);
+      // Quantos dias leva para entregar o pedido depois da solicitação
+      const leadTimeDias = await this.#dao.calcularLeadTime();
+      // Quantos dias de histórico de saídas
+      const janelaDias = Number(90);
+      // Quão seguro o cálculo deve ser
+      const nivelServicoZ = Number(1.65);
+
+      if (!produtoId || leadTimeDias <= 0 || janelaDias < 30) {
+        return res
+          .status(400)
+          .json({ erro: "Parâmetros inválidos (janela mínima: 30 dias)" });
+      }
+
+      const consumoDiario = await this.#dao.consumoDiario(
+        produtoId,
+        janelaDias,
+      );
+      const resultado = calcularEstoqueMinimo({
+        consumoDiario,
+        leadTimeDias,
+        nivelServicoZ,
+      });
+      const estoqueAtual = await this.#dao.buscarEstoqueAtual(produtoId);
+
+      console.log(resultado.estoqueMinimo);
+
+      await this.#dao.atualizarEstoqueMinimo(resultado.estoqueMinimo);
+
+      if (estoqueAtual <= resultado.estoqueMinimo) {
+      }
+
+      // res.json({
+      //   ...resultado,
+      //   estoqueAtual,
+      //   precisaRepor:
+      //     estoqueAtual !== null && estoqueAtual <= resultado.estoqueMinimo,
+      // });
+    } catch (err) {
+      res.status(500).json({ erro: err.message });
+    }
+  };
 }

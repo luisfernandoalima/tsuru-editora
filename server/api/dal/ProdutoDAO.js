@@ -1,4 +1,5 @@
 import { pool } from "../database/connection.js";
+import showLog from "../utils/showLog.js";
 
 export class ProdutoDAO {
   Criar = async (produto) => {
@@ -120,4 +121,85 @@ export class ProdutoDAO {
       console.log(`Erro ao buscar produtos: ${err}`);
     }
   };
+
+  consumoDiario = async (produtoId, janelaDias) => {
+    const { rows } = await pool.query(
+      `SELECT COALESCE(SUM(x.quantidade), 0)::int AS qtd
+        FROM generate_series(
+          CURRENT_DATE - $2::int,
+          CURRENT_DATE - 1,
+          '1 day'
+        ) AS d
+        LEFT JOIN (
+          SELECT s.data_saida, sl.quantidade
+            FROM saida_lote sl
+            JOIN saida s ON s.id = sl.fk_saida_id
+            JOIN lote  l ON l.id = sl.fk_lote_id
+           WHERE l.fk_produto_id = $1
+        ) x ON x.data_saida = d::date
+        GROUP BY d
+        ORDER BY d`,
+      [produtoId, janelaDias],
+    );
+    return rows.map((r) => r.qtd);
+  };
+
+  atualizarEstoqueMinimo = async (id, quantidade) => {
+    try {
+      await pool.query(`UPDATE produto SET estoque_minimo=$2 WHERE id=$1`, [
+        id,
+        quantidade,
+      ]);
+
+      return true;
+    } catch (error) {
+      showLog(`Erro ao atualizar estoque minimo: ${error}`);
+      throw error;
+    }
+  };
+
+  calcularLeadTime = async (produtoId, padrao = 7) => {
+    try {
+      const { rows } = await pool.query(
+        `SELECT
+       (SELECT ROUND(AVG(o.data_fechamento - o.data_aprovacao))
+          FROM ordem_impressao o
+         WHERE o.data_aprovacao  IS NOT NULL
+           AND o.data_fechamento IS NOT NULL
+           AND EXISTS (SELECT 1
+                         FROM lote l
+                        WHERE l.fk_ordem_impressao_id = o.id
+                          AND l.fk_produto_id = $1)
+       )::int AS do_produto,
+       (SELECT ROUND(AVG(data_fechamento - data_aprovacao))
+          FROM ordem_impressao
+         WHERE data_aprovacao  IS NOT NULL
+           AND data_fechamento IS NOT NULL
+       )::int AS geral`,
+        [produtoId],
+      );
+
+      const { do_produto, geral } = rows[0];
+      return Math.max(1, do_produto ?? geral ?? padrao);
+    } catch (error) {
+      showLog(`Erro ao calcular lead time: ${error}`);
+      throw error;
+    }
+  };
+
+  buscarEstoqueAtual = async (produtoId) => {
+    try {
+      const { rows } = await pool.query(
+        `Select quantidade_atual FROM lote WHERE fk_produto_id=$1`,
+        [produtoId],
+      );
+
+      return rows;
+    } catch (error) {
+      showLog(`Erro ao buscar estoque atual: ${error}`);
+      throw error;
+    }
+  };
+
+  
 }

@@ -25,6 +25,7 @@ const buscarProduto = () => {
 const id = route.params.id;
 
 const lotes = ref([]);
+const estoque = ref(0);
 
 const data = await api(`/product/find-product/${id}`, {
   method: "GET",
@@ -35,6 +36,7 @@ const data = await api(`/product/find-product/${id}`, {
 
 const produto = data.produto;
 lotes.value = data.lotes;
+estoque.value = data.quantidadeAtual;
 
 const genero = listGeneros.find((item) => item.id == produto.genero)?.text;
 
@@ -94,7 +96,9 @@ onMounted(() => {
           <div>
             <p class="text-4xl">Valor:</p>
             <p class="text-6xl">R${{ produto.preco }}</p>
-            <p class="text-2xl">Quantidade em estoque: {{ produto.estoque }}</p>
+            <p class="text-2xl">
+              Quantidade em estoque: {{ estoque }} unidades
+            </p>
           </div>
         </div>
       </div>

@@ -47,6 +47,16 @@ const carregarProdutos = async () => {
   produtos.value = response.produtos;
 };
 
+const calcularEstoque = (produto) => {
+  if (produto.estoque > produto.estoqueMinimo) {
+    return "Em Estoque";
+  } else if (produto.estoque == 0) {
+    return "Em Falta";
+  } else if (produto.estoque <= produto.estoqueMinimo) {
+    return "Baixo";
+  }
+};
+
 watch(
   () => route.query.produto,
   () => {
@@ -80,7 +90,7 @@ watch(
         :name="produto.titulo"
         :link="`/produto/${produto.id}`"
         :image="`http://localhost:8081${produto.imgCapa}`"
-        statusItem="Baixo"
+        :statusItem="calcularEstoque(produto)"
       />
     </Container>
   </NuxtLayout>

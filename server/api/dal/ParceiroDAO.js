@@ -6,7 +6,7 @@ export default class ParceiroDAO {
   Criar = async (parceiro) => {
     try {
       const response = await pool.query(
-        "INSERT INTO parceiro (nome, cnpj, email, telefone, ativo) VALUES ($1, $2, $3, $4, $5)",
+        "INSERT INTO parceiro (nome, cnpj, email, contato, ativo) VALUES ($1, $2, $3, $4, $5)",
         [
           parceiro.getNome(),
           parceiro.getCnpj(),
