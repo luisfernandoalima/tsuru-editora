@@ -4,11 +4,17 @@ defineProps({
   width: Number,
   click: Function,
   className: String,
+  type: String,
 });
 </script>
 
 <template>
-  <button @click="click" :style="{ width: width + '%' }" :class="className">
+  <button
+    :type="type"
+    @click="click"
+    :style="{ width: width + '%' }"
+    :class="className"
+  >
     {{ text }}
   </button>
 </template>
