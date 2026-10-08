@@ -1,5 +1,8 @@
 <script setup>
+import { Icon } from "@iconify/vue";
+
 const props = defineProps({
+  id: Number,
   name: String,
   image: String,
   link: String,
@@ -18,42 +21,67 @@ const classStatus = computed(() => {
       return "em_estoque";
   }
 });
+
+const server = useServer();
+const { user } = useAuth();
+
+const perfil = getPerfil(user.value?.funcao);
 </script>
 
 <template>
   <div class="card_body">
-    <NuxtLink :to="props.link" class="link_container">
-      <span :class="`warning ${classStatus}`">
-        {{ props.statusItem }}
-      </span>
-      <div
-        class="image_content"
-        :style="{ backgroundImage: `url(${props.image})` }"
-      ></div>
-      <p class="mt-1 mb-1">{{ props.name }}</p>
-    </NuxtLink>
+    <div>
+      <NuxtLink :to="props.link" class="link_container">
+        <span :class="`warning ${classStatus}`">
+          {{ props.statusItem }}
+        </span>
+        <div
+          class="image_content"
+          :style="{ backgroundImage: `url(${server + props.image})` }"
+        ></div>
+        <p class="mt-1 mb-1">{{ props.name }}</p>
+      </NuxtLink>
+    </div>
+    <div
+      v-if="perfil === 1"
+      class="button_area w-full flex items-center justify-between"
+    >
+      <button class="rounded-bl-lg">
+        <NuxtLink :to="`/estoque/atualizar/${props.id}`"
+          ><Icon icon="jam:write-f" width="24" height="24"
+        /></NuxtLink>
+      </button>
+      <button class="rounded-br-lg">
+        <NuxtLink :to="`/estoque/excluir/${props.id}`"
+          ><Icon icon="tabler:trash" width="24" height="24"
+        /></NuxtLink>
+      </button>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .card_body {
-  width: 150px;
+  width: 175px;
   position: relative;
   transition: 0.3s;
+  border: 2px solid rgb(131, 131, 131);
+  border-radius: 10px;
 
   &:hover {
-    transform: scale(1.1);
+    /* transform: scale(1.05); */
+    box-shadow: 4px 8px 12px #0a0a0a73;
   }
 }
 
 .image_content {
-  border-radius: 10px;
+  border-radius: 8px 8px 0px 0px;
   height: 180px;
 
-  background-position: center center;
+  background-position: top center;
   background-size: cover;
 
-  box-shadow: var(--shadow);
+  /* box-shadow: var(--shadow); */
 }
 
 .warning {
@@ -88,6 +116,26 @@ p {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  margin: 2px 3px;
+  line-height: 24px;
+  min-height: 50px;
   overflow: hidden;
+}
+
+.button_area {
+  button {
+    background-color: #f7f7f7;
+    color: var(--details);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+
+    &:hover {
+      background-color: var(--secondary);
+      color: #f7f7f7;
+    }
+  }
 }
 </style>

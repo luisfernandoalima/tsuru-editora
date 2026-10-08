@@ -93,9 +93,10 @@ onMounted(() => {
       <ItemCard
         v-for="produto in produtos"
         :key="produto.id"
+        :id="produto.id"
         :name="produto.titulo"
         :link="`/produto/${produto.id}`"
-        :image="`http://localhost:8081${produto.imgCapa}`"
+        :image="produto.imgCapa"
         :statusItem="calcularEstoque(produto)"
       />
     </Container>
@@ -109,6 +110,7 @@ onMounted(() => {
   align-items: start;
   justify-items: center;
   row-gap: 1em;
+  column-gap: 25px;
   padding: 50px 0px;
   overflow-y: auto;
   overflow-x: unset;

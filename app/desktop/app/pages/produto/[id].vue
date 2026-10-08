@@ -78,9 +78,9 @@ onMounted(() => {
       :value="produtoBusca"
       @update:value="produtoBusca = $event"
     />
-    <BackButton />
     <div class="main_area_product">
       <div class="product_main w-full">
+        <BackButton class="back_button" />
         <div class="py-5">
           <img
             :src="`http://localhost:8081${produto.imgCapa}`"
@@ -201,10 +201,16 @@ onMounted(() => {
 .main_area_product {
   display: block;
 }
+.back_button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
 
 .product_main {
-  margin: 20px 0px;
   display: grid;
+  position: relative;
+  margin: 0px 0px 20px 0px;
   grid-template-columns: repeat(2, 1fr);
   color: var(--main_text);
   font-weight: bold;

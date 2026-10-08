@@ -31,18 +31,18 @@ const response = await api(`/product/find-product/${id}`, {
 
 const produto = response.produto;
 
-const titulo = ref(produto._titulo);
-const autor = ref(produto._autor);
-const isbn = ref(produto._isbn13);
-const numPaginas = ref(String(produto._numPaginas));
-const idioma = ref(produto._idioma);
-const dataPublicacao = ref(produto._dataPublicacao);
-const serie = ref(produto._serie);
-const volume = ref(produto._volume);
-const genero = ref(produto._genero);
-const preco = ref(produto._preco);
-const classIndicativa = ref(produto._classIndicativa);
-const imgCapa = ref(produto._imgCapa);
+const titulo = ref(produto.titulo);
+const autor = ref(produto.autor);
+const isbn = ref(produto.isbn13);
+const numPaginas = ref(String(produto.numPaginas));
+const idioma = ref(produto.idioma);
+const dataPublicacao = ref(produto.dataPublicacao);
+const serie = ref(produto.serie);
+const volume = ref(produto.volume);
+const genero = ref(produto.genero);
+const preco = ref(produto.preco);
+const classIndicativa = ref(produto.classIndicativa);
+const imgCapa = ref(produto.imgCapa);
 
 const previewImage = ref(`http://localhost:8081${imgCapa.value}`);
 
