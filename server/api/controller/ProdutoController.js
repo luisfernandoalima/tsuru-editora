@@ -199,71 +199,8 @@ export default class ProdutoController {
     }
   };
 
-  listarProdutos = async (req, res) => {
-    try {
-      const data = await this.#dao.Listar();
-
-      if (!data) {
-        return res.status(400).json({
-          message: "Erro ao buscar produtos",
-          type: "error",
-        });
-      }
-
-      const produtos = [];
-
-      for (let item of data) {
-        let quantidadeAtual = 0;
-        let produto = new Produto(item);
-        const estoque = await this.#dao.buscarEstoqueAtual(produto.getId());
-
-        for (let item of estoque) {
-          quantidadeAtual += item.quantidade_atual;
-        }
-
-        produto.setEstoque(quantidadeAtual);
-        produtos.push(produto);
-      }
-
-      return res.status(200).json({ produtos });
-    } catch (error) {
-      showLog(`Erro ao listar produtos: ${error}`);
-      return res.status(400).json({ message: "Erro ao listar produtos" });
-    }
-  };
-
-  listarPorNome = async (req, res) => {
-    const produtoTitulo = String(req.params.produto);
-
-    try {
-      const data = await this.#dao.listarPorNome(produtoTitulo);
-
-      if (!data) {
-        return res.status(400).json({
-          message: "Erro ao buscar produtos",
-          type: "error",
-        });
-      }
-
-      const produtos = [];
-
-      data.forEach((item) => {
-        produtos.push(new Produto(item));
-      });
-
-      return res.status(200).json({
-        produtos,
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: "Erro ao buscar produtos",
-        type: "error",
-      });
-    }
-  };
-
   pesquisarProduto = async (req, res) => {
-    const { pesquisa } = req.query;
+    let { pesquisa } = req.query;
 
     const produtos = [];
 
@@ -271,7 +208,7 @@ export default class ProdutoController {
 
     try {
       if (!pesquisa || pesquisa === undefined || pesquisa == "undefined") {
-        return this.listarProdutos(req, res);
+        pesquisa = "";
       }
 
       if (typeof pesquisa !== "string") {
@@ -289,9 +226,19 @@ export default class ProdutoController {
         });
       }
 
-      results.forEach((item) => {
-        produtos.push(new Produto(item));
-      });
+      for (let item of results) {
+        let quantidadeAtual = 0;
+        let produto = new Produto(item);
+
+        const estoque = await this.#dao.buscarEstoqueAtual(produto.getId());
+
+        for (let item of estoque) {
+          quantidadeAtual += item.quantidade_atual;
+        }
+
+        produto.setEstoque(quantidadeAtual);
+        produtos.push(produto);
+      }
 
       return res.status(200).json({
         produtos,

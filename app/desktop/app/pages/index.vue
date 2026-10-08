@@ -22,56 +22,62 @@ const router = useRouter();
 const api = useApi();
 const token = getToken();
 
-const produto = ref(route.query.produto ?? "");
+const pesquisa = ref("");
 
 const produtos = ref([]);
 
-const buscarProduto = () => {
-  router.push(`/?produto=${produto.value}`);
+const atualizarRota = () => {
+  router.push({
+    path: "/",
+    query: {
+      pesquisa: pesquisa.value,
+    },
+  });
 };
 
 const carregarProdutos = async () => {
-  const pesquisa = produto.value;
-
-  let response;
-
-  response = await api(`/product/search?pesquisa=${pesquisa}`, {
+  const response = await api(`/product/search?pesquisa=${pesquisa.value}`, {
     method: "GET",
     headers: {
       authorization: `Bearer ${token}`,
     },
   });
 
-  console.log(response);
-
   produtos.value = response.produtos;
 };
 
 const calcularEstoque = (produto) => {
-  if (produto.estoque > produto.estoqueMinimo) {
-    return "Em Estoque";
-  } else if (produto.estoque == 0) {
+  if (produto.estoque === 0) {
     return "Em Falta";
-  } else if (produto.estoque <= produto.estoqueMinimo) {
+  }
+
+  if (produto.estoque <= produto.estoqueMinimo) {
     return "Baixo";
   }
+
+  return "Em Estoque";
 };
 
 watch(
-  () => route.query.produto,
-  () => {
+  () => route.query.pesquisa,
+  (novaPesquisa) => {
+    pesquisa.value = String(novaPesquisa || "");
     carregarProdutos();
   },
-  { immediate: true },
 );
+
+onMounted(() => {
+  pesquisa.value = String(route.query.pesquisa || "");
+  carregarProdutos();
+});
 </script>
 
 <template>
   <NuxtLayout>
     <SearchBar
-      :handleForms="buscarProduto"
-      :value="produto"
-      @update:value="produto = $event"
+      :handleForms="atualizarRota"
+      :value="pesquisa"
+      @update:value="pesquisa = $event"
       placeholder="Pesquise pelo título ou ISBN do produto"
     />
 

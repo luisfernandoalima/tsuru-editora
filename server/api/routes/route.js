@@ -58,12 +58,6 @@ route.patch("/product/update/:id", authValidate, produtoController.Alterar);
 
 route.delete("/product/delete/:id", authValidate, produtoController.Excluir);
 
-route.get(
-  "/product/list-products",
-  authValidate,
-  produtoController.listarProdutos,
-);
-
 route.get("/product/search", authValidate, produtoController.pesquisarProduto);
 
 // Registro de saídas
