@@ -4,6 +4,7 @@ import path from "path";
 import Produto from "../class/Produto.js";
 import { ProdutoDAO } from "../dal/ProdutoDAO.js";
 import LoteDAO from "../dal/LoteDAO.js";
+import showLog from "../utils/showLog.js";
 
 export default class ProdutoController {
   #dao = new ProdutoDAO();
@@ -194,24 +195,27 @@ export default class ProdutoController {
   };
 
   listarProdutos = async (req, res) => {
-    const data = await this.#dao.Listar();
+    try {
+      const data = await this.#dao.Listar();
 
-    if (!data) {
-      return res.status(400).json({
-        message: "Erro ao buscar produtos",
-        type: "error",
+      if (!data) {
+        return res.status(400).json({
+          message: "Erro ao buscar produtos",
+          type: "error",
+        });
+      }
+
+      const produtos = [];
+
+      data.forEach((item) => {
+        produtos.push(new Produto(item));
       });
+
+      return res.status(200).json({ produtos });
+    } catch (error) {
+      showLog(`Erro ao listar produtos: ${error}`);
+      return res.status(400).json({ message: "Erro ao listar produtos" });
     }
-
-    const produtos = [];
-
-    data.forEach((item) => {
-      produtos.push(new Produto(item));
-    });
-
-    console.log(data);
-
-    return res.status(200).json({ produtos });
   };
 
   listarPorNome = async (req, res) => {
@@ -282,4 +286,6 @@ export default class ProdutoController {
       });
     } catch (error) {}
   };
+
+  calcularEstoqueMinimo = async () => {};
 }

@@ -3,8 +3,6 @@ import { Router } from "express";
 import authValidate from "../middlewares/auth.js";
 import createUpload from "../middlewares/imageUpload.js";
 
-import { v4 as uuidv4 } from "uuid";
-
 import UsuarioController from "../controller/UsuarioController.js";
 import ProdutoController from "../controller/ProdutoController.js";
 import SaidaController from "../controller/SaidaController.js";
@@ -43,18 +41,14 @@ route.patch(
 
 route.get("/user/list-users", authValidate, userController.listarUsuarios);
 
-route.get(
-  "/user/list-by-name/:name",
-  authValidate,
-  userController.listarUsuariosPorNome,
-);
+route.get("/user/search", authValidate, userController.Pesquisar);
 
 // Produtos
 
 route.post(
   "/product/create",
   authValidate,
-  createUpload(uuidv4()).single("imgCapa"),
+  createUpload().single("imgCapa"),
   produtoController.Criar,
 );
 
@@ -122,6 +116,12 @@ route.patch(
   "/print-order/reject/:id",
   authValidate,
   ordemDeImpressaoController.Rejeitar,
+);
+
+route.patch(
+  "/print-order/close/:id",
+  authValidate,
+  ordemDeImpressaoController.Fechar,
 );
 
 route.get(

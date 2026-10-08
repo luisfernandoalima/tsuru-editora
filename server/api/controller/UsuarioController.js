@@ -222,27 +222,23 @@ export default class UsuarioController {
     });
   };
 
-  listarUsuariosPorNome = async (req, res) => {
+  Pesquisar = async (req, res) => {
     try {
-      const name = String(req.params.name);
+      const pesquisa = String(req.query.pesquisa);
 
-      console.log(name);
+      showLog(`Pesquisando por usuário: ${pesquisa}`);
 
-      if (!name) {
+      if (!pesquisa) {
         return res.status(400).json({
           message: "Erro ao buscar usuários",
-          type: "error",
         });
       }
 
-      const users = await this.#dao.listarUsuariosPorNome(name);
-
-      console.log(users);
+      const users = await this.#dao.Pesquisar(pesquisa);
 
       if (!users) {
         return res.status(400).json({
           message: "Erro ao buscar usuário",
-          type: "error",
         });
       }
 
@@ -250,9 +246,9 @@ export default class UsuarioController {
         users,
       });
     } catch (err) {
+      showLog(`Erro ao buscar usuários: ${pesquisa}`);
       return res.status(400).json({
         message: `Erro ao buscar usuário: ${err}`,
-        type: "error",
       });
     }
   };

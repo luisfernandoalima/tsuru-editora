@@ -25,7 +25,7 @@ const emit = defineEmits(["remover"]);
         {{ item.produto.isbn13 }}
       </p>
 
-      <p class="text-3xl">
+      <p class="text-3xl titulo">
         {{ item.produto.titulo }}
       </p>
     </div>
@@ -79,6 +79,13 @@ const emit = defineEmits(["remover"]);
     &:focus {
       outline: none;
     }
+  }
+
+  .titulo {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
   }
 
   spam {

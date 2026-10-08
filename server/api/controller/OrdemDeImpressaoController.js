@@ -12,6 +12,7 @@ import LoteDAO from "../dal/LoteDAO.js";
 
 import { loteNomeador } from "../utils/loteNomeador.js";
 import Lote from "../class/Lote.js";
+import showLog from "../utils/showLog.js";
 
 export default class OrdemDeImpressaoController {
   #dao = new OrdemDeImpressaoDAO();
@@ -68,6 +69,7 @@ export default class OrdemDeImpressaoController {
       console.log("ORDEM:", ordemDB);
       console.log("ID CRIADOR:", ordemDB.fk_usuario_criador_id);
       console.log("ID APROVADOR:", ordemDB.fk_usuario_aprovador_id);
+      console.log("ID FECHADOR:", ordemDB.fk_usuario_fechador_id);
 
       const ordem = new OrdemDeImpressao(ordemDB);
 
@@ -83,6 +85,14 @@ export default class OrdemDeImpressaoController {
         );
 
         ordem.setAprovador(aprovador);
+      }
+
+      if (ordemDB.fk_usuario_fechador_id) {
+        const fechador = new Usuario(
+          await usuarioDAO.Consultar(ordemDB.fk_usuario_fechador_id),
+        );
+
+        ordem.setFechador(fechador);
       }
 
       res.status(200).json({ ordem });
@@ -165,15 +175,15 @@ export default class OrdemDeImpressaoController {
         });
       }
 
-      const lotes = await loteDAO.consultarOrdem(id);
-
-      for (const loteItem of lotes) {
-        const lote = new Lote(loteItem);
-
-        await loteDAO.Aprovar(Number(lote.getId()));
-      }
-
       if (user.getCargo() === "ADMINISTRADOR") {
+        const lotes = await loteDAO.consultarOrdem(id);
+
+        for (const loteItem of lotes) {
+          const lote = new Lote(loteItem);
+
+          await loteDAO.Aprovar(Number(lote.getId()));
+        }
+
         if (await this.#dao.Aprovar(id, userId)) {
           res.status(200).json({
             message: "Ordem aprovada com sucesso!",
@@ -186,6 +196,56 @@ export default class OrdemDeImpressaoController {
       }
     } catch (err) {
       console.log(`Erro ao aprovar Ordem de Impressão: ${err}`);
+
+      res.status(400).json({
+        message: `Erro ao mudar status da Ordem: ${err}`,
+      });
+    }
+  };
+
+  Fechar = async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      showLog(`Iniciando finalização da ordem: ${id}`);
+
+      const loteDAO = new LoteDAO();
+      const usuarioDAO = new UsuarioDAO();
+
+      const userInfo = req.user;
+      const user = new Usuario(await usuarioDAO.Consultar(userInfo.id));
+
+      const userId = user.getId();
+
+      if (userId === null) {
+        console.log("Usuário não encontrado");
+
+        return res.status(400).json({
+          message: "Erro ao buscar ID de colaborador...",
+        });
+      }
+
+      if (user.getCargo() === "ADMINISTRADOR") {
+        const lotes = await loteDAO.consultarOrdem(id);
+
+        for (const loteItem of lotes) {
+          const lote = new Lote(loteItem);
+
+          await loteDAO.Fechar(Number(lote.getId()));
+        }
+
+        if (await this.#dao.Fechar(id, userId)) {
+          res.status(200).json({
+            message: "Ordem fechada com sucesso!",
+          });
+        }
+
+        showLog("Sucesso ao fechar a ordem no Banco");
+
+        return true;
+      }
+    } catch (err) {
+      showLog(`Erro ao fechar Ordem de Impressão: ${err}`);
 
       res.status(400).json({
         message: `Erro ao mudar status da Ordem: ${err}`,
@@ -266,7 +326,7 @@ export default class OrdemDeImpressaoController {
       // ==========================================
 
       for (const item of req.body.items) {
-        const produtoBD = await produtoDAO.Consultar(item.produto._id);
+        const produtoBD = await produtoDAO.Consultar(item.produto.id);
 
         if (!produtoBD) {
           return res.status(404).json({

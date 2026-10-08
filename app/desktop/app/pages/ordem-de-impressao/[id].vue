@@ -29,13 +29,14 @@ const ordem = ref({
   totalUnidades: 0,
   statusOrdem: "",
   dataCriacao: null,
+  dataAprovacao: null,
   dataFechamento: null,
   aprovador: {
-    _nome: null,
+    nome: null,
   },
 });
 
-const situacao = ref("");
+const situacao = ref(ordem.statusOrdem);
 
 const pesquisa = ref();
 const produtos = ref([]);
@@ -164,6 +165,13 @@ const definirStatus = async (status) => {
           authorization: `Bearer ${token}`,
         },
       });
+    } else if (status == "fechada") {
+      response = await api(`/print-order/close/${id}`, {
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
     }
 
     toast.success({ title: "Sucesso!", message: response.message });
@@ -198,6 +206,14 @@ onMounted(() => {
             :click="() => definirStatus('aprovada')"
           />
         </div>
+        <div class="area_fechamento" v-if="ordem.statusOrdem == 'APROVADA'">
+          <Button
+            text="FECHAR"
+            className="primary"
+            :width="100"
+            :click="() => definirStatus('fechada')"
+          />
+        </div>
         <section>
           <div class="info-grid">
             <div class="info-item">
@@ -229,10 +245,18 @@ onMounted(() => {
               <strong>{{ ordem.statusOrdem }}</strong>
             </div>
             <div class="info-item">
-              <span class="label">Data de criação</span>
-              <strong>{{ formatDate(ordem.dataCriacao) }}</strong>
+              <span class="label">Data de tramitação</span>
+              <strong>{{
+                ordem.dataAprovacao
+                  ? formatDate(ordem.dataAprovacao)
+                  : "Nenhuma"
+              }}</strong>
             </div>
             <div class="info-item">
+              <span class="label">Tramitada por:</span>
+              <strong>{{ ordem.aprovador?.nome || "Não Tramitada" }}</strong>
+            </div>
+            <div class="info-item" v-if="ordem.statusOrdem != 'CANCELADA'">
               <span class="label">Data de fechamento</span>
               <strong>{{
                 ordem.dataFechamento
@@ -240,9 +264,9 @@ onMounted(() => {
                   : "Nenhuma"
               }}</strong>
             </div>
-            <div class="info-item">
-              <span class="label">{{ situacao }} por:</span>
-              <strong>{{ ordem.aprovador?._nome || "Não Aprovado" }}</strong>
+            <div class="info-item" v-if="ordem.statusOrdem != 'CANCELADA'">
+              <span class="label">Fechada por:</span>
+              <strong>{{ ordem.fechador?.nome || "Não Fechada" }}</strong>
             </div>
           </div>
         </section>
@@ -259,7 +283,7 @@ onMounted(() => {
               @update:value="pesquisa = $event"
             />
 
-            <div class="flex gap-3 search_obras">
+            <div class="flex flex-col gap-3 search_obras">
               <img
                 v-for="produto in produtos"
                 :src="`http://localhost:8081${produto.imgCapa}`"
@@ -312,13 +336,21 @@ onMounted(() => {
   min-height: 0;
 }
 
-.area_aprovacao {
+.area_aprovacao,
+.area_fechamento {
   position: absolute;
   display: flex;
   gap: 0px 15px;
   bottom: 15px;
   right: 15px;
+}
+
+.area_aprovacao {
   width: 400px;
+}
+
+.area_fechamento {
+  width: 200px;
 }
 
 .info-grid {
@@ -349,21 +381,42 @@ onMounted(() => {
   gap: 50px;
   flex: 100%;
   width: 100%;
+  height: 100%;
 
   h2 {
     font-size: 1.3em;
     font-weight: 700;
   }
 
+  .obras_adicionadas {
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+    flex: 1;
+  }
+
   .search_obras {
     display: flex;
-    flex: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 500px;
     overflow: auto;
     img {
+      display: block;
       width: 150px;
+      height: 250px;
       cursor: pointer;
     }
   }
+}
+
+.obras_cadastradas {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 600px;
+  overflow: auto;
 }
 
 .obras_container {

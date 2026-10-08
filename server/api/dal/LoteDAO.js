@@ -1,4 +1,5 @@
 import { pool } from "../database/connection.js";
+import showLog from "../utils/showLog.js";
 
 export default class LoteDAO {
   Criar = async (produto, nomeLote, order, quantidade) => {
@@ -30,7 +31,7 @@ export default class LoteDAO {
 
       return true;
     } catch (error) {
-      console.error(error);
+      showLog(error);
       throw error;
     }
   };
@@ -41,7 +42,7 @@ export default class LoteDAO {
 
       return result.rows[0];
     } catch (error) {
-      console.error("Erro ao consultar lotes:", error);
+      showLog("Erro ao consultar lotes:", error);
       throw error;
     }
   };
@@ -55,7 +56,7 @@ export default class LoteDAO {
           codigo,
           quantidade_inicial,
           quantidade_atual,
-          data_criacao,
+          data_criacao_pedido,
           status,
           fk_ordem_impressao_id,
           fk_produto_id
@@ -68,7 +69,7 @@ export default class LoteDAO {
 
       return result.rows;
     } catch (error) {
-      console.error("Erro ao consultar lotes:", error);
+      showLog("Erro ao consultar lotes:", error);
       throw error;
     }
   };
@@ -82,7 +83,7 @@ export default class LoteDAO {
 
       return result.rows;
     } catch (error) {
-      console.error("Erro ao consultar lotes:", error);
+      showLog("Erro ao consultar lotes:", error);
       throw error;
     }
   };
@@ -108,24 +109,29 @@ export default class LoteDAO {
 
       return result.rows[0];
     } catch (error) {
-      console.error("Erro ao atualizar lotes:", error);
+      showLog("Erro ao atualizar lotes:", error);
       throw error;
     }
   };
 
   Atualizar = async (id, quantidade) => {
-    const result = await pool.query(
-      `
+    try {
+      const result = await pool.query(
+        `
       UPDATE lote
       SET quantidade_inicial = $1,
           quantidade_atual = $1
       WHERE id = $2
       RETURNING *
       `,
-      [quantidade, id],
-    );
+        [quantidade, id],
+      );
 
-    return result.rows[0];
+      return result.rows[0];
+    } catch (error) {
+      showLog("Erro ao atualizar lotes:", error);
+      throw error;
+    }
   };
 
   Deletar = async (id) => {
@@ -142,20 +148,46 @@ export default class LoteDAO {
   };
 
   Aprovar = async (id) => {
-    const result = await pool.query(
-      "UPDATE lote SET status='EM ESTOQUE' WHERE id=$1",
-      [id],
-    );
+    try {
+      const result = await pool.query(
+        "UPDATE lote SET status='PRODUÇÃO SOLICITADA', data_criacao_pedido=$2 WHERE id=$1",
+        [id, new Date()],
+      );
 
-    return true;
+      showLog(`Solicitação de produção dos lotes registrada no banco de dados`);
+      return true;
+    } catch (error) {
+      showLog(`Erro ao cancelar ordem: ${error}`);
+      throw error;
+    }
   };
 
   Cancelar = async (id) => {
-    const result = await pool.query(
-      "UPDATE lote SET status='CANCELADO' WHERE id=$1",
-      [id],
-    );
+    try {
+      const result = await pool.query(
+        "UPDATE lote SET status='CANCELADO' WHERE id=$1",
+        [id],
+      );
 
-    return true;
+      showLog(`Lotes cancelados no banco de dados`);
+      return true;
+    } catch (error) {
+      showLog(`Erro ao cancelar ordem: ${error}`);
+      throw error;
+    }
+  };
+
+  Fechar = async (id) => {
+    try {
+      const result = await pool.query(
+        "UPDATE lote SET status='EM ESTOQUE', data_producao=$2 WHERE id=$1",
+        [id, new Date()],
+      );
+      showLog(`Lotes registrados no banco de dados`);
+      return true;
+    } catch (error) {
+      showLog(`Erro ao fechar ordem: ${error}`);
+      throw error;
+    }
   };
 }

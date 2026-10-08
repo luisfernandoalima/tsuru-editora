@@ -1,7 +1,5 @@
-import OrdemDeImpressao from "../class/OrdemDeImpressao.js";
-
 import { pool } from "../database/connection.js";
-
+import showLog from "../utils/showLog.js";
 export default class OrdemDeImpressaoDAO {
   Criar = async (novaOrdem) => {
     try {
@@ -17,8 +15,7 @@ export default class OrdemDeImpressaoDAO {
 
       return true;
     } catch (err) {
-      console.log(`Erro ao criar nova Ordem de Impressão: ${err}`);
-
+      showLog(`Erro ao criar nova Ordem de Impressão: ${err}`);
       return false;
     }
   };
@@ -51,10 +48,7 @@ export default class OrdemDeImpressaoDAO {
 
       return true;
     } catch (err) {
-      console.log("Olá 2");
-
-      console.log(`Erro ao atualizar Ordem de Impressão: ${err}`);
-
+      showLog(`Erro ao atualizar Ordem de Impressão: ${err}`);
       return false;
     }
   };
@@ -66,11 +60,12 @@ export default class OrdemDeImpressaoDAO {
         [id],
       );
 
-      console.log(result.rows);
+      showLog(result.rows);
 
       return result.rows[0];
     } catch (err) {
-      console.log(`Erro ao atualizar Ordem de Impressão: ${err}`);
+      showLog(`Erro ao atualizar Ordem de Impressão: ${err}`);
+      throw err;
     }
   };
 
@@ -81,13 +76,12 @@ export default class OrdemDeImpressaoDAO {
         [new Date(), userId, id],
       );
 
-      console.log("Ordem " + id + " rejeitada com sucesso: " + response);
+      showLog("Ordem " + id + " rejeitada com sucesso: " + response);
 
       return true;
     } catch (err) {
-      console.log(`Erro ao rejeitar Ordem de Impressão: ${err}`);
-
-      return false;
+      showLog(`Erro ao rejeitar Ordem de Impressão: ${err}`);
+      throw err;
     }
   };
 
@@ -98,13 +92,28 @@ export default class OrdemDeImpressaoDAO {
         [new Date(), userId, id],
       );
 
-      console.log("Ordem " + id + " aprovada com sucesso: " + response);
+      showLog("Ordem " + id + " aprovada com sucesso: " + response);
 
       return true;
     } catch (err) {
-      console.log(`Erro ao aprovar Ordem de Impressão: ${err}`);
+      showLog(`Erro ao aprovar Ordem de Impressão: ${err}`);
+      throw err;
+    }
+  };
 
-      return err;
+  Fechar = async (id, userId) => {
+    try {
+      const response = await pool.query(
+        "UPDATE ordem_impressao SET data_fechamento = $1, status = 'FECHADA', fk_usuario_fechador_id = $2 WHERE id = $3",
+        [new Date(), userId, id],
+      );
+
+      showLog("Ordem " + id + " fechada com sucesso: " + response);
+
+      return true;
+    } catch (err) {
+      showLog(`Erro ao fechar Ordem de Impressão: ${err}`);
+      throw err;
     }
   };
 
@@ -114,7 +123,7 @@ export default class OrdemDeImpressaoDAO {
         "SELECT * FROM ordem_impressao ORDER BY data_criacao DESC",
       );
 
-      console.log(response.rows);
+      showLog(response.rows);
 
       return response.rows;
     } catch (error) {

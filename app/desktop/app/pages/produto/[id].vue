@@ -182,7 +182,7 @@ onMounted(() => {
                 <td>{{ lote.codigo }}</td>
                 <td>{{ lote.quantidade_inicial }}</td>
                 <td>{{ lote.quantidade_atual }}</td>
-                <td>{{ formatDate(lote.data_criacao) }}</td>
+                <td>{{ formatDate(lote.data_producao) }}</td>
                 <td>{{ lote.status }}</td>
               </tr>
             </tbody>
@@ -265,6 +265,7 @@ img {
 }
 
 .lote_info_table {
+  border: 2px solid #f1e4e4;
   td {
     text-align: center;
   }
@@ -275,6 +276,11 @@ img {
 
 table {
   color: var(--main_text);
+
+  td,
+  th {
+    border: 1px solid #99a1af;
+  }
 
   td,
   th {

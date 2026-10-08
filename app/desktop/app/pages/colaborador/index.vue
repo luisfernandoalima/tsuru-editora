@@ -15,20 +15,20 @@ const router = useRouter();
 const api = useApi();
 const token = getToken();
 
-const colaborador = ref(route.query.nome ?? "");
+const colaborador = ref(route.query.pesquisa ?? "");
 
 const colaboradores = ref([]);
 
 const buscarColaboradores = () => {
-  router.push(`/colaborador?nome=${colaborador.value}`);
+  router.push(`/colaborador?pesquisa=${colaborador.value}`);
 };
 
 const carregarColaboradores = async () => {
-  const nomeColaborador = colaborador.value;
+  const pesquisa = colaborador.value;
 
   let response;
 
-  if (!nomeColaborador) {
+  if (!pesquisa) {
     response = await api("/user/list-users", {
       method: "GET",
       headers: {
@@ -36,7 +36,7 @@ const carregarColaboradores = async () => {
       },
     });
   } else {
-    response = await api(`/user/list-by-name/${nomeColaborador}`, {
+    response = await api(`/user/search?pesquisa=${pesquisa}`, {
       method: "GET",
       headers: {
         authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ const carregarColaboradores = async () => {
 };
 
 watch(
-  () => route.query.nome,
+  () => route.query.pesquisa,
   () => {
     carregarColaboradores();
   },
@@ -65,6 +65,7 @@ watch(
       :handleForms="buscarColaboradores"
       :value="colaborador"
       @update:value="colaborador = $event"
+      placeholder="Pesquise pelo nome, e-mail ou CPF do colaborador..."
     />
 
     <div class="button_area">

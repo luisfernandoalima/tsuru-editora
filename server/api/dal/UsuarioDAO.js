@@ -1,6 +1,7 @@
 import { pool } from "../database/connection.js";
 
 import Usuario from "../class/Usuario.js";
+import showLog from "../utils/showLog.js";
 
 export default class UsuarioDAO {
   Criar = async (user) => {
@@ -98,16 +99,20 @@ export default class UsuarioDAO {
     }
   };
 
-  listarUsuariosPorNome = async (name) => {
+  Pesquisar = async (pesquisa) => {
     try {
       const result = await pool.query(
-        "SELECT * FROM usuario WHERE nome ILIKE $1 ORDER BY nome",
-        [`%${name}%`],
+        "SELECT * FROM usuario WHERE nome ILIKE $1 OR email ILIKE $1 OR cpf ILIKE $1 ORDER BY nome",
+        [`%${pesquisa}%`],
       );
 
+      showLog(
+        `Número de usuários encontrados para a pesquisa "${pesquisa}": ${result.rowCount}`,
+      );
       return result.rows;
     } catch (err) {
-      console.error(`Erro ao buscar usuários: ${err}`);
+      showLog(`Erro ao buscar usuários para a pesquisa "${pesquisa}": ${err}`);
+      throw err;
     }
   };
 }

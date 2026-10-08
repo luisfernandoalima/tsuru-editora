@@ -16,12 +16,14 @@ export default class OrdemDeImpressao {
     this.id = ordem.id;
     this.nome = ordem.nome;
     this.dataCriacao = new Date(ordem.data_criacao);
-    this.dataFechamento = ordem.data_aprovacao;
+    this.dataAprovacao = ordem.data_aprovacao;
+    this.dataFechamento = ordem.data_fechamento;
     this.totalObras = ordem.total_obras;
     this.totalUnidades = ordem.total_unidades;
     this.statusOrdem = ordem.status;
     this.criador = ordem.fk_usuario_criador_id;
     this.aprovador = ordem.fk_usuario_aprovador_id;
+    this.fechador = ordem.fk_usuario_fechador_id;
   }
 
   getId() {
@@ -49,10 +51,18 @@ export default class OrdemDeImpressao {
   }
 
   getDataAprovacao() {
+    return this.dataAprovacao;
+  }
+
+  setDataAprovacao(dataAprovacao) {
+    this.dataAprovacao = dataAprovacao;
+  }
+
+  getDataFechamento() {
     return this.dataFechamento;
   }
 
-  setDataAprovacao(dataFechamento) {
+  setDataFechamento(dataFechamento) {
     this.dataFechamento = dataFechamento;
   }
 
@@ -94,5 +104,13 @@ export default class OrdemDeImpressao {
 
   setAprovador(aprovador) {
     this.aprovador = aprovador;
+  }
+
+  getFechador() {
+    return this.fechador;
+  }
+
+  setFechador(fechador) {
+    this.fechador = fechador;
   }
 }
