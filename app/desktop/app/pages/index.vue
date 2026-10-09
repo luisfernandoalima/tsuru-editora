@@ -82,7 +82,7 @@ onMounted(() => {
     />
 
     <Container customClass="main_area">
-      <NuxtLink to="/estoque/novo-produto" v-if="perfil === 1">
+      <NuxtLink to="/produto/novo-produto" v-if="perfil === 1">
         <div class="new_product_container">
           <Icon icon="ep:plus" width="70" height="70" />
         </div>

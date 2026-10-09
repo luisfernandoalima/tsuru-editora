@@ -47,12 +47,12 @@ const perfil = getPerfil(user.value?.funcao);
       class="button_area w-full flex items-center justify-between"
     >
       <button class="rounded-bl-lg">
-        <NuxtLink :to="`/estoque/atualizar/${props.id}`"
+        <NuxtLink :to="`/produto/atualizar/${props.id}`"
           ><Icon icon="jam:write-f" width="24" height="24"
         /></NuxtLink>
       </button>
       <button class="rounded-br-lg">
-        <NuxtLink :to="`/estoque/excluir/${props.id}`"
+        <NuxtLink :to="`/produto/excluir/${props.id}`"
           ><Icon icon="tabler:trash" width="24" height="24"
         /></NuxtLink>
       </button>

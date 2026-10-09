@@ -23,5 +23,5 @@ const response = await api(`/product/delete/${id}`, {
 
 console.log(response);
 
-navigateTo("/estoque");
+navigateTo("/");
 </script>

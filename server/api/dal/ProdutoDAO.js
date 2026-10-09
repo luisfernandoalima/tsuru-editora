@@ -24,7 +24,7 @@ export class ProdutoDAO {
 
       return true;
     } catch (err) {
-      console.error(`Erro ao cadastrar produto: ${err}`);
+      showLog(`Erro ao cadastrar produto: ${err}`);
       return false;
     }
   };
@@ -65,7 +65,7 @@ export class ProdutoDAO {
 
       return true;
     } catch (err) {
-      console.error(`Erro ao atualizar produto: ${err}`);
+      showLog(`Erro ao atualizar produto: ${err}`);
       return false;
     }
   };
@@ -78,7 +78,7 @@ export class ProdutoDAO {
 
       return result.rows[0];
     } catch (err) {
-      console.error(`Erro ao consultar produto: ${err}`);
+      showLog(`Erro ao consultar produto: ${err}`);
       return false;
     }
   };
@@ -89,7 +89,7 @@ export class ProdutoDAO {
 
       return true;
     } catch (err) {
-      console.error(`Erro ao excluir produto: ${err}`);
+      showLog(`Erro ao excluir produto: ${err}`);
       return false;
     }
   };
@@ -102,7 +102,7 @@ export class ProdutoDAO {
 
       return produtos.rows;
     } catch (err) {
-      console.log(`Erro ao buscar produtos: ${err}`);
+      showLog(`Erro ao buscar produtos: ${err}`);
     }
   };
 
@@ -113,12 +113,12 @@ export class ProdutoDAO {
         [`%${pesquisa}%`],
       );
 
-      console.log("Pesquisando por: " + pesquisa);
-      console.log(produtos.rows);
+      showLog(`Pesquisando por: '${pesquisa}'`);
+      showLog(`Número de produtos encontrados: ${produtos.rowCount}`);
 
       return produtos.rows;
     } catch (err) {
-      console.log(`Erro ao buscar produtos: ${err}`);
+      showLog(`Erro ao buscar produtos: ${err}`);
     }
   };
 
@@ -200,6 +200,4 @@ export class ProdutoDAO {
       throw error;
     }
   };
-
-  
 }

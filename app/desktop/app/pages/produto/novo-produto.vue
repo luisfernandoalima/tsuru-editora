@@ -22,6 +22,7 @@ const { getToken } = useAuthToken();
 
 const api = useApi();
 const toast = useToast();
+const router = useRouter();
 
 const token = getToken();
 
@@ -70,6 +71,8 @@ const createProduct = async () => {
     },
     body: formData,
   });
+
+  router.push("/");
 };
 </script>
 

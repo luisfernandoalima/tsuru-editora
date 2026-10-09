@@ -56,36 +56,44 @@ export default class ProdutoController {
   };
 
   Consultar = async (req, res) => {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
 
-    const produtoBD = await this.#dao.Consultar(Number(id));
+      showLog(`Buscando pelo produto: ${id}`);
 
-    const produto = new Produto(produtoBD);
-    let quantidadeAtual = 0;
+      const produtoBD = await this.#dao.Consultar(Number(id));
 
-    if (!produto) {
-      return res.status(400).json({
-        message: "Erro ao encontrar produto.",
-        type: "error",
+      const produto = new Produto(produtoBD);
+      let quantidadeAtual = 0;
+
+      if (!produto) {
+        showLog("Produto não encontrado");
+        return res.status(400).json({
+          message: "Erro ao encontrar produto.",
+          type: "error",
+        });
+      }
+
+      const loteDAO = new LoteDAO();
+
+      const lotes = await loteDAO.consultarPorProduto(produto);
+
+      const estoque = await this.#dao.buscarEstoqueAtual(produto.getId());
+      estoque.forEach((item) => {
+        quantidadeAtual += item.quantidade_atual;
       });
+
+      this.calcularEstoqueMinimo(req, res);
+
+      return res.status(201).json({
+        produto,
+        lotes,
+        quantidadeAtual,
+      });
+    } catch (error) {
+      showLog(`Erro ao consultar produto: ${error}`);
+      return res.status(400).json({ message: "Erro ao consultar produto" });
     }
-
-    const loteDAO = new LoteDAO();
-
-    const lotes = await loteDAO.consultarPorProduto(produto);
-
-    const estoque = await this.#dao.buscarEstoqueAtual(produto.getId());
-    estoque.forEach((item) => {
-      quantidadeAtual += item.quantidade_atual;
-    });
-
-    this.calcularEstoqueMinimo(req, res);
-
-    return res.status(201).json({
-      produto,
-      lotes,
-      quantidadeAtual,
-    });
   };
 
   Alterar = async (req, res) => {
@@ -175,11 +183,11 @@ export default class ProdutoController {
 
         fs.unlink(filePath, (err) => {
           if (err) {
-            console.warn("Erro ao deletar imagem:", err.message);
+            showLog("Erro ao deletar imagem:", err.message);
             return;
           }
 
-          console.log("Imagem deletada com sucesso");
+          showLog("Imagem deletada com sucesso");
         });
       }
 
@@ -190,7 +198,7 @@ export default class ProdutoController {
         type: "success",
       });
     } catch (err) {
-      console.error(err);
+      showLog(err);
 
       return res.status(400).json({
         message: "Produto não encontrado.",
@@ -275,8 +283,6 @@ export default class ProdutoController {
         nivelServicoZ,
       });
       const estoqueAtual = await this.#dao.buscarEstoqueAtual(produtoId);
-
-      console.log(resultado.estoqueMinimo);
 
       await this.#dao.atualizarEstoqueMinimo(resultado.estoqueMinimo);
 
