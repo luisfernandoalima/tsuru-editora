@@ -5,6 +5,7 @@ import { useAuthToken } from "~/composables/useAuthToken";
 
 import { Icon } from "@iconify/vue";
 import Container from "~/components/layout/Container.vue";
+import Filtro from "~/components/ui/utils/Filtro.vue";
 
 definePageMeta({
   middleware: "auth",
@@ -23,6 +24,7 @@ const api = useApi();
 const token = getToken();
 
 const pesquisa = ref("");
+const filtro = ref({ status: "todos", ordenacao: "titulo_asc" });
 
 const produtos = ref([]);
 
@@ -31,40 +33,40 @@ const atualizarRota = () => {
     path: "/",
     query: {
       pesquisa: pesquisa.value,
+      status: filtro.value.status,
+      ordenacao: filtro.value.ordenacao,
     },
   });
 };
 
 const carregarProdutos = async () => {
-  const response = await api(`/product/search?pesquisa=${pesquisa.value}`, {
-    method: "GET",
-    headers: {
-      authorization: `Bearer ${token}`,
+  const response = await api(
+    `/product/search?pesquisa=${pesquisa.value}&status=${filtro.value.status}&ordenacao=${filtro.value.ordenacao}`,
+    {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   produtos.value = response.produtos;
 };
 
-const calcularEstoque = (produto) => {
-  if (produto.estoque === 0) {
-    return "Em Falta";
-  }
-
-  if (produto.estoque <= produto.estoqueMinimo) {
-    return "Baixo";
-  }
-
-  return "Em Estoque";
-};
-
 watch(
-  () => route.query.pesquisa,
-  (novaPesquisa) => {
+  () => [route.query.pesquisa, route.query.status, route.query.ordenacao],
+  ([novaPesquisa, novoStatus, novaOrdenacao]) => {
     pesquisa.value = String(novaPesquisa || "");
+    filtro.value = {
+      status: String(novoStatus || "todos"),
+      ordenacao: String(novaOrdenacao || "titulo_asc"),
+    };
     carregarProdutos();
   },
+  { immediate: true },
 );
+
+watch(filtro, atualizarRota);
 
 onMounted(() => {
   pesquisa.value = String(route.query.pesquisa || "");
@@ -81,7 +83,9 @@ onMounted(() => {
       placeholder="Pesquise pelo título ou ISBN do produto"
     />
 
-    <Container customClass="main_area">
+    <Filtro v-model="filtro" />
+
+    <Container customClass="main_area mt-5">
       <NuxtLink to="/produto/novo-produto" v-if="perfil === 1">
         <div class="new_product_container">
           <Icon icon="ep:plus" width="70" height="70" />
@@ -97,7 +101,7 @@ onMounted(() => {
         :name="produto.titulo"
         :link="`/produto/${produto.id}`"
         :image="produto.imgCapa"
-        :statusItem="calcularEstoque(produto)"
+        :statusItem="produto.status"
       />
     </Container>
   </NuxtLayout>

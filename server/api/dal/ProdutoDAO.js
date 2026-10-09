@@ -5,7 +5,7 @@ export class ProdutoDAO {
   Criar = async (produto) => {
     try {
       await pool.query(
-        "INSERT INTO produto (isbn, titulo, autor, preco, numero_paginas, idioma, data_publicacao, serie, volume, genero, classificacao_indicativa, capa_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+        "INSERT INTO produto (isbn, titulo, autor, preco, numero_paginas, idioma, data_publicacao, serie, volume, genero, classificacao_indicativa, capa_url, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
         [
           produto.getIsbn13(),
           produto.getTitulo(),
@@ -19,6 +19,7 @@ export class ProdutoDAO {
           produto.getGenero(),
           produto.getClassIndicativa(),
           produto.getImgCapa(),
+          produto.getStatus(),
         ],
       );
 
@@ -106,14 +107,48 @@ export class ProdutoDAO {
     }
   };
 
-  pesquisarProduto = async (pesquisa) => {
+  pesquisarProduto = async (pesquisa, status, ordenacao) => {
+    const ORDENACOES = {
+      titulo_asc: "p.titulo ASC",
+      titulo_desc: "p.titulo DESC",
+      estoque_asc: "estoque ASC, p.titulo ASC",
+      estoque_desc: "estoque DESC, p.titulo ASC",
+    };
+
+    showLog("Inicando pesquisa no Banco de Dados.");
+
+    const params = [];
+    const where = [];
+
+    if (pesquisa) {
+      params.push(`%${pesquisa}%`);
+      where.push(
+        `(p.titulo ILIKE $${params.length} OR p.isbn ILIKE $${params.length})`,
+      );
+    }
+
+    if (status === "em_estoque") where.push(`p.status ILIKE 'EM ESTOQUE'`);
+    if (status === "esgotado") where.push(`p.status ILIKE 'ESGOTADO'`);
+    if (status === "baixo") where.push(`p.status ILIKE 'BAIXO ESTOQUE'`);
+
     try {
       const produtos = await pool.query(
-        "SELECT * FROM produto WHERE titulo ILIKE $1 OR isbn ILIKE $1 ORDER BY titulo",
-        [`%${pesquisa}%`],
+        `
+    SELECT p.*, COALESCE(SUM(l.quantidade_atual), 0)::int AS estoque
+    FROM produto p
+    LEFT JOIN lote l ON l.fk_produto_id = p.id
+    ${where.length ? "WHERE " + where.join(" AND ") : ""}
+    GROUP BY p.id
+    ORDER BY ${ORDENACOES[ordenacao] ?? ORDENACOES.titulo_asc}
+  `,
+        params,
       );
 
-      showLog(`Pesquisando por: '${pesquisa}'`);
+      console.log(produtos);
+
+      showLog(`Pesquisando por: '${params}'`);
+      showLog(`Onde o Status é: '${where}'`);
+      showLog(`E ordenando por: '${ordenacao}'`);
       showLog(`Número de produtos encontrados: ${produtos.rowCount}`);
 
       return produtos.rows;

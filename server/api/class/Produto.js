@@ -12,9 +12,10 @@ export default class Produto {
     this.genero = produto.genero;
     this.classIndicativa = produto.classificacao_indicativa;
     this.preco = produto.preco;
-    this.estoque = 0;
-    this.estoqueMinimo = produto.estoque_minimo
+    this.estoque = produto.estoque || 0;
+    this.estoqueMinimo = produto.estoque_minimo;
     this.imgCapa = produto.capa_url;
+    this.status = produto.status;
   }
 
   getId() {
@@ -127,5 +128,13 @@ export default class Produto {
 
   setImgCapa(value) {
     this.imgCapa = value;
+  }
+
+  getStatus() {
+    return this.status;
+  }
+
+  setStatus(status) {
+    this.status = status;
   }
 }

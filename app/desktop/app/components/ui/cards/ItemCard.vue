@@ -11,11 +11,11 @@ const props = defineProps({
 
 const classStatus = computed(() => {
   switch (props.statusItem) {
-    case "Em Estoque":
+    case "EM ESTOQUE":
       return "em_estoque";
-    case "Baixo":
+    case "BAIXO":
       return "baixo_estoque";
-    case "Em Falta":
+    case "ESGOTADO":
       return "falta_estoque";
     default:
       return "em_estoque";
@@ -97,18 +97,18 @@ const perfil = getPerfil(user.value?.funcao);
 }
 
 .em_estoque {
-  background-color: green;
-  box-shadow: 0px 0px 10px green;
+  background-color: #008000;
+  box-shadow: 0px 0px 10px #008000;
 }
 
 .baixo_estoque {
-  background-color: orange;
-  box-shadow: 0px 0px 10px orange;
+  background-color: #ffa500;
+  box-shadow: 0px 0px 10px #ffa600;
 }
 
 .falta_estoque {
-  background-color: red;
-  box-shadow: 0px 0px 10px red;
+  background-color: #ff0000;
+  box-shadow: 0px 0px 10px #ff0000;
 }
 
 p {

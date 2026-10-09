@@ -32,6 +32,7 @@ export default class ProdutoController {
         preco: Number(req.body.preco),
         estoque: 0,
         capa_url: imagem_capa,
+        status: "ESGOTADO",
       };
 
       const newProduct = new Produto(data);
@@ -208,24 +209,32 @@ export default class ProdutoController {
   };
 
   pesquisarProduto = async (req, res) => {
-    let { pesquisa } = req.query;
+    let { pesquisa, status, ordenacao } = req.query;
+
+    showLog(`Pesquisando por: '${pesquisa}'`);
+    showLog(`Onde o Status é: '${status}'`);
+    showLog(`E ordenando por: '${ordenacao}'`);
+
+    if (!pesquisa || pesquisa === undefined || pesquisa == "undefined") {
+      pesquisa = "";
+    }
+
+    if (typeof pesquisa !== "string") {
+      return res.status(400).json({
+        mensagem: "Pesquisa inválida",
+      });
+    }
 
     const produtos = [];
 
     showLog(`Buscando produtos pela pesquisa: ${pesquisa || "''"}`);
 
     try {
-      if (!pesquisa || pesquisa === undefined || pesquisa == "undefined") {
-        pesquisa = "";
-      }
-
-      if (typeof pesquisa !== "string") {
-        return res.status(400).json({
-          mensagem: "Pesquisa inválida",
-        });
-      }
-
-      const results = await this.#dao.pesquisarProduto(pesquisa);
+      const results = await this.#dao.pesquisarProduto(
+        pesquisa,
+        status,
+        ordenacao,
+      );
 
       if (!results) {
         return res.status(400).json({
@@ -235,16 +244,7 @@ export default class ProdutoController {
       }
 
       for (let item of results) {
-        let quantidadeAtual = 0;
         let produto = new Produto(item);
-
-        const estoque = await this.#dao.buscarEstoqueAtual(produto.getId());
-
-        for (let item of estoque) {
-          quantidadeAtual += item.quantidade_atual;
-        }
-
-        produto.setEstoque(quantidadeAtual);
         produtos.push(produto);
       }
 
