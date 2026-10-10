@@ -6,4 +6,10 @@ export const pool = new Pool({
   database: process.env.DB_DATABASE,
   password: String(process.env.DB_PASSWORD),
   port: Number(process.env.DB_PORT),
+  ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+  max: 5,
+});
+
+pool.on("error", (err) => {
+  console.error("Erro inesperado no pool:", err);
 });
