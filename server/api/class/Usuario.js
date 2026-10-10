@@ -18,7 +18,7 @@ export default class Usuario {
     this.cpf = user.cpf;
     this.cargo = user.perfil;
     this.ativo = user.ativo;
-    this.privateprimeiroLogin = user.primeiro_login;
+    this.primeiroLogin = user.primeiro_login;
   }
 
   getId = () => this.id;
@@ -59,8 +59,7 @@ export default class Usuario {
 
   getAtivo = () => this.ativo;
 
-  setPrimeiroLogin = (primeiroLogin) =>
-    (this.privateprimeiroLogin = primeiroLogin);
+  setPrimeiroLogin = (primeiroLogin) => (this.primeiroLogin = primeiroLogin);
 
-  getPrimeiroLogin = () => this.privateprimeiroLogin;
+  getPrimeiroLogin = () => this.primeiroLogin;
 }
