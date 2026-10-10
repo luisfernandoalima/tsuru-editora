@@ -35,8 +35,9 @@ Esse projeto foi criado para ser um ERP para uma editora de livros.
 ```
 📦 tsuru-editora
 ┣ 📂 app
-┣ ┣ 📁 desktop        # Código-fonte do front-end
-┣ 📂 server           # Back-end
+┃ ┣ 📁 desktop        # Código-fonte do front-end
+┃ ┣ 📁 doc            # Documentação do projeto
+┃ 📂 server           # Back-end
 ┃ ┣ 📁 api            # Código-fonte do back-end
 ┃ ┗ 📁 database       # Banco de dados
 ┗ README.md
