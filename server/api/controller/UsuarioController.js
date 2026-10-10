@@ -52,6 +52,12 @@ export default class UsuarioController {
         message: "Usuário cadastrado!",
       });
     } catch (error) {
+      console.error("Erro ao cadastrar usuário:", error.message);
+      if (error.errors)
+        error.errors.forEach((e) =>
+          console.error(" -", e.code, e.address, e.port),
+        );
+      else console.error(error);
       return res.status(400).json({
         message: error,
       });
