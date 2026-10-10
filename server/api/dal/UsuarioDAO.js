@@ -23,6 +23,11 @@ export default class UsuarioDAO {
       return true;
     } catch (err) {
       console.error(`Erro ao cadastrar usuário: ${err}`);
+      if (err.errors)
+        err.errors.forEach((e) =>
+          console.error(" -", e.code, e.address, e.port),
+        );
+
       return false;
     }
   };
