@@ -8,7 +8,6 @@ definePageMeta({
 <template>
   <NuxtLayout>
     <div class="operation_option_div">
-      <NuxtLink to="/operacoes/entrada">Entradas</NuxtLink>
       <NuxtLink to="/operacoes/saida">Saídas</NuxtLink>
     </div>
   </NuxtLayout>
