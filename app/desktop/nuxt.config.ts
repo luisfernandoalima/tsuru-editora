@@ -11,9 +11,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiUrl:
-        process.env.NUXT_PUBLIC_API_URL ||
-        "https://projeto-livraria-9q6r.onrender.com",
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || "http://localhost:8081",
     },
   },
 

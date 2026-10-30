@@ -1,3 +1,8 @@
+import ExcelJS from "exceljs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "node:fs";
+
 import OrdemDeImpressao from "../class/OrdemDeImpressao.js";
 import OrdemDeImpressaoDAO from "../dal/OrdemDeImpressaoDAO.js";
 
@@ -440,11 +445,118 @@ export default class OrdemDeImpressaoController {
         produtos,
       });
     } catch (error) {
-      console.log(`Erro ao salvar produtos na Ordem de Impressão: ${error}`);
+      console.log(`Erro ao listar produtos na Ordem de Impressão: ${error}`);
 
       res.status(400).json({
-        message: `Erro ao salvar produtos na Ordem de Impressão: ${error}`,
+        message: `Erro ao listar produtos na Ordem de Impressão: ${error}`,
       });
+    }
+  };
+
+  baixarLista = async (req, res) => {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    const TEMPLATE_PATH = path.join(
+      __dirname,
+      "..",
+      "templates",
+      "order_template.xlsx",
+    );
+
+    try {
+      const { id } = req.params;
+
+      const ordemDeImpressao = new OrdemDeImpressao(
+        await this.#dao.Consultar(id),
+      );
+      const listaProdutos = await this.#dao.listarProdutos(
+        ordemDeImpressao.getId(),
+      );
+
+      const produtos = [];
+
+      listaProdutos.forEach((item) => {
+        const quantidade = item.quantidade_inicial;
+
+        delete item.quantidade_inicial;
+
+        const produto = new Produto(item);
+
+        produtos.push({
+          produto,
+          quantidade,
+        });
+      });
+
+      showLog(`Preparando montagem do documento...`);
+      console.log(
+        "TEMPLATE_PATH:",
+        TEMPLATE_PATH,
+        "existe?",
+        fs.existsSync(TEMPLATE_PATH),
+      );
+
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(TEMPLATE_PATH);
+      console.log(
+        "1. template lido, abas:",
+        workbook.worksheets.map((w) => `${w.id}:${w.name}`),
+      );
+
+      const sheet = workbook.getWorksheet(1);
+      console.log("2. aba obtida:", !!sheet);
+
+      sheet.getCell("A1").value = ordemDeImpressao.getNome();
+      console.log("3. A1 preenchida");
+
+      sheet.addTable({
+        name: "Producao",
+        ref: "A2", // célula do canto superior esquerdo, onde ficará o cabeçalho
+        headerRow: true,
+        totalsRow: false,
+        style: {
+          theme: "TableStyleLight1",
+          showRowStripes: true,
+        },
+        columns: [
+          { name: "ID", filterButton: true },
+          { name: "Código", filterButton: true },
+          { name: "ISBN", filterButton: true },
+          { name: "Título", filterButton: true },
+          { name: "Qtd. Produzida", filterButton: true },
+        ],
+        rows: produtos.map((item) => [
+          item.produto.id,
+          item.produto.id,
+          item.produto.isbn13,
+          item.produto.titulo,
+          item.quantidade,
+        ]),
+      });
+
+      console.log("4. linhas preenchidas");
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      );
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="relatorio.xlsx"',
+      );
+
+      await workbook.xlsx.write(res);
+      console.log("5. escrito na resposta");
+
+      res.end();
+    } catch (error) {
+      console.error(error);
+      if (!res.headersSent) {
+        res
+          .status(500)
+          .json({ erro: "Falha ao gerar planilha", detalhe: error.message });
+      }
     }
   };
 }

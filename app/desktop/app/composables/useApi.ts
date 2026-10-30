@@ -5,5 +5,6 @@ export const useApi = () => {
     baseURL: config.public.apiUrl + "/api",
   });
 
+  console.log(api);
   return api;
 };

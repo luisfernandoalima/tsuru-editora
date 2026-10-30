@@ -144,8 +144,6 @@ export class ProdutoDAO {
         params,
       );
 
-      console.log(produtos);
-
       showLog(`Pesquisando por: '${params}'`);
       showLog(`Onde o Status é: '${where}'`);
       showLog(`E ordenando por: '${ordenacao}'`);

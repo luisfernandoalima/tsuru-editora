@@ -118,6 +118,8 @@ route.patch(
   ordemDeImpressaoController.Fechar,
 );
 
+route.get("/print-order/download/:id", ordemDeImpressaoController.baixarLista);
+
 route.get(
   "/print-order/:id",
   authValidate,

@@ -181,6 +181,30 @@ const definirStatus = async (status) => {
   }
 };
 
+const baixarPlanilha = async () => {
+  try {
+    const blob = await api(`/print-order/download/${id}`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "relatorio.xlsx";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+    toast.error({ title: "Erro!", message: error.message });
+  }
+};
+
 onMounted(() => {
   consultarOrdem();
   consultarItens();
@@ -212,6 +236,14 @@ onMounted(() => {
             className="primary"
             :width="100"
             :click="() => definirStatus('fechada')"
+          />
+        </div>
+        <div class="area_fechamento" v-if="ordem.statusOrdem == 'FECHADA'">
+          <Button
+            text="RELATÓRIO"
+            className="primary"
+            :width="100"
+            :click="() => baixarPlanilha()"
           />
         </div>
         <section>
