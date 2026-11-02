@@ -179,6 +179,12 @@ export default class SaidaController {
       const cupomFiscal = String(req.params.cupom);
 
       console.log("Consultando saída, cupom:", cupomFiscal);
+
+      const saida = await this.#dao.Consultar(cupomFiscal);
+
+      console.log(saida);
+
+      return res.status(200).json({saida});
     } catch (error) {
       console.error("Erro ao consultar saída:", error);
 

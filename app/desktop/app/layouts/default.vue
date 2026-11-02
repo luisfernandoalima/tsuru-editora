@@ -41,8 +41,18 @@ const perfil = getPerfil(user.value?.funcao);
             >
           </li>
           <li>
-            <NuxtLink to="/operacoes"
-              ><Icon icon="fluent:arrow-sort-16-filled" />Operações</NuxtLink
+            <NuxtLink to="/saida"
+              ><Icon icon="fluent:arrow-sort-16-filled" />Saídas</NuxtLink
+            >
+          </li>
+          <li>
+            <NuxtLink to="/saida"
+              ><Icon icon="fluent:arrow-sort-16-filled" />Campanhas</NuxtLink
+            >
+          </li>
+          <li>
+            <NuxtLink to="/saida"
+              ><Icon icon="fluent:arrow-sort-16-filled" />Devoluções</NuxtLink
             >
           </li>
           <li v-if="perfil === 1">

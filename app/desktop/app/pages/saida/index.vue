@@ -3,7 +3,7 @@ import Container from "~/components/layout/Container.vue";
 import SearchBar from "~/components/layout/SearchBar.vue";
 import { Icon } from "@iconify/vue";
 import { useAuthToken } from "~/composables/useAuthToken";
-
+import Button from "~/components/ui/utils/Button.vue";
 definePageMeta({
   layout: "default",
   middleware: "auth",
@@ -22,7 +22,7 @@ const cupom = ref(route.query.cupom ?? "");
 const saidas = ref([]);
 
 const buscarSaidas = () => {
-  router.push(`/operacoes/saida?cupom=${cupom.value}`);
+  router.push(`/saida?cupom=${cupom.value}`);
 };
 
 const carregaSaidas = async () => {
@@ -69,14 +69,19 @@ watch(
     />
 
     <div class="button_area">
-      <NuxtLink to="/operacoes/saida/nova-saida"
-        >+ Cadastrar nova saída</NuxtLink
-      >
+      <NuxtLink to="/saida/nova-saida">+ Cadastrar nova saída</NuxtLink>
     </div>
 
     <Container customClass="table_area">
+      <Button
+        text="RELATÓRIO"
+        className="primary"
+        style="width: 25%; align-self: flex-end"
+        :width="100"
+        :click="() => baixarPlanilha()"
+      />
       <table
-        class="table-auto border-collapse border border-gray-400 text-white"
+        class="table-auto border-collapse border border-gray-400 text-white mt-3"
       >
         <thead>
           <tr>
@@ -100,7 +105,7 @@ watch(
             <td class="border border-gray-300">
               <NuxtLink
                 class="flex justify-center"
-                :to="`/operacoes/saida/${value.numero_cupom_fiscal}`"
+                :to="`/saida/${value.numero_cupom_fiscal}`"
                 ><Icon icon="mdi:eye" width="24" height="24"
               /></NuxtLink>
             </td>

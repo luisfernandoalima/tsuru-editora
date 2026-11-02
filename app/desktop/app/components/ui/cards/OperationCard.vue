@@ -7,8 +7,7 @@ defineProps({
 });
 
 // /uploads é servido pelo backend (porta 8081), não pelo Nuxt.
-// Ajuste para a URL base da sua API, ou leve isso para o runtimeConfig.
-const UPLOADS_HOST = "http://localhost:8081";
+const UPLOADS_HOST = useServer();
 
 const capaSrc = (url) => (url ? `${UPLOADS_HOST}${url}` : null);
 </script>
@@ -33,10 +32,10 @@ const capaSrc = (url) => (url ? `${UPLOADS_HOST}${url}` : null);
 
       <div class="product-info">
         <NuxtLink :to="`/produto/${item.idProduto}`">
-          <h3>{{ item.titulo }}</h3>
+          <h3>{{ item.produto }}</h3>
         </NuxtLink>
 
-        <span class="product-id">Produto #{{ item.idProduto }}</span>
+        <span class="product-id">Produto #{{ item.isbn }}</span>
 
         <span v-if="item.codigoLote" class="product-id">
           Lote: {{ item.codigoLote }}

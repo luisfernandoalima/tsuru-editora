@@ -2,6 +2,8 @@ import { pool } from "../database/connection.js";
 
 import Saida from "../class/Saida.js";
 
+import showLog from "../utils/showLog.js";
+
 export default class SaidaDAO {
   Registrar = async (newExit) => {
     try {
@@ -35,37 +37,51 @@ export default class SaidaDAO {
 
   Consultar = async (cupomFiscal) => {
     try {
+      showLog(`Iniciando busca no banco de dados do cupom: ${cupomFiscal}`);
+
       const result = await pool.query(
         `
-        SELECT
-          s.id,
-          s.numero_cupom_fiscal,
-          to_char(s.data_saida, 'YYYY-MM-DD') AS data_saida,
-          s.valor_total,
-          s.credito_usado,
-          s.valor_final,
-          s.metodo_pagamento,
-          u.nome AS usuario_nome,
-          u.email AS usuario_email,
-          sl.quantidade,
-          sl.subtotal,
-          l.id AS lote_id,
-          l.codigo AS lote_codigo,
-          p.id AS produto_id,
-          p.titulo,
-          p.capa_url
-        FROM saida s
-        JOIN usuario u ON u.id = s.fk_usuario_id
-        LEFT JOIN saida_lote sl ON sl.fk_saida_id = s.id
-        LEFT JOIN lote l ON l.id = sl.fk_lote_id
-        LEFT JOIN produto p ON p.id = l.fk_produto_id
-        WHERE s.numero_cupom_fiscal = $1
-        ORDER BY l.id;
-        `,
+      SELECT
+        s.id,
+        s.data_saida,
+        s.valor_total,
+        s.valor_final,
+        s.credito_usado,
+        s.metodo_pagamento,
+        s.numero_cupom_fiscal,
+        u.nome  AS usuario_nome,
+        u.email AS usuario_email,
+        e.logradouro, e.numero, e.bairro, e.cidade, e.estado, e.cep,
+        p.nome  AS parceiro_nome,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'lote_id', l.id,
+              'lote_codigo', l.codigo,
+              'produto', pr.titulo,
+              'isbn', pr.isbn,
+              'capaUrl', pr.capa_url,
+              'quantidade', sl.quantidade,
+              'subtotal', sl.subtotal
+            )
+          ) FILTER (WHERE l.id IS NOT NULL),
+          '[]'
+        ) AS itens
+      FROM saida s
+      JOIN usuario u          ON u.id = s.fk_usuario_id
+      JOIN endereco e         ON e.id = s.fk_endereco_id
+      LEFT JOIN parceiro p    ON p.id = e.fk_parceiro_id
+      LEFT JOIN saida_lote sl ON sl.fk_saida_id = s.id
+      LEFT JOIN lote l        ON l.id = sl.fk_lote_id
+      LEFT JOIN produto pr    ON pr.id = l.fk_produto_id
+      WHERE s.numero_cupom_fiscal = $1
+      GROUP BY s.id, u.id, e.id, p.id
+      `,
         [cupomFiscal],
       );
 
-      return result.rows[0];
+      // Retorna a saída encontrada ou null se não existir
+      return result.rows[0] ?? null;
     } catch (err) {
       console.error(`Erro ao buscar saida: ${err}`);
       return false;
