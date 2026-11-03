@@ -184,7 +184,7 @@ export default class SaidaController {
 
       console.log(saida);
 
-      return res.status(200).json({saida});
+      return res.status(200).json({ saida });
     } catch (error) {
       console.error("Erro ao consultar saída:", error);
 
@@ -216,6 +216,35 @@ export default class SaidaController {
         message: "Erro ao buscar saidas",
         type: "error",
       });
+    }
+  };
+
+  listarPorParceiro = async (req, res) => {
+    try {
+      const parceiroId = Number(req.params.parceiroId);
+
+      if (!Number.isInteger(parceiroId)) {
+        return res
+          .status(400)
+          .json({ message: "ID do parceiro inválido.", type: "error" });
+      }
+
+      const saidas = await this.#dao.listarPorParceiro(parceiroId);
+
+      if (saidas === false) {
+        return res
+          .status(500)
+          .json({ message: "Erro ao buscar saídas.", type: "error" });
+      }
+
+      console.log(saidas);
+
+      return res.status(200).json({ saidas });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ message: "Erro ao buscar saídas.", type: "error" });
     }
   };
 }

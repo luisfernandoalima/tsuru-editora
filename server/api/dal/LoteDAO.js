@@ -190,4 +190,36 @@ export default class LoteDAO {
       throw error;
     }
   };
+
+  consultarPorSaida = async (saidaId) => {
+    try {
+      const result = await pool.query(
+        `
+      SELECT
+        l.id,
+        l.codigo,
+        l.quantidade_inicial,
+        l.quantidade_atual,
+        l.status,
+        l.data_producao,
+        pr.titulo AS produto_titulo,
+        pr.isbn,
+         pr.preco  AS preco_produto,
+        sl.quantidade AS quantidade_saida,
+        sl.subtotal
+      FROM saida_lote sl
+      JOIN lote l     ON l.id = sl.fk_lote_id
+      JOIN produto pr ON pr.id = l.fk_produto_id
+      WHERE sl.fk_saida_id = $1
+      ORDER BY l.id
+      `,
+        [saidaId],
+      );
+
+      return result.rows;
+    } catch (error) {
+      showLog(`Erro ao consultar lotes da saída: ${error}`);
+      throw error;
+    }
+  };
 }

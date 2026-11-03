@@ -10,6 +10,8 @@ import OrdemDeImpressaoController from "../controller/OrdemDeImpressaoController
 import EnderecoController from "../controller/EnderecoController.js";
 import ParceiroController from "../controller/ParceiroController.js";
 import LoteController from "../controller/LoteController.js";
+import CampanhaDoacaoController from "../controller/CampanhaDoacaoController.js";
+import DevolucaoController from "../controller/DevolucaoController.js";
 
 const route = Router();
 
@@ -20,6 +22,8 @@ const enderecoController = new EnderecoController();
 const parceiroController = new ParceiroController();
 const ordemDeImpressaoController = new OrdemDeImpressaoController();
 const loteController = new LoteController();
+const campanhaController = new CampanhaDoacaoController();
+const devolucaoController = new DevolucaoController();
 
 // Usuários
 
@@ -131,17 +135,30 @@ route.get(
 route.post("/partner/new-partner", authValidate, parceiroController.Criar);
 
 route.get("/partner/list", authValidate, parceiroController.Listar);
-
 route.get(
   "/partner/search",
   authValidate,
   parceiroController.pesquisarParceiros,
 );
 
+route.get("/list-by-partner/:parceiroId", saidaController.listarPorParceiro);
+route.get("/by-outgoing/:saidaId", loteController.consultarPorSaida);
+
 route.get("/partner/view/:id", authValidate, parceiroController.Consultar);
 
 route.patch("/partner/edit/:id", authValidate, parceiroController.Alterar);
 
 route.post("/partner/new-adress/:id", authValidate, enderecoController.Criar);
+
+// Campanhas
+
+route.post("/campaign/new-campaign", authValidate, campanhaController.Criar);
+route.get("/campaign/list", authValidate, campanhaController.Listar);
+route.get("/campaign/:id", authValidate, campanhaController.Consultar);
+route.post("/campaign/delete/:id", authValidate, campanhaController.Excluir);
+
+// Devolução
+
+route.post("/return/new-return", devolucaoController.Criar);
 
 export default route;

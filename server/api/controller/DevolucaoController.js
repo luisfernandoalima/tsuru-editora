@@ -1,63 +1,81 @@
-import Endereco from "../class/Endereco.js";
-import EnderecoDAO from "../dal/EnderecoDAO.js";
+import DevolucaoDAO from "../dal/Devolucao_CreditoDAO.js";
+import showLog from "../utils/showLog.js";
 
-export default class EnderecoController {
-  #dao = new EnderecoDAO();
+export default class DevolucaoController {
+  #dao = new DevolucaoDAO();
 
   Criar = async (req, res) => {
     try {
-      const partnerId = Number(req.params.id);
+      showLog("Criando nova devolução");
 
-      const reqInfo = {
-        cep: req.body.cep,
-        logradouro: req.body.logradouro,
-        numero: req.body.numero,
-        bairro: req.body.bairro,
-        cidade: req.body.cidade,
-        estado: req.body.estado,
-      };
+      const { saidaId, motivo, itens } = req.body;
 
-      const endereco = new Endereco(reqInfo);
-
-      console.log("Id do parceiro: " + req.body.parceiroId);
-      console.log(endereco);
-
-      const response = await this.#dao.Criar(endereco, partnerId);
-
-      if (response) {
-        return res.status(201).json({
-          message: "Endereço cadastrado!",
-        });
+      if (!Number.isInteger(Number(saidaId))) {
+        return res
+          .status(400)
+          .json({ message: "ID da saída inválido.", type: "error" });
       }
-    } catch (error) {
-      console.log(error);
 
-      return res.status(400).json({
-        message: error,
-      });
-    }
-  };
+      if (!motivo?.trim()) {
+        return res
+          .status(400)
+          .json({ message: "Informe o motivo da devolução.", type: "error" });
+      }
 
-  Excluir = async (req, res) => {
-    try {
-      const adressId = req.params.id;
+      if (!Array.isArray(itens)) {
+        return res
+          .status(400)
+          .json({ message: "Itens inválidos.", type: "error" });
+      }
 
-      if (!(await this.#dao.Excluir(Number(adressId)))) {
+      // Ignora quantidade <= 0 e junta lotes repetidos
+      const agrupados = new Map();
+      for (const item of itens) {
+        const loteId = Number(item.loteId);
+        const quantidade = Number(item.quantidade);
+
+        if (!Number.isInteger(loteId)) {
+          return res
+            .status(400)
+            .json({ message: "ID de lote inválido.", type: "error" });
+        }
+        if (!Number.isInteger(quantidade) || quantidade < 0) {
+          return res
+            .status(400)
+            .json({ message: "Quantidade inválida.", type: "error" });
+        }
+        if (quantidade === 0) continue;
+
+        agrupados.set(loteId, (agrupados.get(loteId) ?? 0) + quantidade);
+      }
+
+      if (!agrupados.size) {
         return res.status(400).json({
-          message: "Erro ao excluir usuário",
+          message: "Informe a quantidade de ao menos um lote.",
           type: "error",
         });
       }
 
+      const devolucao = await this.#dao.Criar({
+        saidaId: Number(saidaId),
+        motivo: motivo.trim(),
+        itens: [...agrupados].map(([loteId, quantidade]) => ({
+          loteId,
+          quantidade,
+        })),
+      });
+
       return res.status(201).json({
-        message: "Usuário excluído!",
-        type: "success",
+        message: "Devolução registrada com sucesso!",
+        devolucao,
       });
     } catch (error) {
-      console.log(`${error}`);
+      showLog(`Não foi possível criar a devolução: ${error}`);
 
-      return res.status(400).json({
-        message: "Erro ao excluir endereço",
+      // Erros de regra (404/400) vêm do DAO com .status
+      return res.status(error.status ?? 500).json({
+        message: error.status ? error.message : "Erro ao registrar devolução.",
+        type: "error",
       });
     }
   };

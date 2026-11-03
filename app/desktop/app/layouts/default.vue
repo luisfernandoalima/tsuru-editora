@@ -46,7 +46,7 @@ const perfil = getPerfil(user.value?.funcao);
             >
           </li>
           <li>
-            <NuxtLink to="/saida"
+            <NuxtLink to="/campanhas"
               ><Icon icon="fluent:arrow-sort-16-filled" />Campanhas</NuxtLink
             >
           </li>

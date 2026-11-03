@@ -36,4 +36,24 @@ export default class LoteController {
   };
 
   atualizarEstoque = async () => {};
+
+  consultarPorSaida = async (req, res) => {
+    try {
+      const saidaId = Number(req.params.saidaId);
+
+      if (!Number.isInteger(saidaId)) {
+        return res
+          .status(400)
+          .json({ message: "ID da saída inválido.", type: "error" });
+      }
+
+      const lotes = await this.#dao.consultarPorSaida(saidaId);
+
+      return res.status(200).json({ lotes });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Erro ao buscar lotes da saída.", type: "error" });
+    }
+  };
 }

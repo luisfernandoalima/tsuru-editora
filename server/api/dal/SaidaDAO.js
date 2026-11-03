@@ -116,4 +116,25 @@ export default class SaidaDAO {
       return false;
     }
   };
+
+  listarPorParceiro = async (parceiroId) => {
+    try {
+      const result = await pool.query(
+        `
+      SELECT s.id, s.numero_cupom_fiscal, s.data_saida, s.valor_final
+      FROM saida s
+      JOIN endereco e ON e.id = s.fk_endereco_id
+      WHERE e.fk_parceiro_id = $1
+        AND s.numero_cupom_fiscal IS NOT NULL
+      ORDER BY s.data_saida DESC, s.id DESC
+      `,
+        [parceiroId],
+      );
+
+      return result.rows;
+    } catch (err) {
+      console.error(`Erro ao listar saídas do parceiro: ${err}`);
+      return false;
+    }
+  };
 }
