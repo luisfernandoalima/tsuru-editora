@@ -84,8 +84,6 @@ export default class ProdutoController {
         quantidadeAtual += item.quantidade_atual;
       });
 
-      this.calcularEstoqueMinimo(req, res);
-
       return res.status(201).json({
         produto,
         lotes,
@@ -257,9 +255,9 @@ export default class ProdutoController {
     }
   };
 
-  calcularEstoqueMinimo = async (req, res) => {
+  calcularEstoqueMinimo = async (id) => {
     try {
-      const produtoId = Number(req.params.id);
+      const produtoId = Number(id);
       // Quantos dias leva para entregar o pedido depois da solicitação
       const leadTimeDias = await this.#dao.calcularLeadTime();
       // Quantos dias de histórico de saídas
@@ -284,19 +282,20 @@ export default class ProdutoController {
       });
       const estoqueAtual = await this.#dao.buscarEstoqueAtual(produtoId);
 
-      await this.#dao.atualizarEstoqueMinimo(resultado.estoqueMinimo);
+      console.log(resultado);
+      await this.#dao.atualizarEstoqueMinimo(id, resultado.estoqueMinimo);
 
-      if (estoqueAtual <= resultado.estoqueMinimo) {
+      if (estoqueAtual[0].quantidade_atual <= resultado.estoqueMinimo) {
+        await this.#dao.alterarStatus(id, "BAIXO ESTOQUE");
+      } else {
+        await this.#dao.alterarStatus(id, "EM ESTOQUE");
       }
 
-      // res.json({
-      //   ...resultado,
-      //   estoqueAtual,
-      //   precisaRepor:
-      //     estoqueAtual !== null && estoqueAtual <= resultado.estoqueMinimo,
-      // });
+      showLog("Estoque mínimo atualizado");
+      return;
     } catch (err) {
-      res.status(500).json({ erro: err.message });
+      showLog("Não foi possível atualizar o estoque mínimo");
+      return;
     }
   };
 }

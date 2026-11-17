@@ -8,20 +8,16 @@ export default class CreditoController {
     try {
       const credito = new Credito();
 
-      let valor_total = 0;
-      let valor_atual = 0;
+      // let valor_total = 0;
+      // let valor_atual = 0;
 
-      const devolucao = await this.#dao.Consultar(partnerId);
+      const { valorOriginal, valorAtual } =
+        await this.#dao.ConsultarSaldo(partnerId);
 
-      devolucao.forEach((item) => {
-        const creditos = new Credito(item);
+      credito.setValorOriginal(valorOriginal);
+      credito.setValorAtual(valorAtual);
 
-        valor_atual += creditos.getValorAtual();
-        valor_total += creditos.getValorOriginal();
-      });
-
-      credito.setValorAtual(valor_atual);
-      credito.setValorOriginal(valor_total);
+      console.log(credito);
 
       return credito;
     } catch (error) {

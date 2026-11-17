@@ -13,7 +13,7 @@ const classStatus = computed(() => {
   switch (props.statusItem) {
     case "EM ESTOQUE":
       return "em_estoque";
-    case "BAIXO":
+    case "BAIXO ESTOQUE":
       return "baixo_estoque";
     case "ESGOTADO":
       return "falta_estoque";

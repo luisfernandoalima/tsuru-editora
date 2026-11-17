@@ -66,6 +66,12 @@ route.get("/product/search", authValidate, produtoController.pesquisarProduto);
 
 // Registro de saídas
 
+route.get(
+  "/report/movimentacao",
+  authValidate,
+  saidaController.gerarRelatorio,
+);
+
 route.post("/outgoing/register", authValidate, saidaController.Registrar);
 
 route.get(
@@ -154,11 +160,21 @@ route.post("/partner/new-adress/:id", authValidate, enderecoController.Criar);
 
 route.post("/campaign/new-campaign", authValidate, campanhaController.Criar);
 route.get("/campaign/list", authValidate, campanhaController.Listar);
+route.get(
+  "/campaign/lotes-disponiveis",
+  authValidate,
+  campanhaController.ListarLotesDisponiveis,
+);
+route.post(
+  "/campaign/:id/lotes",
+  authValidate,
+  campanhaController.VincularLotes,
+);
 route.get("/campaign/:id", authValidate, campanhaController.Consultar);
 route.post("/campaign/delete/:id", authValidate, campanhaController.Excluir);
 
 // Devolução
-
 route.post("/return/new-return", devolucaoController.Criar);
+route.get("/return/list", authValidate, devolucaoController.Listar);
 
 export default route;

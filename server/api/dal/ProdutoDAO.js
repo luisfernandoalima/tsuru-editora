@@ -155,6 +155,20 @@ export class ProdutoDAO {
     }
   };
 
+  alterarStatus = async (id, status) => {
+    try {
+      const result = await pool.query(
+        `UPDATE produto SET status=$2 WHERE id=$1`,
+        [id, status],
+      );
+
+      return true;
+    } catch (error) {
+      showLog(`Erro ao atualizar estoque minimo: ${error}`);
+      throw error;
+    }
+  };
+
   consumoDiario = async (produtoId, janelaDias) => {
     const { rows } = await pool.query(
       `SELECT COALESCE(SUM(x.quantidade), 0)::int AS qtd
@@ -179,10 +193,10 @@ export class ProdutoDAO {
 
   atualizarEstoqueMinimo = async (id, quantidade) => {
     try {
-      await pool.query(`UPDATE produto SET estoque_minimo=$2 WHERE id=$1`, [
-        id,
-        quantidade,
-      ]);
+      const result = await pool.query(
+        `UPDATE produto SET estoque_minimo=$2 WHERE id=$1`,
+        [id, quantidade],
+      );
 
       return true;
     } catch (error) {

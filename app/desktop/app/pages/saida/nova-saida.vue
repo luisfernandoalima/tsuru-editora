@@ -57,8 +57,16 @@ const valorTotal = computed(() =>
   ),
 );
 
-const valorFinal = computed(() => {
-  return valorTotal.value - creditosUtilizados.value / 100;
+const valorFinal = computed(
+  () => valorTotal.value - Number(creditosUtilizados.value || 0) / 10,
+);
+
+// Não deixa passar do saldo (em pontos) nem do valor da venda (R$ 1 = 10 pontos)
+watch([creditosUtilizados, creditos, valorTotal], () => {
+  const limite = Math.min(Number(creditos.value || 0), valorTotal.value * 10);
+  const atual = Number(creditosUtilizados.value || 0);
+  if (atual > limite) creditosUtilizados.value = limite;
+  if (atual < 0) creditosUtilizados.value = 0;
 });
 
 const pesquisarParceiros = async () => {
@@ -180,7 +188,7 @@ const finalizarVenda = async () => {
     });
 
     toast.success({ title: "Sucesso!", message: response.message });
-    router.push("/operacoes/saida");
+    router.push("/saida");
   } catch (err) {
     toast.error({ title: "Erro!", message: err.data?.message || err.message });
   }
@@ -334,7 +342,7 @@ onMounted(() => {
               <span class="text-sm"
                 >Créditos:
                 <span class="font-semibold text-green-900"
-                  >-{{ formatCurrency(creditosUtilizados / 100) }}</span
+                  >-{{ formatCurrency(creditosUtilizados / 10) }}</span
                 ></span
               >
             </p>

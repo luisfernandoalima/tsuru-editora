@@ -79,4 +79,19 @@ export default class DevolucaoController {
       });
     }
   };
+  Listar = async (req, res) => {
+    try {
+      showLog("Listando devoluções");
+
+      const devolucoes = await this.#dao.Listar();
+
+      return res.status(200).json({ devolucoes });
+    } catch (error) {
+      showLog(`Não foi possível listar as devoluções: ${error}`);
+      return res.status(error.status ?? 500).json({
+        message: "Erro ao listar as devoluções.",
+        type: "error",
+      });
+    }
+  };
 }

@@ -53,13 +53,10 @@ const statusClass = computed(() => {
         </span>
 
         <div class="campanha-card__acoes">
-          <NuxtLink
-            :to="`/campanhas/${props.id}/visualizar`"
-            aria-label="Visualizar"
-          >
+          <NuxtLink :to="`/campanhas/${props.id}`" aria-label="Visualizar">
             <Icon icon="mdi:eye-outline" />
           </NuxtLink>
-          <NuxtLink :to="`/campanhas/${props.id}/editar`" aria-label="Editar">
+          <NuxtLink :to="`/campanhas/${props.id}`" aria-label="Editar">
             <Icon icon="material-symbols:edit-outline" />
           </NuxtLink>
         </div>

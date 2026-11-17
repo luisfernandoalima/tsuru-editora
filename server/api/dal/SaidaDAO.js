@@ -137,4 +137,57 @@ export default class SaidaDAO {
       return false;
     }
   };
+
+  gerarRelatorio = async (inicio) => {
+    try {
+      showLog(`Gerando movimentação mensal a partir de ${inicio}`);
+
+      const { rows } = await pool.query(
+        `
+        WITH meses AS (
+          SELECT (date_trunc('month', $1::date) + make_interval(months => g))::date AS inicio
+          FROM generate_series(0, 5) AS g
+        )
+        SELECT
+          EXTRACT(YEAR  FROM m.inicio)::int AS ano,
+          EXTRACT(MONTH FROM m.inicio)::int AS mes,
+          COALESCE((
+            SELECT SUM(l.quantidade_inicial)
+            FROM lote l
+            WHERE l.data_producao >= m.inicio
+              AND l.data_producao <  m.inicio + INTERVAL '1 month'
+          ), 0) AS entradas,
+          COALESCE((
+            SELECT SUM(sl.quantidade)
+            FROM saida s
+            JOIN saida_lote sl ON sl.fk_saida_id = s.id
+            WHERE s.data_saida >= m.inicio
+              AND s.data_saida <  m.inicio + INTERVAL '1 month'
+          ), 0) AS saidas,
+          COALESCE((
+            SELECT SUM(dl.quantidade)
+            FROM doacao d
+            JOIN doacao_lote dl ON dl.fk_doacao_id = d.id
+            WHERE d.data_doacao >= m.inicio
+              AND d.data_doacao <  m.inicio + INTERVAL '1 month'
+          ), 0) AS doacoes
+        FROM meses m
+        ORDER BY m.inicio
+        `,
+        [inicio],
+      );
+
+      // SUM de integer volta como string no pg
+      return rows.map((r) => ({
+        ano: r.ano,
+        mes: r.mes,
+        entradas: Number(r.entradas),
+        saidas: Number(r.saidas),
+        doacoes: Number(r.doacoes),
+      }));
+    } catch (error) {
+      showLog(`Não foi possível gerar a movimentação mensal: ${error}`);
+      throw error;
+    }
+  };
 }

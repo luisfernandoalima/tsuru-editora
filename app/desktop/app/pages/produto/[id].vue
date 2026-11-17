@@ -37,6 +37,7 @@ const data = await api(`/product/find-product/${id}`, {
 const produto = data.produto;
 lotes.value = data.lotes;
 estoque.value = data.quantidadeAtual;
+console.log(produto);
 
 const genero = listGeneros.find((item) => item.id == produto.genero)?.text;
 
@@ -97,7 +98,8 @@ onMounted(() => {
             <p class="text-4xl">Valor:</p>
             <p class="text-6xl">R${{ produto.preco }}</p>
             <p class="text-2xl">
-              Quantidade em estoque: {{ estoque }} unidades
+              Quantidade em estoque: {{ estoque }} unidades (Estoque mínimo:
+              {{ produto.estoqueMinimo || 0 }} un.)
             </p>
           </div>
         </div>

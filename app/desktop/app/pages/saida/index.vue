@@ -51,6 +51,29 @@ const carregaSaidas = async () => {
   console.log(saidas);
 };
 
+const baixarRelatorio = async (fim) => {
+  try {
+    const blob = await api(`/report/movimentacao?fim=${fim}`, {
+      method: "GET",
+      responseType: "blob",
+      headers: { authorization: `Bearer ${getToken()}` },
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Relatorio_TSURU_${fim}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    toast.error({
+      title: "Erro",
+      message: "Não foi possível gerar o relatório",
+    });
+    console.log(error);
+  }
+};
+
 watch(
   () => route.query.cupom,
   () => {
@@ -78,7 +101,7 @@ watch(
         className="primary"
         style="width: 25%; align-self: flex-end"
         :width="100"
-        :click="() => baixarPlanilha()"
+        :click="() => baixarRelatorio()"
       />
       <table
         class="table-auto border-collapse border border-gray-400 text-white mt-3"

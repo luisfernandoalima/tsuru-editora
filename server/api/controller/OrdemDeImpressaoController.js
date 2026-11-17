@@ -559,4 +559,5 @@ export default class OrdemDeImpressaoController {
       }
     }
   };
+  
 }

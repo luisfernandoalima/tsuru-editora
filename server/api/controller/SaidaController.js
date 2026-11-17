@@ -20,12 +20,18 @@ import Endereco from "../class/Endereco.js";
 import LoteDAO from "../dal/LoteDAO.js";
 import Lote from "../class/Lote.js";
 
+import DevolucaoDAO from "../dal/Devolucao_CreditoDAO.js";
+
+import showLog from "../utils/showLog.js";
+import gerarRelatorioXlsx from "../utils/GerarRelatorio.js";
+import ProdutoController from "./ProdutoController.js";
 export default class SaidaController {
   #dao = new SaidaDAO();
 
   Registrar = async (req, res) => {
     try {
       const { saida, produtos } = req.body;
+      const creditoDAO = new DevolucaoDAO();
 
       const produtoDAO = new ProdutoDAO();
       const loteDAO = new LoteDAO();
@@ -42,6 +48,7 @@ export default class SaidaController {
 
       const endereco = new Endereco(enderecoBD);
 
+      const listaProdutos = [];
       const listaSaidaLote = [];
 
       for (const item of produtos) {
@@ -54,6 +61,7 @@ export default class SaidaController {
         }
 
         const produto = new Produto(produtoBanco);
+        listaProdutos.push(produto);
 
         const lotesDisponiveis = await loteDAO.consultarPorProduto(produto);
 
@@ -83,7 +91,7 @@ export default class SaidaController {
         }
 
         if (quantidadeRestante > 0) {
-          throw res.status(400).json({
+          return res.status(400).json({
             message: `Estoque insuficiente para o produto ${
               produto.getTitulo?.() ?? item.produto_id
             }.`,
@@ -107,13 +115,13 @@ export default class SaidaController {
       const novaSaida = new Saida(saidaInfo);
 
       if (await this.#dao.Consultar(novaSaida.getCupomFiscal())) {
-        throw res.status(400).json({
+        return res.status(400).json({
           message: "Número do cupom já registrado",
         });
       }
 
       if (!validarTipoPagamento(novaSaida.getTipoPagamento())) {
-        throw res.status(400).json({
+        return res.status(400).json({
           message: "Erro ao registrar saída, erro de pagamento",
         });
       }
@@ -121,14 +129,53 @@ export default class SaidaController {
       const precoTotal = calcularPrecoTotal(novaSaida.getProdutos());
 
       if (precoTotal != novaSaida.getValorTotal()) {
-        throw res.json({
+        return res.status(400).json({
           message:
             "Erro ao registrar saída: Erro de cálculo de valor do produto",
           type: "error",
         });
       }
 
+      // credito_usado = pontos; cada ponto vale R$ 0,10 de desconto
+      const pontosUsados =
+        Math.round(Number(saida.credito_usado ?? 0) * 100) / 100;
+
+      if (!Number.isFinite(pontosUsados) || pontosUsados < 0) {
+        return res.status(400).json({ message: "Crédito utilizado inválido." });
+      }
+
+      if (pontosUsados > 0) {
+        const desconto = Math.round(pontosUsados * 10) / 100; // pontos / 10, em centavos exatos
+
+        if (desconto > precoTotal) {
+          return res.status(400).json({
+            message: "O desconto não pode ser maior que o valor total.",
+          });
+        }
+
+        const valorFinalEsperado =
+          Math.round((precoTotal - desconto) * 100) / 100;
+        if (Math.abs(valorFinalEsperado - Number(saida.valor_final)) > 0.001) {
+          return res
+            .status(400)
+            .json({ message: "Erro de cálculo do valor final com créditos." });
+        }
+
+        const saldo = await creditoDAO.ConsultarSaldoPorEndereco(
+          saida.endereco_id,
+        );
+        if (pontosUsados > saldo) {
+          return res.status(400).json({
+            message: `Saldo de créditos insuficiente (disponível: ${saldo.toFixed(2)} pontos).`,
+          });
+        }
+      }
+
       const saidaID = await this.#dao.Registrar(novaSaida);
+
+      if (pontosUsados > 0) {
+        await creditoDAO.Utilizar({ saidaId: saidaID, valor: pontosUsados });
+      }
 
       for (const item of novaSaida.getProdutos()) {
         await saidaLoteDAO.Registrar(saidaID, item);
@@ -142,6 +189,13 @@ export default class SaidaController {
         await loteDAO.atualizarEstoque(loteId, item.getQuantidade());
       }
 
+      const produtoController = new ProdutoController();
+
+      listaProdutos.forEach((item) => {
+        showLog(item.getId());
+        produtoController.calcularEstoqueMinimo(item.getId());
+      });
+
       return res.json({
         message: "Saída registrada com sucesso",
         type: "success",
@@ -149,8 +203,10 @@ export default class SaidaController {
     } catch (err) {
       console.log(err);
 
-      res.json({
-        message: `Erro ao registrar saída: ${err}`,
+      if (res.headersSent) return;
+
+      return res.status(err.status ?? 500).json({
+        message: `Erro ao registrar saída: ${err.message ?? err}`,
         type: "error",
       });
     }
@@ -245,6 +301,46 @@ export default class SaidaController {
       return res
         .status(500)
         .json({ message: "Erro ao buscar saídas.", type: "error" });
+    }
+  };
+
+  gerarRelatorio = async (req, res) => {
+    try {
+      showLog("Gerando relatório de movimentação");
+
+      // ?fim=YYYY-MM  (mês final; padrão: mês atual). O relatório cobre 6 meses.
+      const hoje = new Date();
+      const padrao = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
+      const fim = new Date()
+        .toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" })
+        .slice(0, 7);
+
+      // Início = 5 meses antes do mês final
+      const [ano, mes] = fim.split("-").map(Number);
+      const ini = new Date(Date.UTC(ano, mes - 1 - 5, 1));
+      const inicio = ini.toISOString().slice(0, 10); // YYYY-MM-01
+
+      const meses = await this.#dao.gerarRelatorio(inicio);
+      const arquivo = await gerarRelatorioXlsx(meses);
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="Relatorio_TSURU_${fim}.xlsx"`,
+      );
+      res.setHeader("Content-Length", arquivo.length);
+
+      return res.status(200).send(arquivo);
+    } catch (error) {
+      showLog(`Não foi possível gerar o relatório: ${error}`);
+      if (res.headersSent) return;
+      return res.status(error.status ?? 500).json({
+        message: "Erro ao gerar o relatório.",
+        type: "error",
+      });
     }
   };
 }
