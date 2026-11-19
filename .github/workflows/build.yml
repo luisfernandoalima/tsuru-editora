@@ -27,7 +27,7 @@ jobs:
       - name: Build
         working-directory: ./app/desktop
         env:
-          NUXT_PUBLIC_API_URL: https://sua-api.com
+          NUXT_PUBLIC_API_URL: https://projeto-livraria-9q6r.onrender.com
         run: npx tauri build
 
       - name: Disponibilizar o instalador para download
