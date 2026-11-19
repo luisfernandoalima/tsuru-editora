@@ -82,7 +82,7 @@ watch(
         :key="value._id"
         :name="value._titulo"
         :id="value._id"
-        :image="`http://localhost:8081${value._imgCapa}`"
+        :image="`https://projeto-livraria-9q6r.onrender.com${value._imgCapa}`"
       />
     </div>
   </NuxtLayout>

@@ -12,7 +12,7 @@ const emit = defineEmits(["remover"]);
     <div
       class="image_container"
       :style="{
-        backgroundImage: `url(http://localhost:8081${item.produto.imgCapa})`,
+        backgroundImage: `url(https://projeto-livraria-9q6r.onrender.com${item.produto.imgCapa})`,
       }"
     ></div>
 

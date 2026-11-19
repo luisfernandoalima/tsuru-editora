@@ -311,7 +311,7 @@ onMounted(() => {
           <div class="flex gap-3 search_obras">
             <img
               v-for="produto in produtos"
-              :src="`http://localhost:8081${produto.imgCapa}`"
+              :src="`https://projeto-livraria-9q6r.onrender.com${produto.imgCapa}`"
               :alt="produto.titulo"
               @click="buscarProduto(produto.id)"
             />

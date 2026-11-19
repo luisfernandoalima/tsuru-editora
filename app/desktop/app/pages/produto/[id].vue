@@ -84,7 +84,7 @@ onMounted(() => {
         <BackButton class="back_button" />
         <div class="py-5">
           <img
-            :src="`http://localhost:8081${produto.imgCapa}`"
+            :src="`https://projeto-livraria-9q6r.onrender.com${produto.imgCapa}`"
             :alt="data.titulo"
           />
         </div>

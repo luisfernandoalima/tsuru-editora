@@ -44,7 +44,9 @@ const preco = ref(produto.preco);
 const classIndicativa = ref(produto.classIndicativa);
 const imgCapa = ref(produto.imgCapa);
 
-const previewImage = ref(`http://localhost:8081${imgCapa.value}`);
+const previewImage = ref(
+  `https://projeto-livraria-9q6r.onrender.com${imgCapa.value}`,
+);
 
 const updateProduct = async () => {
   try {
