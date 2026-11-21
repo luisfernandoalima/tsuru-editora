@@ -365,4 +365,10 @@ onMounted(pesquisarParceiros);
   border-radius: 10px;
   padding: 5px;
 }
+.lotes_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
 </style>

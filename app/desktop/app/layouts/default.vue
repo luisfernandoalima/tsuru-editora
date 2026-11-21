@@ -23,11 +23,6 @@ const perfil = getPerfil(user.value?.funcao);
               />Home</NuxtLink
             >
           </li>
-          <li v-if="perfil === 1">
-            <NuxtLink to="/estoque">
-              <Icon icon="fluent:box-24-regular" />Estoque</NuxtLink
-            >
-          </li>
           <li>
             <NuxtLink to="/ordem-de-impressao">
               <Icon icon="mingcute:paper-2-line" />Ordens Impre.</NuxtLink

@@ -56,7 +56,11 @@ const statusClass = computed(() => {
           <NuxtLink :to="`/campanhas/${props.id}`" aria-label="Visualizar">
             <Icon icon="mdi:eye-outline" />
           </NuxtLink>
-          <NuxtLink :to="`/campanhas/${props.id}`" aria-label="Editar">
+          <NuxtLink
+            :to="`/campanhas/${props.id}/lotes`"
+            aria-label="Editar"
+            v-if="status == 'ativa'"
+          >
             <Icon icon="material-symbols:edit-outline" />
           </NuxtLink>
         </div>

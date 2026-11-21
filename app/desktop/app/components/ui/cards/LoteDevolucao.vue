@@ -74,7 +74,7 @@ const atualizar = (event) => {
 <style scoped>
 .lote-card {
   background: #fff;
-  border: 1px solid #ddd;
+  border: var(--border);
   border-radius: 15px;
   padding: 16px 18px;
   display: flex;

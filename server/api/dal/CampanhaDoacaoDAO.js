@@ -176,21 +176,19 @@ export default class CampanhaDoacaoDAO {
   };
 
   VincularLotes = async ({ campanhaId, devolucaoLoteIds, usuarioId }) => {
-    const client = await pool.connect();
-
     try {
       showLog(
         `Vinculando ${devolucaoLoteIds.length} lote(s) à campanha ${campanhaId}`,
       );
-      await client.query("BEGIN");
+      await pool.query("BEGIN");
 
-      const campanha = await client.query(
+      const campanha = await pool.query(
         "SELECT id FROM campanha WHERE id = $1",
         [campanhaId],
       );
       if (!campanha.rows[0]) throw erro(404, "Campanha não encontrada.");
 
-      const lotes = await client.query(
+      const lotes = await pool.query(
         `
       SELECT id, quantidade
       FROM devolucao_lote
@@ -205,7 +203,7 @@ export default class CampanhaDoacaoDAO {
         throw erro(400, "Algum lote selecionado não existe.");
       }
 
-      const jaVinculados = await client.query(
+      const jaVinculados = await pool.query(
         `
       SELECT fk_devolucao_lote_id
       FROM doacao_lote
@@ -221,8 +219,7 @@ export default class CampanhaDoacaoDAO {
         );
       }
 
-      // data_doacao usa o DEFAULT CURRENT_DATE
-      const doacao = await client.query(
+      const doacao = await pool.query(
         `
       INSERT INTO doacao (fk_campanha_id, fk_usuario_id)
       VALUES ($1, $2)
@@ -233,7 +230,7 @@ export default class CampanhaDoacaoDAO {
       const doacaoId = doacao.rows[0].id;
 
       for (const { id, quantidade } of lotes.rows) {
-        await client.query(
+        await pool.query(
           `
         INSERT INTO doacao_lote (fk_doacao_id, fk_devolucao_lote_id, quantidade)
         VALUES ($1, $2, $3)
@@ -242,14 +239,17 @@ export default class CampanhaDoacaoDAO {
         );
       }
 
-      await client.query("COMMIT");
+      const updateStatus = await pool.query(
+        "UPDATE campanha SET status='fechada' WHERE id=$1",
+        [campanhaId],
+      );
+
+      await pool.query("COMMIT");
       return { doacaoId, totalLotes: lotes.rows.length };
     } catch (error) {
-      await client.query("ROLLBACK");
+      await pool.query("ROLLBACK");
       showLog(`Não foi possível vincular os lotes: ${error}`);
       throw error;
-    } finally {
-      client.release();
     }
   };
 }

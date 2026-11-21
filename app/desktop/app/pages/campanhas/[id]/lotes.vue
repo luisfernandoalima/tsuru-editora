@@ -101,7 +101,7 @@ onMounted(carregarLotes);
     <SearchBar />
 
     <div class="flex justify-between">
-      <NuxtLink :to="`/campanhas/${route.params.id}`" class="back_link">
+      <NuxtLink :to="`/campanhas/`" class="back_link">
         <Icon icon="akar-icons:arrow-left" class="inline" /> Voltar
       </NuxtLink>
 
